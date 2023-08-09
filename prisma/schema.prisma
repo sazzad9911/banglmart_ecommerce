@@ -1,0 +1,160 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongodb"]
+}
+
+model users {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?         @unique
+  name          String
+  image         String?
+  phone         String?         @unique
+  birthday      String?
+  gender        String?
+  role          Int             @default(1)
+  uid           String
+  address       Json?
+  createdAt     DateTime        @default(now())
+  seller        seller[]
+  brand         brands[]
+  products      products[]
+  comments      comments[]
+  reviews       reviews[]
+  notifications notifications[]
+}
+
+model category {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String        @unique
+  icon        String
+  subCategory subCategory[]
+  products    products[]
+}
+
+model subCategory {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  name       String     @unique
+  categoryId String     @db.ObjectId
+  category   category?  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  options    options[]
+  products   products[]
+}
+
+model options {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  subCategoryId String       @db.ObjectId
+  subCategory   subCategory? @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  products      products[]
+}
+
+model seller {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String     @unique @db.ObjectId
+  user        users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopName    String
+  shopAddress String
+  products    products[]
+}
+
+model brands {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String     @unique @db.ObjectId
+  user         users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brandName    String
+  brandAddress String
+  brandIcon    String
+  products     products[]
+}
+
+model products {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  price       Int
+  title       String
+  description String
+  thumbnail     String
+  offers        offers[]
+  coins         coins[]
+  variants      variants[]
+  comments      comments[]
+  reviews       reviews[]
+  verified      Boolean      @default(false)
+  sellerId      String?      @db.ObjectId
+  seller        seller?      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  brandId       String?      @db.ObjectId
+  brand         brands?      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  category      category?    @relation(fields: [categoryId], references: [id])
+  categoryId    String       @db.ObjectId
+  subCategoryId String       @db.ObjectId
+  subCategory   subCategory? @relation(fields: [subCategoryId], references: [id])
+  optionId      String       @db.ObjectId
+  option        options?     @relation(fields: [optionId], references: [id])
+  userId        String       @db.ObjectId
+  user          users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model offers {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  money      Int       @default(0)
+  percentage Int       @default(0)
+  name       String?
+  productId  String    @db.ObjectId
+  product    products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model coins {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  number    Int       @default(0)
+  name      String?
+  productId String    @db.ObjectId
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model variants {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  size      String
+  color     String
+  image     String
+  productId String    @db.ObjectId
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model comments {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  message       String
+  replay        String
+  userId        String          @db.ObjectId
+  user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId     String          @db.ObjectId
+  product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  notifications notifications[]
+}
+
+model reviews {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  message       String
+  rate          Int             @default(0)
+  replay        String
+  userId        String          @db.ObjectId
+  user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId     String          @db.ObjectId
+  product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  notifications notifications[]
+}
+
+model notifications {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  title     String
+  userId    String    @db.ObjectId
+  user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commentId String    @db.ObjectId
+  comments  comments? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reviewId  String    @db.ObjectId
+  reviews   reviews?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
