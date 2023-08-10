@@ -93,4 +93,21 @@ export const getProductThumbnail = async (req, res) => {
     res.status(400).send(error);
   }
 };
+export const getProductVariants = async (req, res) => {
+
+  if(!req.file){
+    return res.status(StatusCodes.BAD_REQUEST).json({message:"Invalid file"})
+  }
+ 
+  try {
+    await sharp(req.file.buffer)
+      .resize({ width: 350, height: 400 })
+      .png()
+      .toFile(__dirname + `/images/${req.file.originalname}`);
+    return {path:`/images/${req.file.originalname}`}
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+};
 export { main, getInfo, storeInfo, uploadImage,getImageToUrl };

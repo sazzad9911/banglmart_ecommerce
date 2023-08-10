@@ -52,7 +52,7 @@ const Views = () => {
       dispatch(setUser(user));
       fetching()
     }
-  }, [user]);
+  }, [user,isLoading]);
 
   const fetching = async () => {
     const res = await getCategory();

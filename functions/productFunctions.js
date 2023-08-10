@@ -14,6 +14,7 @@ export const addProduct = async (req, res) => {
     verified,
     sellerId,
     brandId,
+    coin,
   } = req.body;
   if (
     !categoryId ||
@@ -43,6 +44,7 @@ export const addProduct = async (req, res) => {
         categoryId: categoryId,
         subCategoryId,
         optionId,
+        coin: Boolean(coin),
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -78,7 +80,9 @@ export const updateProduct = async (req, res) => {
     title,
     description,
     productId,
+    coin,
   } = req.body;
+  //console.log(req.body);
   if (
     !categoryId ||
     !subCategoryId ||
@@ -106,33 +110,36 @@ export const updateProduct = async (req, res) => {
           title,
           description,
           userId: id,
+          coin: Boolean(coin),
         },
       });
       res.status(StatusCodes.OK).json({ data: product });
     } catch (e) {
       res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
     }
-  }
-  try {
-    const { path } = await getProductThumbnail(req, res);
-    const product = await prisma.products.update({
-      where: {
-        id: productId,
-      },
-      data: {
-        categoryId,
-        subCategoryId,
-        optionId,
-        price: parseInt(price),
-        title,
-        description,
-        userId: id,
-        thumbnail: path,
-      },
-    });
-    res.status(StatusCodes.OK).json({ data: product });
-  } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  } else {
+    try {
+      const { path } = await getProductThumbnail(req, res);
+      const product = await prisma.products.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          categoryId,
+          subCategoryId,
+          optionId,
+          price: parseInt(price),
+          title,
+          description,
+          userId: id,
+          thumbnail: path,
+          coin: Boolean(coin),
+        },
+      });
+      res.status(StatusCodes.OK).json({ data: product });
+    } catch (e) {
+      res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+    }
   }
 };
 export const deleteProduct = async (req, res) => {
@@ -157,6 +164,25 @@ export const acceptProduct = async (req, res) => {
       },
       data: {
         verified: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getProductByOption = async (req, res) => {
+  const { optionId } = req.query;
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        optionId:optionId
+      },
+      include: {
+        user: true,
+        offers: true,
+        coins: true,
+        variants:true
       },
     });
     res.status(StatusCodes.OK).json({ data: product });

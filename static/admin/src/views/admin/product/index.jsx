@@ -34,6 +34,7 @@ import { url } from "api/authApi";
 import { setLoading } from "reducers/isLoading";
 import { deleteProductApi } from "api/productApi";
 import { useEffect } from "react";
+import EditProduct from "./EditProduct";
 
 export default function Product() {
   const [search, setSearch] = useState();
@@ -42,6 +43,7 @@ export default function Product() {
   const user = useSelector((state) => state.user);
   const product = useSelector((state) => state.product);
   const [productList, setProductList] = useState();
+  const [selectProduct, setSelectProduct] = useState();
 
   useEffect(() => {
     if (search) {
@@ -52,7 +54,7 @@ export default function Product() {
       );
     }
     setProductList(product?.data);
-  }, [search]);
+  }, [search,product]);
   const deleteProduct = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -71,8 +73,14 @@ export default function Product() {
       }
     });
   };
-  const addProduct = async () => {};
+  const addProduct = async () => {
+    setSearch("df")
+    setSearch("")
+  };
   const updateProduct = async () => {};
+  if(selectProduct){
+    return <EditProduct data={selectProduct} onClose={()=>setSelectProduct(undefined)}/>
+  }
 
   return (
     <ModalLayout
@@ -129,7 +137,7 @@ export default function Product() {
                             <MenuItem onClick={() => deleteProduct(e.data.id)}>
                               Delete
                             </MenuItem>
-                            <MenuItem>Edit</MenuItem>
+                            <MenuItem  onClick={() => setSelectProduct(e.data)}>Edit</MenuItem>
                           </MenuList>
                         </>
                       )}
@@ -142,7 +150,7 @@ export default function Product() {
           <FloatButton onClick={onOpen} />
         </>
       }
-      modal={<AddProduct onClose={onClose} />}
+      modal={<AddProduct addProducts={addProduct} onClose={onClose} />}
     />
   );
 }

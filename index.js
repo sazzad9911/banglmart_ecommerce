@@ -14,6 +14,7 @@ import upload from "./lib/upload.js";
 import { fileURLToPath } from "url";
 import category from "./routes/category.js";
 import product from "./routes/product.js";
+import variants from "./routes/variants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +46,7 @@ app.use("/icon", express.static("icon"));
 app.use("/auth", authentication);
 app.use("/category", category);
 app.use("/product", product);
+app.use("/variant", variants);
 app.use("/uploadImage", [verifyToken, upload.single("image")], uploadImage);
 
 

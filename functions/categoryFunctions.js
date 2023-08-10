@@ -70,7 +70,7 @@ const storeCategory = async (req, res) => {
     const result = await prisma.category.create({
       data: {
         name,
-        icon:path?.split(" ").join("%"),
+        icon:path,
       },
     });
     res.status(StatusCodes.OK).json({ data: result });

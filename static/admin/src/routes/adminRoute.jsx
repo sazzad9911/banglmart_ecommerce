@@ -18,10 +18,11 @@ import {
   MdBarChart,
   MdPerson,
   MdLock,
-  MdCategory,MdProductionQuantityLimits
+  MdCategory,MdProductionQuantityLimits,MdBackupTable
 } from "react-icons/md";
 import ForgetPassword from "views/auth/ForgetPassword";
 import Product from "views/admin/product";
+import Variants from "views/admin/variants";
 
 const adminRoutes = [
   {
@@ -44,6 +45,13 @@ const adminRoutes = [
     path: "product",
     icon: <MdProductionQuantityLimits className="h-6 w-6" />,
     component: < Product/>,
+  },
+  {
+    name: "Product Variants",
+    layout: "/admin",
+    path: "variants",
+    icon: <MdBackupTable className="h-6 w-6" />,
+    component: < Variants/>,
   },
   
   {

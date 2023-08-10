@@ -2,7 +2,7 @@ import express from "express";
 import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
 import upload from "../lib/upload.js";
-import { acceptProduct, addProduct, deleteProduct, getAllProduct, updateProduct } from "../functions/productFunctions.js";
+import { acceptProduct, addProduct, deleteProduct, getAllProduct, getProductByOption, updateProduct } from "../functions/productFunctions.js";
 
 const product = express.Router();
 const apiLimiter = rateLimiter({
@@ -12,6 +12,7 @@ const apiLimiter = rateLimiter({
 });
 
 product.route("/getAll").get(getAllProduct);
+product.route("/getProductByOption").get(getProductByOption);
 product.route("/update").put([verifyUser,upload.single("thumbnail")],updateProduct);
 product.route("/delete").delete(verifyUser,deleteProduct);
 product.route("/add").post([verifyUser,upload.single("thumbnail")],addProduct);

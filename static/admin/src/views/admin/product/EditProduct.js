@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import {
@@ -23,23 +23,27 @@ import Swal from "sweetalert2";
 import { useAlert } from "react-alert";
 import { setLoading } from "reducers/isLoading";
 import { addProduct } from "api/productApi";
+import Header from "components/headers";
+import { url } from "api/authApi";
+import { updateProduct } from "api/productApi";
 
-export default function AddProduct({ onClose,addProducts}) {
-  const [categoryId, setCategoryId] = useState();
-  const [subCategoryId, setSubCategoryId] = useState();
-  const [optionId, setOptionId] = useState();
-  const [title, setTitle] = useState();
-  const [description, setDescription] = useState();
-  const [price, setPrice] = useState();
+export default function EditProduct({ data, onClose, addProducts }) {
+  const [categoryId, setCategoryId] = useState(data?.categoryId);
+  const [subCategoryId, setSubCategoryId] = useState(data?.subCategoryId);
+  const [optionId, setOptionId] = useState(data?.optionId);
+  const [title, setTitle] = useState(data?.title);
+  const [description, setDescription] = useState(data?.description);
+  const [price, setPrice] = useState(data?.price);
   const [picture, setPicture] = useState();
   const categoryList = useSelector((state) => state.category);
   const subCategory = useSelector((state) => state.subCategory);
   const option = useSelector((state) => state.option);
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [select,setSelect]=useState("BDT")
+  const [select, setSelect] = useState(data?.coin ? "Coin" : "BDT");
   const alert = useAlert();
   const [submit, setSubmit] = useState(false);
+  const product = useSelector((state) => state.product);
 
   const addNewProduct = async () => {
     if (
@@ -48,8 +52,7 @@ export default function AddProduct({ onClose,addProducts}) {
       !optionId ||
       !title ||
       !description ||
-      !price ||
-      !picture
+      !price 
     ) {
       return setSubmit(true);
     }
@@ -64,21 +67,23 @@ export default function AddProduct({ onClose,addProducts}) {
       form.append("title", title);
       form.append("description", description);
       form.append("verified", "new");
-      form.append("thumbnail", picture);
-      form.append("coin", select==="BDT"?"":select);
-      await addProduct(form, user.token);
+      picture&&form.append("thumbnail", picture);
+      form.append("productId",data.id)
+      form.append("coin", select === "BDT" ? "" : select);
+      await updateProduct(form, user.token)
       onClose();
       dispatch(setLoading(false));
-      addProducts()
-      Swal.fire("Success", "Product added successful", "success");
+      Swal.fire("Success", "Product updated successful", "success");
     } catch (e) {
       onClose();
       dispatch(setLoading(false));
+      console.log(e.message);
       Swal.fire("Ops!", "Something went wrong", "error");
     }
   };
   return (
     <div>
+      <Header onClick={onClose} title="Edit Product" />
       <h2 className="mediumText mb-2">Product Categories</h2>
       <div className=" lg:grid lg:grid-cols-3 lg:gap-4">
         <div>
@@ -166,10 +171,16 @@ export default function AddProduct({ onClose,addProducts}) {
               type="number"
               placeholder="Product Price"
             />
-            <InputRightElement style={{
-              width:120
-            }}>
-              <Select value={select} onChange={e=>setSelect(e.target.value)}  placeholder="Currency">
+            <InputRightElement
+              style={{
+                width: 120,
+              }}
+            >
+              <Select
+                value={select}
+                onChange={(e) => setSelect(e.target.value)}
+                placeholder="Currency"
+              >
                 <option value="Coin">Coin</option>
                 <option value="BDT">BDT</option>
               </Select>
@@ -181,16 +192,21 @@ export default function AddProduct({ onClose,addProducts}) {
         </div>
         <div>
           <h2 className="mediumText mb-2">Product Thumbnail (Ratio 180*225)</h2>
-          <Input
-            isInvalid={submit && !picture}
-            onChange={(e) =>
-              setPicture(e.target.files[e.target.files.length - 1])
-            }
-            style={style}
-            type="file"
-            accept="image/jpeg,image/png"
-            placeholder="Product thumbnail"
-          />
+          <InputGroup>
+            <Input
+              isInvalid={submit && !picture}
+              onChange={(e) =>
+                setPicture(e.target.files[e.target.files.length - 1])
+              }
+              style={style}
+              type="file"
+              accept="image/jpeg,image/png"
+              placeholder="Product thumbnail"
+            />
+            <InputRightElement>
+            <img className="w-8 h-8" crossOrigin="anonymous" src={`${url}${data?.thumbnail}`} alt="Product thumbnail" />
+            </InputRightElement>
+          </InputGroup>
           {submit && !picture && (
             <div className="text-red-500">Product thumbnail is required!</div>
           )}
