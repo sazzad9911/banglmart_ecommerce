@@ -18,8 +18,8 @@ export default function AddSize({ onChange }) {
         <Input value={first} onChange={e=>onFirst(e.target.value)} placeholder="eg. Xl/XXL/M" />
       </div>
       <div className="mt-4">
-        <div className="mediumText mb-2">Size in CM.</div>
-        <Input type="number" value={second} onChange={e=>onSecond(e.target.value)} placeholder="eg. 36/45/33" />
+        <div className="mediumText mb-2">Package Size</div>
+        <Input value={second} onChange={e=>onSecond(e.target.value)} placeholder="eg. 36 cm/450gm/33kg" />
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ import { MdCheckCircle, MdCancel, MdOutlineError } from "react-icons/md";
 import { useMemo } from "react";
 import Progress from "components/progress";
 import { IoMdAddCircle } from "react-icons/io";
+import { Button } from "@chakra-ui/react";
+import { AiFillDelete } from "react-icons/ai";
 const ColorTable = (props) => {
   const { columnsData, tableData } = props;
 
@@ -81,22 +83,9 @@ const ColorTable = (props) => {
                           {cell.value}
                         </p>
                       );
-                    } else if (cell.column.Header === "STATUS") {
+                    } else if (cell.column.Header === "ACTION") {
                       data = (
-                        <div className="flex items-center gap-2">
-                          <div className={`rounded-full text-xl`}>
-                            {cell.value === "COLOR" ? (
-                              <MdCheckCircle className="text-green-500" />
-                            ) : cell.value === "Disable" ? (
-                              <MdCancel className="text-red-500" />
-                            ) : cell.value === "Error" ? (
-                              <MdOutlineError className="text-orange-500" />
-                            ) : null}
-                          </div>
-                          <p className="text-sm font-bold text-navy-700 dark:text-white">
-                            {cell.value}
-                          </p>
-                        </div>
+                        <AiFillDelete onClick={()=>props.onDelete?props.onDelete(cell.value):null} color="red"/>
                       );
                     } else if (cell.column.Header === "COLOR") {
                       data = (
@@ -109,9 +98,10 @@ const ColorTable = (props) => {
                           }}
                         />
                       );
-                    } else if (cell.column.Header === "PROGRESS") {
+                    } else if (cell.column.Header == "M") {
                       data = <Progress width="w-[68px]" value={cell.value} />;
                     }
+                    
                     return (
                       <td
                         className="pt-[14px] pb-[18px] sm:text-[14px]"
@@ -122,6 +112,7 @@ const ColorTable = (props) => {
                       </td>
                     );
                   })}
+                 
                 </tr>
               );
             })}

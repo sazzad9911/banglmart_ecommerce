@@ -10,7 +10,7 @@ export const addColor = async (req, res) => {
       .json({ message: "Color and title fields are required" });
   }
   try {
-    const colors =await prisma.colors.create({
+    const colors = await prisma.colors.create({
       data: {
         title,
         color,
@@ -29,7 +29,7 @@ export const deleteColor = async (req, res) => {
       .json({ message: "all fields are required" });
   }
   try {
-    const colors =await prisma.colors.delete({
+    const colors = await prisma.colors.delete({
       where: {
         id: colorId,
       },
@@ -47,7 +47,7 @@ export const addSize = async (req, res) => {
       .json({ message: "all fields are required" });
   }
   try {
-    const size =await prisma.size.create({
+    const size = await prisma.size.create({
       data: {
         title,
         cm,
@@ -66,7 +66,7 @@ export const deleteSize = async (req, res) => {
       .json({ message: "all fields are required" });
   }
   try {
-    const size =await prisma.size.delete({
+    const size = await prisma.size.delete({
       where: {
         id: sizeId,
       },
@@ -77,22 +77,22 @@ export const deleteSize = async (req, res) => {
   }
 };
 export const addVariant = async (req, res) => {
-  const { colorId, sizeId,productId } = req.body;
-  const {id,email}=req.user;
-  if (!colorId || !sizeId||!productId) {
+  const { colorId, sizeId, productId } = req.body;
+  const { id, email } = req.user;
+  if (!colorId || !sizeId || !productId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "all fields are required" });
   }
   const { path } = await getProductVariants(req, res);
   try {
-    const size =await prisma.variants.create({
+    const size = await prisma.variants.create({
       data: {
         colorId: colorId,
         sizeId: sizeId,
         image: path,
         productId,
-        userId:id
+        userId: id,
       },
     });
     res.status(StatusCodes.OK).json({ data: size });
@@ -102,64 +102,105 @@ export const addVariant = async (req, res) => {
   }
 };
 export const deleteVariant = async (req, res) => {
-  const { variantId } = req.body;
+  const { variantId } = req.query;
   if (!variantId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "all fields are required" });
   }
   try {
-    const size =await prisma.variants.delete({
-      where:{
-        id:variantId
-      }
+    const size = await prisma.variants.delete({
+      where: {
+        id: variantId,
+      },
     });
     res.status(StatusCodes.OK).json({ data: size });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
-export const getVariant = async (req, res) => {
-    const { productId,userId } = req.query;
-    
+export const updateVariant = async (req, res) => {
+  const { colorId, sizeId, productId, variantId } = req.body;
+  const { id, email } = req.user;
+  if (!colorId || !sizeId || !productId || !variantId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "all fields are required" });
+  }
+  if (req.file) {
+    const { path } = await getProductVariants(req, res);
     try {
-      const variants =await prisma.variants.findMany({
-        where:{
-          productId:productId?productId:undefined,
-          userId:userId?userId:undefined
+      const size = await prisma.variants.update({
+        data: {
+          colorId: colorId ? colorId : undefined,
+          sizeId: sizeId ? sizeId : undefined,
+          image: path,
+          productId: productId ? productId : undefined,
+          userId: id,
         },
-        include:{
-          product:true,
-          color:true,
-          size:true
-        }
+        where: {
+          id: variantId,
+        },
       });
-      res.status(StatusCodes.OK).json({ data: variants });
+      res.status(StatusCodes.OK).json({ data: size });
     } catch (e) {
+      console.log(e.message);
       res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
     }
-  };
-  
-  export const getColor = async (req, res) => {
-
+  } else {
     try {
-      const variants =await prisma.colors.findMany({
-        
+      const size = await prisma.variants.update({
+        data: {
+          colorId: colorId ? colorId : undefined,
+          sizeId: sizeId ? sizeId : undefined,
+          productId: productId ? productId : undefined,
+          userId: id,
+        },
+        where: {
+          id: variantId,
+        },
       });
-      res.status(StatusCodes.OK).json({ data: variants });
+      res.status(StatusCodes.OK).json({ data: size });
     } catch (e) {
+      console.log(e.message);
       res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
     }
-  };
-  export const getSize = async (req, res) => {
+  }
+};
+export const getVariant = async (req, res) => {
+  const { productId, userId } = req.query;
 
-    try {
-      const variants =await prisma.size.findMany({
-        
-      });
-      res.status(StatusCodes.OK).json({ data: variants });
-    } catch (e) {
-      res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
-    }
-  };
-  
+  try {
+    const variants = await prisma.variants.findMany({
+      where: {
+        productId: productId ? productId : undefined,
+        userId: userId ? userId : undefined,
+      },
+      include: {
+        product: true,
+        color: true,
+        size: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: variants });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+
+export const getColor = async (req, res) => {
+  try {
+    const variants = await prisma.colors.findMany({});
+    res.status(StatusCodes.OK).json({ data: variants });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getSize = async (req, res) => {
+  try {
+    const variants = await prisma.size.findMany({});
+    res.status(StatusCodes.OK).json({ data: variants });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};

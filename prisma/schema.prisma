@@ -27,6 +27,7 @@ model users {
   reviews       reviews[]
   notifications notifications[]
   varants       variants[]
+  pushToken     String?
 }
 
 model category {
@@ -74,36 +75,40 @@ model brands {
 }
 
 model products {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  price         Int
-  coin          Boolean      @default(false)
-  title         String
-  description   String
-  thumbnail     String
-  offers        offers[]
-  coins         coins[]
-  variants      variants[]
-  comments      comments[]
-  reviews       reviews[]
-  verified      Boolean      @default(false)
-  sellerId      String?      @db.ObjectId
-  seller        seller?      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  brandId       String?      @db.ObjectId
-  brand         brands?      @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  category      category?    @relation(fields: [categoryId], references: [id])
-  categoryId    String       @db.ObjectId
-  subCategoryId String       @db.ObjectId
-  subCategory   subCategory? @relation(fields: [subCategoryId], references: [id])
-  optionId      String       @db.ObjectId
-  option        options?     @relation(fields: [optionId], references: [id])
-  userId        String       @db.ObjectId
-  user          users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  price            Int
+  coin             Boolean            @default(false)
+  title            String
+  description      String
+  thumbnail        String
+  quantity         Int                @default(1)
+  minOrder         Int                @default(1)
+  createdAt        DateTime           @default(now())
+  offers           offers[]
+  coins            coins[]
+  variants         variants[]
+  comments         comments[]
+  reviews          reviews[]
+  flashSellProduct flashSellProduct[]
+  verified         Boolean            @default(false)
+  sellerId         String?            @db.ObjectId
+  seller           seller?            @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  brandId          String?            @db.ObjectId
+  brand            brands?            @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  category         category?          @relation(fields: [categoryId], references: [id])
+  categoryId       String             @db.ObjectId
+  subCategoryId    String             @db.ObjectId
+  subCategory      subCategory?       @relation(fields: [subCategoryId], references: [id])
+  optionId         String             @db.ObjectId
+  option           options?           @relation(fields: [optionId], references: [id])
+  userId           String             @db.ObjectId
+  user             users?             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model offers {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   money      Int       @default(0)
-  percentage Int       @default(0)
+  percentage Boolean   @default(false)
   name       String?
   productId  String    @unique @db.ObjectId
   product    products? @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -119,14 +124,14 @@ model coins {
 
 model colors {
   id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  title    String @unique
+  title    String     @unique
   color    String
   variants variants[]
 }
 
 model size {
   id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  title    String @unique
+  title    String     @unique
   cm       String
   variants variants[]
 }
@@ -177,4 +182,23 @@ model notifications {
   comments  comments? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   reviewId  String    @db.ObjectId
   reviews   reviews?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+model flashSell {
+  id      String             @id @default(auto()) @map("_id") @db.ObjectId
+  startAt DateTime
+  endAt   DateTime
+  banner  String
+  title   String             @unique
+  product flashSellProduct[]
+}
+
+model flashSellProduct {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  offer       Int
+  percentage  Boolean    @default(false)
+  flashSellId String     @db.ObjectId
+  flashSell   flashSell? @relation(fields: [flashSellId], references: [id], onDelete: Cascade)
+  productId   String     @db.ObjectId
+  product     products?  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

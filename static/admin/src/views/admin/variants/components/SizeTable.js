@@ -10,6 +10,7 @@ import { MdCheckCircle, MdCancel, MdOutlineError } from "react-icons/md";
 import { useMemo } from "react";
 import Progress from "components/progress";
 import { IoMdAddCircle } from "react-icons/io";
+import { AiFillDelete } from "react-icons/ai";
 const SizeTable = (props) => {
   const { columnsData, tableData } = props;
 
@@ -90,7 +91,7 @@ const SizeTable = (props) => {
                             ) : null}
                           </div>
                           <p className="text-sm font-bold text-navy-700 dark:text-white">
-                            {cell.value} CM
+                            {cell.value} 
                           </p>
                         </div>
                       );
@@ -102,6 +103,11 @@ const SizeTable = (props) => {
                       );
                     } else if (cell.column.Header === "PROGRESS") {
                       data = <Progress width="w-[68px]" value={cell.value} />;
+                    }
+                    else if (cell.column.Header === "ACTION") {
+                      data = (
+                        <AiFillDelete onClick={()=>props.onDelete?props.onDelete(cell.value):null} color="red"/>
+                      );
                     }
                     return (
                       <td

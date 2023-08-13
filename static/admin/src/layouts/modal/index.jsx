@@ -19,7 +19,7 @@ export default function ModalLayout({
   onClose,
 }) {
   return (
-    <div className="h-full w-full p-4 ">
+    <div className="h-full w-full p-4 dark:text-[#fff] ">
       {component}
       <Modal size={"6xl"} colorScheme="blue" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

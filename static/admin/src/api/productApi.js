@@ -53,13 +53,13 @@ export const addColorApi=async(title,color,token)=>{
     })
     return res.data
 }
-export const deleteSize=async(sizeId,token)=>{
+export const deleteSizeApi=async(sizeId,token)=>{
     const res=await axios.delete(`${url}/variant/deleteSize?sizeId=${sizeId}`,{
         headers:{Authorization:`Bearer ${token}`}
     })
     return res.data
 }
-export const deleteColor=async(colorId,token)=>{
+export const deleteColorApi=async(colorId,token)=>{
     const res=await axios.delete(`${url}/variant/deleteColor?colorId=${colorId}`,{
         headers:{Authorization:`Bearer ${token}`}
     })
@@ -67,6 +67,30 @@ export const deleteColor=async(colorId,token)=>{
 }
 export const addVariantApi=async(form,token)=>{
     const res=await axios.post(`${url}/variant/addVariant`,form,{
+        headers:{Authorization:`Bearer ${token}`}
+    })
+    return res.data
+}
+export const updateVariantApi=async(form,token)=>{
+    const res=await axios.put(`${url}/variant/updateVariant`,form,{
+        headers:{Authorization:`Bearer ${token}`}
+    })
+    return res.data
+}
+export const deleteVariantApi=async(variantId,token)=>{
+    const res=await axios.delete(`${url}/variant/deleteVariant?variantId=${variantId}`,{
+        headers:{Authorization:`Bearer ${token}`}
+    })
+    return res.data
+}
+export const updateQuantityApi=async(data,token)=>{
+    const res=await axios.put(`${url}/product/updateQuantity`,data,{
+        headers:{Authorization:`Bearer ${token}`}
+    })
+    return res.data
+}
+export const addOffersApi=async(data,token)=>{
+    const res=await axios.post(`${url}/product/addOffers`,data,{
         headers:{Authorization:`Bearer ${token}`}
     })
     return res.data

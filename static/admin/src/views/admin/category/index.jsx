@@ -142,7 +142,7 @@ export default function Category() {
     return <CategoryList id={categoryId} onBack={setCategoryId} />;
   }
   return (
-    <div className="mt-4 gap-2 py-3 lg:grid lg:grid-cols-2">
+    <div className="mt-4 gap-2 py-3 lg:grid lg:grid-cols-2 dark:text-[#fff]">
       <div>
         <div className=" rounded-md border-2 p-4">
           <h1 className="headLine">Add Main Category</h1>
@@ -175,7 +175,7 @@ export default function Category() {
           <h1 className="headLine">Add Sub Category</h1>
           <FormControl className="my-6">
             <FormLabel>Select Category</FormLabel>
-            <Select
+            <Select className=" dark:bg-brandLinear dark:text-[#000]"
               value={subCategory}
               onChange={(e) => setSubCategory(e.target.value)}
               style={style}
@@ -208,7 +208,7 @@ export default function Category() {
           <h1 className="headLine">Add Options</h1>
           <FormControl className="my-6">
             <FormLabel>Select Category</FormLabel>
-            <Select
+            <Select className=" dark:bg-brandLinear dark:text-[#000]"
               onChange={(e) => {
                 setSubCategories(
                   subCategoryList?.filter((d) => d.categoryId == e.target.value)
@@ -224,7 +224,7 @@ export default function Category() {
               ))}
             </Select>
             <FormLabel className="mt-4">Select Sub Category</FormLabel>
-            <Select
+            <Select className=" dark:bg-brandLinear dark:text-[#000]"
               value={option}
               onChange={(e) => setOption(e.target.value)}
               style={style}
@@ -285,7 +285,7 @@ export default function Category() {
                         <AiOutlineHolder />
                       </MenuButton>
 
-                      <MenuList>
+                      <MenuList className=" dark:text-[#000]">
                         <MenuItem
                           onClick={() => {
                             Swal.fire({

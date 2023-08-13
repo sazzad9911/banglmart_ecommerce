@@ -58,6 +58,9 @@ export const getAllProduct = async (req, res) => {
     const product = await prisma.products.findMany({
       where: {
         userId: userId ? userId : undefined,
+        quantity: {
+          gte: 1,
+        },
       },
       include: {
         user: true,
@@ -176,16 +179,150 @@ export const getProductByOption = async (req, res) => {
   try {
     const product = await prisma.products.findMany({
       where: {
-        optionId:optionId
+        optionId: optionId,
       },
       include: {
         user: true,
         offers: true,
         coins: true,
-        variants:true
+        variants: true,
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const updateQuantity = async (req, res) => {
+  const { id, email } = req.user;
+  const { minOrder, productId, quantity } = req.body;
+  //console.log(req.body);
+  if (!minOrder || !quantity || !productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+
+  try {
+    const product = await prisma.products.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        minOrder: parseInt(minOrder),
+        quantity: parseInt(quantity),
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getFlashSell = async (req, res) => {
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        quantity: {
+          gte: 10,
+        },
+      },
+      include: {
+        user: true,
+        offers: true,
+        coins: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getTop = async (req, res) => {
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        quantity: {
+          gte: 10,
+        },
+      },
+      include: {
+        user: true,
+        offers: true,
+        coins: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getTopSell = async (req, res) => {
+  try {
+    const product = await prisma.products.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        user: true,
+        offers: true,
+        coins: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getForYou = async (req, res) => {
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        quantity: {
+          gte: 10,
+        },
+      },
+      include: {
+        user: true,
+        offers: true,
+        coins: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const addOffers = async (req, res) => {
+  const { productId, money, percentage, name,type } = req.body;
+  // console.log(productId);
+  if (!name || !productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All field are required" });
+  }
+  try {
+    if (type) {
+      const offers = await prisma.offers.update({
+        where: {
+          productId: productId,
+        },
+        data: {
+          name,
+          percentage: Boolean(percentage),
+          money: parseInt(money),
+        },
+      });
+      return res.status(StatusCodes.OK).json({ data: offers });
+    }
+    const offers = await prisma.offers.create({
+      data: {
+        name,
+        percentage: Boolean(percentage),
+        money: parseInt(money),
+        productId:productId
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: offers });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }

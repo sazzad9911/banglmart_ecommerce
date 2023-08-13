@@ -83,7 +83,7 @@ export default function CategoryList({ onBack, id }) {
     }
   };
   return (
-    <>
+    <div className="dark:text-[#fff]">
       <Header title={"Category List"} onClick={() => onBack(null)} />
       <div className=" gap-2 py-3 lg:grid lg:grid-cols-2">
         <div className=" mt-2 overflow-y-auto rounded-md border-2 p-4 lg:mt-0">
@@ -148,7 +148,7 @@ export default function CategoryList({ onBack, id }) {
         <div className=" mt-2 overflow-y-auto rounded-md border-2 p-4 lg:mt-0">
           <h1 className="headLine mb-4">Options List</h1>
 
-          <Select
+          <Select className=" dark:bg-brandLinear dark:text-[#000]"
             onChange={(e) => setSelection(e.target.value)}
             style={style}
             placeholder="Select Sub- Category"
@@ -208,9 +208,10 @@ export default function CategoryList({ onBack, id }) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 const style = {
   borderColor: "#ABB2B9",
+  
 };

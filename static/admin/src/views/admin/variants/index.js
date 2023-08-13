@@ -5,7 +5,6 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Select,
   Td,
   Th,
   Tr,
@@ -31,6 +30,13 @@ import { useAlert } from "react-alert";
 import { addSize } from "api/productApi";
 import { setLoading } from "reducers/isLoading";
 import { addColorApi } from "api/productApi";
+import Select from "react-select";
+import { deleteVariantApi } from "api/productApi";
+import Swal from "sweetalert2";
+import { Loader } from "App";
+import EditVariant from "./EditVariant";
+import { deleteColorApi } from "api/productApi";
+import { deleteSizeApi } from "api/productApi";
 const colorHeaders = [
   {
     Header: "NAME",
@@ -39,6 +45,10 @@ const colorHeaders = [
   {
     Header: "COLOR",
     accessor: "color",
+  },
+  {
+    Header: "ACTION",
+    accessor: "id",
   },
 ];
 const sizeHeaders = [
@@ -50,11 +60,15 @@ const sizeHeaders = [
     Header: "SIZE(CM.)",
     accessor: "cm",
   },
+  {
+    Header: "ACTION",
+    accessor: "id",
+  },
 ];
 export default function Variants() {
-  const [VARIANT, setVariant] = useState();
-  const [COLORS, setColors] = useState([]);
-  const [SIZE, setSize] = useState([]);
+  const VARIANT = useSelector((state) => state.variant);
+  const COLORS = useSelector((state) => state.color);
+  const SIZE = useSelector((state) => state.size);
   const user = useSelector((state) => state.user);
   const [addClick, setAddClick] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,26 +78,31 @@ export default function Variants() {
   const dispatch = useDispatch();
   const alert = useAlert();
   const isLoading = useSelector((state) => state.isLoading);
-
+  const [variantId, setVariantId] = useState();
+  const [AllVariants, setAllVariants] = useState();
+  const [List, setList] = useState([]);
+  const product = useSelector((state) => state.product);
+  const [editClick, setEditClick] = useState();
   useEffect(() => {
-    fetch();
-  }, [COLORS,VARIANT,SIZE]);
-  const fetch = async () => {
-    
-    try {
-      const res = await getVariant(user.user.id);
-      setVariant(res.data);
-      const colors = await getColor(user.user.id);
-      setColors(colors.data);
-      const size = await getSize();
-      setSize(size.data);
-      dispatch(setLoading(false));
-      //console.log(size.data);
-    } catch (e) {
-      console.log(e.message);
-      dispatch(setLoading(false));
+    if (product && product.data) {
+      let arr = [];
+      product?.data?.map((doc, i) => {
+        arr.push({
+          value: doc.id,
+          label: doc.title,
+        });
+      });
+      setList(arr);
     }
-  };
+  }, [product]);
+  useEffect(() => {
+    if (variantId) {
+      setAllVariants(VARIANT?.filter((d) => d.productId === variantId?.value));
+    } else {
+      setAllVariants(VARIANT);
+    }
+  }, [variantId, VARIANT]);
+
   const storeColor = async () => {
     onClose();
     if (!color || !color?.title || !color?.color) {
@@ -112,6 +131,19 @@ export default function Variants() {
       alert.error("Something went wrong");
     }
   };
+  const deleteVariant = async (id) => {
+    dispatch(setLoading(true));
+    await deleteVariantApi(id, user.token);
+    dispatch(setLoading(false));
+  };
+
+  if (!VARIANT || !COLORS || !SIZE) {
+    return (
+      <div className="flex h-[90vh] w-full items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
   if (addClick) {
     return (
       <AddVariant
@@ -121,12 +153,32 @@ export default function Variants() {
       />
     );
   }
+  if (editClick) {
+    return (
+      <EditVariant
+        data={editClick}
+        colors={COLORS}
+        size={SIZE}
+        onClose={() => setEditClick(false)}
+      />
+    );
+  }
   return (
-    <div className=" grid grid-cols-3 gap-4 p-4">
-      <div className=" col-span-2">
+    <div className="lg:grid lg:grid-cols-5 gap-4 p-4 dark:text-[#fff]">
+      <div className=" lg:col-span-3">
         <h2 className="headLine mb-4">Your Product Variants</h2>
+        <Select
+          className="basic-single text-[#000]"
+          classNamePrefix="select"
+          defaultValue={List[List.indexOf(variantId)]}
+          isClearable={true}
+          isSearchable={true}
+          name="color"
+          options={List}
+          onChange={setVariantId}
+        />
         <Pagination
-          data={VARIANT}
+          data={AllVariants}
           itemsPerPage={10}
           head={
             <Tr>
@@ -160,7 +212,7 @@ export default function Variants() {
                     src={`${url}${e.data.image}`}
                   />
                 </Td>
-                <Td>
+                <Td className="text-[#000]">
                   <Menu>
                     {({ isOpen }) => (
                       <>
@@ -169,8 +221,47 @@ export default function Variants() {
                         </MenuButton>
 
                         <MenuList>
-                          <MenuItem>Delete</MenuItem>
-                          <MenuItem>Edit</MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              Swal.fire({
+                                title: "Are you sure?",
+                                text: "You won't be able to revert this!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Yes, delete it!",
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                  deleteVariant(e.data.id)
+                                    .then((res) => {
+                                      Swal.fire(
+                                        "Deleted!",
+                                        "Your file has been deleted.",
+                                        "success"
+                                      );
+                                    })
+                                    .catch((e) => {
+                                      dispatch(setLoading(false));
+                                      Swal.fire(
+                                        "Ops!",
+                                        "Something went wrong.",
+                                        "error"
+                                      );
+                                    });
+                                }
+                              });
+                            }}
+                          >
+                            Delete
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setEditClick(e.data);
+                            }}
+                          >
+                            Edit
+                          </MenuItem>
                         </MenuList>
                       </>
                     )}
@@ -181,9 +272,40 @@ export default function Variants() {
           }}
         />
       </div>
-      <div>
+      <div className="col-span-2">
         <div className="m-2">
           <ColorTable
+            onDelete={(id) => {
+              Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  dispatch(setLoading(true))
+                  try {
+                    await deleteColorApi(id, user.token)
+                    Swal.fire(
+                      "Deleted!",
+                      "Your color has been deleted.",
+                      "success"
+                    );
+                    dispatch(setLoading(false))
+                  } catch (e) {
+                    Swal.fire(
+                      "Ops!",
+                      "This color is now using.",
+                      "error"
+                    );
+                    dispatch(setLoading(false))
+                  }
+                }
+              });
+            }}
             onClick={() => {
               setAddColor(true);
               onOpen();
@@ -193,7 +315,37 @@ export default function Variants() {
           />
         </div>
         <div className="m-2">
-          <SizeTable
+          <SizeTable onDelete={(id) => {
+              Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  dispatch(setLoading(true))
+                  try {
+                    await deleteSizeApi(id, user.token)
+                    Swal.fire(
+                      "Deleted!",
+                      "Your size has been deleted.",
+                      "success"
+                    );
+                    dispatch(setLoading(false))
+                  } catch (e) {
+                    Swal.fire(
+                      "Ops!",
+                      "This size is now using.",
+                      "error"
+                    );
+                    dispatch(setLoading(false))
+                  }
+                }
+              });
+            }}
             onClick={() => {
               setAddColor(false);
               onOpen();

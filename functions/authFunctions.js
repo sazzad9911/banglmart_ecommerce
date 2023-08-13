@@ -15,7 +15,7 @@ import jwt from "jsonwebtoken";
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
-  
+
   if (!email || !password) {
     res
       .status(StatusCodes.BAD_REQUEST)
@@ -41,7 +41,8 @@ const signIn = async (req, res) => {
 };
 
 const signUp = async (req, res) => {
-  const { email, password, name, role,phone,address,birthday,gender } = req.body;
+  const { email, password, name, role, phone, address, birthday, gender } =
+    req.body;
   if (!email || !password || !name) {
     res
       .status(StatusCodes.BAD_REQUEST)
@@ -58,12 +59,12 @@ const signUp = async (req, res) => {
       data: {
         name: name,
         email: email,
-        role:role,
-        phone:phone,
-        address:address,
-        birthday:birthday,
-        gender:gender,
-        uid:userCredential?.user.uid
+        role: role,
+        phone: phone,
+        address: address,
+        birthday: birthday,
+        gender: gender,
+        uid: userCredential?.user.uid,
       },
     });
     const token = jwt.sign({ id: user.id, email }, process.env.AUTH_TOKEN);
@@ -72,6 +73,7 @@ const signUp = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+
 const getUser = async (req, res) => {
   const id = req?.user?.id;
   if (!id) {
@@ -121,17 +123,22 @@ const resetPassword = async (req, res) => {
   }
 };
 const thirdPartySignIn = async (req, res) => {
-  const { uid, email, name, image,role,birthday,gender,phone,address } = req.body;
-  if (!name || !email || !uid || !image) {
+  const { uid, email, name, image, role, birthday, gender, phone, address } =
+    req.body;
+  if (!uid) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: "Please provide uid" });
+    return;
+  }
+  if (!email & !phone) {
     res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Please provide uid, name, email, profile image link" });
+      .json({ message: "Please provide email/phone" });
     return;
   }
   try {
     const user = await prisma.users.findUnique({
       where: {
-        email:email
+        email: email,
       },
     });
     if (!user) {
@@ -140,12 +147,12 @@ const thirdPartySignIn = async (req, res) => {
           name: name,
           email: email,
           image: image,
-          uid:uid,
+          uid: uid,
           role,
           birthday,
           gender,
           phone,
-          address
+          address,
         },
       });
       const token = jwt.sign({ id: newUser.id, email }, process.env.AUTH_TOKEN);
@@ -180,7 +187,7 @@ const updateUser = async (req, res) => {
       data: {
         image: image?.toString(),
         email,
-        name
+        name,
       },
     });
     const token = jwt.sign(
@@ -196,35 +203,39 @@ const getAllUser = async (req, res) => {
   const { name } = req.query;
   try {
     const result = await prisma.user_info.findMany({});
-    const sort=result.filter(user=>user.name.toLocaleLowerCase().includes(name?name.toLocaleLowerCase():""))
-    res.status(StatusCodes.OK).json({ users:sort });
+    const sort = result.filter((user) =>
+      user.name
+        .toLocaleLowerCase()
+        .includes(name ? name.toLocaleLowerCase() : "")
+    );
+    res.status(StatusCodes.OK).json({ users: sort });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
-const registerSeller=async(req,res)=>{
-  const {id,email}=req.user;
+const registerSeller = async (req, res) => {
+  const { id, email } = req.user;
   const { shopName, shopAddress } = req.body;
-  if (!shopName || !shopAddress ) {
+  if (!shopName || !shopAddress) {
     res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Please provide shopName, ShopAddress at most" });
     return;
   }
   try {
-    const seller=await prisma.seller.create({
-      data:{
+    const seller = await prisma.seller.create({
+      data: {
         shopAddress,
         shopName,
-        userId:id,
-      }
-    })
+        userId: id,
+      },
+    });
     const user = await prisma.users.update({
-      where:{
-        id:id
+      where: {
+        id: id,
       },
       data: {
-        role:2
+        role: 2,
       },
     });
     const token = jwt.sign({ id: user.id, email }, process.env.AUTH_TOKEN);
@@ -232,51 +243,57 @@ const registerSeller=async(req,res)=>{
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
-}
-const acceptSellerRequest=async(req,res)=>{
-  const {id,email}=req.user;
-  const {sellerId}=req.body;
-  if(!sellerId){
-    return res.status(StatusCodes.BAD_REQUEST).json({message:"sellerId is required for accept"})
+};
+const acceptSellerRequest = async (req, res) => {
+  const { id, email } = req.user;
+  const { sellerId } = req.body;
+  if (!sellerId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "sellerId is required for accept" });
   }
   try {
-    const seller=await prisma.seller.findUnique({
-      where:{
-        id:sellerId
-      }
-    })
-    if(!Boolean(seller)){
-      return res.status(StatusCodes.FORBIDDEN).json({message:"No request found in that record."})
-    }
-    const user = await prisma.users.update({
-      where:{
-        id:id
-      },
-      data: {
-        role:2
+    const seller = await prisma.seller.findUnique({
+      where: {
+        id: sellerId,
       },
     });
-    res.status(StatusCodes.OK).json({ message:"Requested accepted." });
+    if (!Boolean(seller)) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "No request found in that record." });
+    }
+    const user = await prisma.users.update({
+      where: {
+        id: id,
+      },
+      data: {
+        role: 2,
+      },
+    });
+    res.status(StatusCodes.OK).json({ message: "Requested accepted." });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
-}
-const checkSeller=async(req,res)=>{
-  const {userId}=req.query;
-  if(!userId){
-    return res.status(StatusCodes.BAD_REQUEST).json({message:"userId is required for check"})
+};
+const checkSeller = async (req, res) => {
+  const { userId } = req.query;
+  if (!userId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "userId is required for check" });
   }
   try {
-    const seller=await prisma.seller.findUnique({
-      where:{
-        userId:userId
-      }
-    })
-    res.status(StatusCodes.OK).json({ data:seller });
+    const seller = await prisma.seller.findUnique({
+      where: {
+        userId: userId,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: seller });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
-}
+};
 export {
   signIn,
   signUp,
@@ -286,5 +303,5 @@ export {
   thirdPartySignIn,
   updateUser,
   getAllUser,
-  checkSeller
+  checkSeller,
 };

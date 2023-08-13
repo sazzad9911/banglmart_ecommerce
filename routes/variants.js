@@ -2,7 +2,7 @@ import express from "express";
 import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
 import upload from "../lib/upload.js";
-import { addColor, addSize, addVariant, deleteColor, deleteSize, deleteVariant, getColor, getSize, getVariant } from "../functions/variantsFunction.js";
+import { addColor, addSize, addVariant, deleteColor, deleteSize, deleteVariant, getColor, getSize, getVariant, updateVariant } from "../functions/variantsFunction.js";
 
 const variants = express.Router();
 const apiLimiter = rateLimiter({
@@ -16,7 +16,8 @@ variants.route("/deleteColor").delete(verifyUser,deleteColor);
 variants.route("/addSize").post(verifyUser,addSize);
 variants.route("/deleteSize").delete(verifyUser,deleteSize);
 variants.route("/addVariant").post([verifyUser,upload.single("image")],addVariant);
-variants.route("/deleteVariant").post(verifyUser,deleteVariant);
+variants.route("/updateVariant").put([verifyUser,upload.single("image")],updateVariant);
+variants.route("/deleteVariant").delete(verifyUser,deleteVariant);
 variants.route("/getColor").get(getColor);
 variants.route("/getSize").get(getSize);
 variants.route("/getVariant").get(getVariant);

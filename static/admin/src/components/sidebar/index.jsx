@@ -32,18 +32,18 @@ const Sidebar = ({ open, onClose }) => {
       </div>
       <div className="mt-[58px] mb-7 h-px bg-gray-300 dark:bg-white/30" />
       {/* Nav item */}
-      <div className=" h-[calc(100vh-160px)] overflow-y-auto">
+      <div className=" h-[calc(100vh-160px)]  overflow-y-auto">
         {user?.user?.role === 4 ? (
           <ul className="mb-auto pt-1">
-            <Links routes={adminRoutes.filter((d) => d.layout === "/admin")} />
+            <Links onClose={onClose} routes={adminRoutes.filter((d) => d.layout === "/admin")} />
           </ul>
         ) : user?.user?.role === 3 ? (
           <ul className="mb-auto pt-1">
-            <Links routes={brandRoutes.filter((d) => d.layout === "/brand")} />
+            <Links onClose={onClose} routes={brandRoutes.filter((d) => d.layout === "/brand")} />
           </ul>
         ) : (
           <ul className="mb-auto pt-1">
-            <Links routes={sellerRoutes.filter((d) => d.layout === "/seller")} />
+            <Links onClose={onClose} routes={sellerRoutes.filter((d) => d.layout === "/seller")} />
           </ul>
         )}
         {/* Free Horizon Card */}

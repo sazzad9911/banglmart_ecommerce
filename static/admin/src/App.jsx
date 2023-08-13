@@ -22,6 +22,12 @@ import { getOptions } from "api/category";
 import { setOption } from "reducers/option";
 import { getAllProduct } from "api/productApi";
 import { setProduct } from "reducers/product";
+import { getVariant } from "api/productApi";
+import { getColor } from "api/productApi";
+import { getSize } from "api/productApi";
+import { setColor } from "reducers/multiple";
+import { setSize } from "reducers/multiple";
+import { setVariant } from "reducers/multiple";
 const options = {
   // you can also just use 'bottom center'
   position: positions.BOTTOM_CENTER,
@@ -50,9 +56,13 @@ const Views = () => {
   useEffect(() => {
     if (user) {
       dispatch(setUser(user));
-      fetching()
+      fetching2();
+      fetching();
+
+      fetching3();
+      fetching4();
     }
-  }, [user,isLoading]);
+  }, [user, isLoading]);
 
   const fetching = async () => {
     const res = await getCategory();
@@ -61,10 +71,21 @@ const Views = () => {
     dispatch(setSubCategory(sub.data));
     const op = await getOptions();
     dispatch(setOption(op.data));
-    const product = await getAllProduct(user?.user?.id);
-    dispatch(setProduct(product))
   };
-
+  const fetching2 = async () => {
+    const product = await getAllProduct(user?.user?.id);
+    dispatch(setProduct(product));
+  };
+  const fetching3 = async () => {
+    const colors = await getColor(user.user.id);
+    dispatch(setColor(colors.data));
+    const size = await getSize();
+    dispatch(setSize(size.data));
+  };
+  const fetching4 = async () => {
+    const res = await getVariant(user.user.id);
+    dispatch(setVariant(res.data));
+  };
   return (
     <AlertProvider template={AlertTemplate} {...options}>
       <Routes>
@@ -96,21 +117,26 @@ const Views = () => {
 
       {isLoading && (
         <div className=" fixed top-0 left-0 bottom-0 right-0 z-10 flex h-[100vh] w-[100vw] items-center justify-center bg-[#61616148]">
-          <ThreeCircles
-            height="100"
-            width="100"
-            color="#1833F9"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-            ariaLabel="three-circles-rotating"
-            outerCircleColor=""
-            innerCircleColor=""
-            middleCircleColor=""
-          />
+          <Loader />
         </div>
       )}
     </AlertProvider>
   );
 };
 export default App;
+export const Loader = () => {
+  return (
+    <ThreeCircles
+      height="100"
+      width="100"
+      color="#1833F9"
+      wrapperStyle={{}}
+      wrapperClass=""
+      visible={true}
+      ariaLabel="three-circles-rotating"
+      outerCircleColor=""
+      innerCircleColor=""
+      middleCircleColor=""
+    />
+  );
+};

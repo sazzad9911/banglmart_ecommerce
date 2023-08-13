@@ -82,7 +82,7 @@ export default function EditProduct({ data, onClose, addProducts }) {
     }
   };
   return (
-    <div>
+    <div className="dark:text-[#fff]">
       <Header onClick={onClose} title="Edit Product" />
       <h2 className="mediumText mb-2">Product Categories</h2>
       <div className=" lg:grid lg:grid-cols-3 lg:gap-4">

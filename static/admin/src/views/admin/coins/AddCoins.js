@@ -16,6 +16,7 @@ import {
   InputRightElement,
   useDisclosure,
   Button,
+  Select as S,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
@@ -26,7 +27,7 @@ import Header from "components/headers";
 import Select from "react-select";
 import { addVariantApi } from "api/productApi";
 
-export default function AddVariant({ onClose, addProducts,colors,size }) {
+export default function AddCoins({ onClose, addProducts, colors, size }) {
   const [picture, setPicture] = useState();
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -34,12 +35,12 @@ export default function AddVariant({ onClose, addProducts,colors,size }) {
   const [submit, setSubmit] = useState(false);
   const [productList, setProductList] = useState([]);
   const product = useSelector((state) => state.product);
-  const [SIZE,setSize]=useState([])
-  const [COLORS,setColors]=useState([])
-  const [productId,setProductId]=useState()
-  const [colorId,setColorId]=useState()
-  const [sizeId,setSizeId]=useState()
- 
+  const [productId, setProductId] = useState();
+  const [colorId, setColorId] = useState();
+  const [sizeId, setSizeId] = useState();
+  const [select, setSelect] = useState("Fixed");
+  const [price, setPrice] = useState();
+  const [title,setTitle]=useState()
 
   useEffect(() => {
     if (product) {
@@ -48,31 +49,12 @@ export default function AddVariant({ onClose, addProducts,colors,size }) {
       });
     }
   }, []);
-  useEffect(() => {
-    if (colors) {
-        colors?.map((doc) => {
-            setColors((val) => [...val, { value: doc.id, label: doc.title }]);
-      });
-    }
-  }, []);
-  useEffect(() => {
-    if (size) {
-        size?.map((doc) => {
-            setSize((val) => [...val, { value: doc.id, label: doc.title }]);
-      });
-    }
-  }, []);
 
   const addNewProduct = async () => {
-    if (
-      !colorId ||
-      !sizeId ||
-      !productId ||
-      !picture
-    ) {
+    if (!productId || !title||!price) {
       return setSubmit(true);
     }
-    
+
     dispatch(setLoading(true));
     try {
       const form = new FormData();
@@ -86,20 +68,20 @@ export default function AddVariant({ onClose, addProducts,colors,size }) {
       //addProducts();
       Swal.fire("Success", "Product added successful", "success");
     } catch (e) {
-     // onClose();
+      // onClose();
       dispatch(setLoading(false));
       Swal.fire("Ops!", "Something went wrong", "error");
     }
   };
   return (
     <div className="dark:text-[#fff]">
-      <Header onClick={onClose} title={"Add Variant"} />
+      <Header onClick={onClose} title={"Add Coins"} />
       <h2 className="mediumText mb-2">Select Product</h2>
       <div>
         <Select
           className="basic-single text-[#000]"
           classNamePrefix="select"
-          defaultValue={productList[productList.indexOf(productId)]}
+          defaultValue={productId}
           isClearable={true}
           isSearchable={true}
           name="color"
@@ -111,58 +93,48 @@ export default function AddVariant({ onClose, addProducts,colors,size }) {
           <div className="text-red-500">Select category!</div>
         )}
       </div>
-      <h2 className="mediumText mt-4 mb-2">Product Color</h2>
+      <h2 className="mediumText mt-4 mb-2">Offer title</h2>
       <div>
-        <Select
-          className="basic-single text-[#000]"
-          classNamePrefix="select"
-          defaultValue={productList[productList.indexOf(colorId)]}
-          isClearable={true}
-          isSearchable={true}
-          name="color"
-          options={COLORS}
-          onChange={setColorId}
+        <Input
+          isInvalid={submit && !title}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={style}
+        
+          placeholder="Offer Title"
         />
 
-        {submit && !colorId && (
+        {submit && !title && (
           <div className="text-red-500">Select color!</div>
         )}
       </div>
-      <h2 className="mediumText mt-4 mb-2">Product Size</h2>
       <div>
-        <Select
-          className="basic-single text-[#000]"
-          classNamePrefix="select"
-          defaultValue={productList[productList.indexOf(sizeId)]}
-          isClearable={true}
-          isSearchable={true}
-          name="color"
-          options={SIZE}
-          onChange={e=>{
-            setSizeId(e)
-          }}
-        />
-
-        {submit && !sizeId && (
-          <div className="text-red-500">Select size!</div>
+        <h2 className="mediumText mb-2 mt-4">Discount Price</h2>
+        <InputGroup>
+          <Input
+            isInvalid={submit && !price}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            style={style}
+            type="number"
+            placeholder="Discount price"
+          />
+          <InputRightElement
+            style={{
+              width: 120,
+            }}
+          >
+            <S value={select} onChange={(e) => setSelect(e.target.value)}>
+              <option value="Fixed">Fixed</option>
+              <option value="Percentage">Percentage %</option>
+            </S>
+          </InputRightElement>
+        </InputGroup>
+        {submit && !price && (
+          <div className="text-red-500">Product price is required!</div>
         )}
       </div>
-      <div>
-        <h2 className="mediumText mt-4 mb-2">Product Thumbnail (Ratio 350*400)</h2>
-        <Input
-          isInvalid={submit && !picture}
-          onChange={(e) =>
-            setPicture(e.target.files[e.target.files.length - 1])
-          }  
-          style={style}
-          type="file"
-          accept="image/jpeg,image/png"
-          placeholder="Product thumbnail"
-        />
-        {submit && !picture && (
-          <div className="text-red-500">Product thumbnail is required!</div>
-        )}
-      </div>
+      
       <div className="mt-6 flex justify-end">
         <Button onClick={addNewProduct} colorScheme="blue">
           Save
@@ -176,5 +148,5 @@ export default function AddVariant({ onClose, addProducts,colors,size }) {
 }
 const style = {
   borderColor: "#D0D0D0",
-  backgroundColor:"white"
+  backgroundColor: "white",
 };

@@ -125,7 +125,7 @@ export default function Product() {
                     />
                   </Td>
                   <Td>{e.data.user.name}</Td>
-                  <Td>
+                  <Td className="text-[#000]">
                     <Menu>
                       {({ isOpen }) => (
                         <>

@@ -22,7 +22,7 @@ export function SidebarLinks(props) {
         route.layout === "/auth"|| route.layout === "/brand"||route.layout === "/seller"
       ) {
         return (
-          <Link key={index} to={route.layout + "/" + route.path}>
+          <Link  key={index} to={route.layout + "/" + route.path}>
             <div className="relative mb-3 flex hover:cursor-pointer">
               <li
                 className="my-[3px] flex cursor-pointer items-center px-8"
@@ -48,7 +48,7 @@ export function SidebarLinks(props) {
                 </p>
               </li>
               {activeRoute(route.path) ? (
-                <div className="absolute right-0 top-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400" />
+                <div className="absolute left-0 top-px h-9 w-1 rounded-lg bg-brand-500 dark:bg-brand-400" />
               ) : null}
             </div>
           </Link>
