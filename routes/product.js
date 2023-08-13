@@ -2,7 +2,8 @@ import express from "express";
 import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
 import upload from "../lib/upload.js";
-import { acceptProduct, addOffers, addProduct, deleteProduct, getAllProduct, getFlashSell, getForYou, getProductByOption, getTop, getTopSell, updateProduct, updateQuantity } from "../functions/productFunctions.js";
+import { acceptProduct, addOffers, addProduct, deleteProduct, getAllProduct, getForYou, getProductByOption, getTop, getTopSell, updateProduct, updateQuantity } from "../functions/productFunctions.js";
+import { getFlashSell } from "../functions/flashSellFunction.js";
 
 const product = express.Router();
 const apiLimiter = rateLimiter({

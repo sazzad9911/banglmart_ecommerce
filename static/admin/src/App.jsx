@@ -28,6 +28,8 @@ import { getSize } from "api/productApi";
 import { setColor } from "reducers/multiple";
 import { setSize } from "reducers/multiple";
 import { setVariant } from "reducers/multiple";
+import { getFlashSellApi } from "api/productApi";
+import { setFlashSell } from "reducers/multiple";
 const options = {
   // you can also just use 'bottom center'
   position: positions.BOTTOM_CENTER,
@@ -61,6 +63,7 @@ const Views = () => {
 
       fetching3();
       fetching4();
+      fetching5()
     }
   }, [user, isLoading]);
 
@@ -85,6 +88,10 @@ const Views = () => {
   const fetching4 = async () => {
     const res = await getVariant(user.user.id);
     dispatch(setVariant(res.data));
+  };
+  const fetching5 = async () => {
+    const res = await getFlashSellApi();
+    dispatch(setFlashSell(res.data));
   };
   return (
     <AlertProvider template={AlertTemplate} {...options}>

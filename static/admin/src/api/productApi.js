@@ -95,3 +95,7 @@ export const addOffersApi=async(data,token)=>{
     })
     return res.data
 }
+export const getFlashSellApi=async()=>{
+    const res=await axios.get(`${url}/product/get/flash`)
+    return res.data
+}

@@ -35,3 +35,15 @@ export const setVariant=(value)=>{
         value:value
     }
 }
+export const flashSell=(state=null,action)=>{
+    if(action.type==="FLASH_SELL"){
+        return action.value
+    }
+    return state
+}
+export const setFlashSell=(value)=>{
+    return{
+        type:"FLASH_SELL",
+        value:value
+    }
+}

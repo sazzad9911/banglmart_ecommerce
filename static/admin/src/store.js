@@ -2,6 +2,7 @@ import category from "reducers/category";
 import isLoading from "reducers/isLoading";
 import { size } from "reducers/multiple";
 import { variant } from "reducers/multiple";
+import { flashSell } from "reducers/multiple";
 import { color } from "reducers/multiple";
 import option from "reducers/option";
 import product from "reducers/product";
@@ -20,7 +21,8 @@ const combine=combineReducers({
     product:product,
     color:color,
     size:size,
-    variant:variant
+    variant:variant,
+    flashSell:flashSell
 })
 const store =createStore(combine)
 export default store
