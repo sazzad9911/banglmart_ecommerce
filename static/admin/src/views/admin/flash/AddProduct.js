@@ -27,22 +27,27 @@ import { addProduct } from "api/productApi";
 import Header from "components/headers";
 import Select from "react-select";
 import { addVariantApi } from "api/productApi";
-import { addOffersApi } from "api/productApi";
+import { postApi } from "api/api";
 
-export default function AddOffer({ data, onClose, addProducts, colors, size }) {
-  const [picture, setPicture] = useState();
+export default function AddFlashProduct({
+  onClose,
+  addProducts,
+  colors,
+  size,
+  data,
+}) {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const alert = useAlert();
   const [submit, setSubmit] = useState(false);
   const [productList, setProductList] = useState([]);
   const product = useSelector((state) => state.product);
-  const [productId, setProductId] = useState(data.id);
-  const [select, setSelect] = useState(data.offers.length>0&&data.offers[0].percentage?"Percentage":"Fixed");
-  const [price, setPrice] = useState(data.offers.length>0?data.offers[0].money:"");
-  const [title, setTitle] = useState(data.offers.length>0?data.offers[0].name:"");
-  const [free,setFree]=useState(data.offers.length>0?data.offers[0].deliveryFree:false)
-
+  const [productId, setProductId] = useState();
+  const [select, setSelect] = useState("Fixed");
+  const [price, setPrice] = useState();
+  const [min, setMin] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const [free,setFree]=useState(false)
 
   useEffect(() => {
     if (product) {
@@ -53,28 +58,29 @@ export default function AddOffer({ data, onClose, addProducts, colors, size }) {
   }, []);
 
   const addNewProduct = async () => {
-    if (!productId || !title || !price) {
+    if (!productId || !price) {
       return setSubmit(true);
     }
 
-
     dispatch(setLoading(true));
     try {
-      await addOffersApi(
+      await postApi(
+        "/product/create/flash/product",
         {
-          type: data.offers?.length>0 ? data.id : undefined,
-          name: title,
-          money:  price,
-          percentage: select === "Fixed" ? undefined : price,
-          productId:productId,
-          deliveryFree:free?"ssfsf":undefined
+          flashSellId: data.id,
+          productId: productId.value,
+          offer:price,
+          percentage:select==="Fixed"?undefined:"edfwd",
+          minSell:min,
+          quantity:quantity,
+          deliveryFree:free?"ewewe":undefined,
         },
         user.token
       )
       onClose();
       dispatch(setLoading(false));
       //addProducts();
-      Swal.fire("Success", "Offer added successful", "success");
+      Swal.fire("Success", "Product added successful", "success");
     } catch (e) {
       // onClose();
       dispatch(setLoading(false));
@@ -83,19 +89,59 @@ export default function AddOffer({ data, onClose, addProducts, colors, size }) {
   };
   return (
     <div className="dark:text-[#fff]">
-      <Header onClick={onClose} title={data?.title} />
-
-      <h2 className="mediumText mt-6 mb-2">Offer title</h2>
+      <Header onClick={onClose} title={"Product Flash Sell"} />
+      <h2 className="mediumText mb-2">Select Product</h2>
       <div>
-        <Input
-          isInvalid={submit && !title}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={style}
-          placeholder="Offer Title"
+        <Select
+          className="basic-single text-[#000]"
+          classNamePrefix="select"
+          defaultValue={productId}
+          isClearable={true}
+          isSearchable={true}
+          name="color"
+          options={productList}
+          onChange={setProductId}
         />
 
-        {submit && !title && <div className="text-red-500">Select color!</div>}
+        {submit && !productId && (
+          <div className="text-red-500">Select category!</div>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h2 className="mediumText mt-4 mb-2">Minimum Order</h2>
+          <div>
+            <Input
+              type="number"
+              isInvalid={submit && !min}
+              value={min}
+              onChange={(e) => setMin(e.target.value)}
+              style={style}
+              placeholder="eg. 10"
+            />
+
+            {submit && !min && (
+              <div className="text-red-500">Select Minimum Order</div>
+            )}
+          </div>
+        </div>
+        <div>
+          <h2 className="mediumText mt-4 mb-2">Total Product</h2>
+          <div>
+            <Input
+              type="number"
+              isInvalid={submit && !quantity}
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              style={style}
+              placeholder="eg. 10"
+            />
+
+            {submit && !quantity && (
+              <div className="text-red-500">Select Total Product!</div>
+            )}
+          </div>
+        </div>
       </div>
       <div>
         <h2 className="mediumText mb-2 mt-4">Discount Price</h2>
@@ -109,8 +155,8 @@ export default function AddOffer({ data, onClose, addProducts, colors, size }) {
             placeholder="Discount price"
           />
           <InputRightElement
-            style={{ 
-              width: 200,
+            style={{
+              width: 150,
             }}
           >
             <S value={select} onChange={(e) => setSelect(e.target.value)}>
@@ -123,10 +169,11 @@ export default function AddOffer({ data, onClose, addProducts, colors, size }) {
           <div className="text-red-500">Product price is required!</div>
         )}
       </div>
-      <div className="flex items-center my-6 ">
-      <h2 className="mediumText mr-6">Free Delivery</h2>
-    <Switch isChecked={free}  onChange={()=>setFree(v=>(!v))} size="lg"/>
+      <div className="my-6 flex items-center">
+        <div className="mediumText mr-10">Delivery Free </div>
+        <Switch size={"lg"} isChecked={free} onChange={()=>setFree(e=>(!e))}/>
       </div>
+
       <div className="mt-6 flex justify-end">
         <Button onClick={addNewProduct} colorScheme="blue">
           Save

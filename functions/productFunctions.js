@@ -293,7 +293,7 @@ export const getForYou = async (req, res) => {
   }
 };
 export const addOffers = async (req, res) => {
-  const { productId, money, percentage, name,type } = req.body;
+  const { productId, money, percentage, name,type,deliveryFree } = req.body;
   // console.log(productId);
   if (!name || !productId) {
     return res
@@ -310,6 +310,7 @@ export const addOffers = async (req, res) => {
           name,
           percentage: Boolean(percentage),
           money: parseInt(money),
+          deliveryFree: Boolean(deliveryFree)
         },
       });
       return res.status(StatusCodes.OK).json({ data: offers });
@@ -319,7 +320,8 @@ export const addOffers = async (req, res) => {
         name,
         percentage: Boolean(percentage),
         money: parseInt(money),
-        productId:productId
+        productId:productId,
+        deliveryFree: Boolean(deliveryFree)
       },
     });
     res.status(StatusCodes.OK).json({ data: offers });
