@@ -112,7 +112,7 @@ const adminRoutes = [
     component: < ManageUsers/>,
   },
   {
-    name: "POS Management",
+    name: "Order Management",
     layout: "/admin",
     path: "pos",
     icon: <MdOutlinePostAdd className="h-6 w-6" />,
@@ -126,7 +126,7 @@ const adminRoutes = [
     component: < OfferCodes/>,
   },
   {
-    name: "Adds & Pages",
+    name: "Ads & Pages",
     layout: "/admin",
     path: "pages",
     icon: <FaPager className="h-6 w-6" />,

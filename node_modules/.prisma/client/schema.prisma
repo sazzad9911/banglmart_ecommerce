@@ -1,15 +1,15 @@
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["mongodb"]
+}
+
 datasource db {
-  provider = "mongodb"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["mongodb"]
-}
-
 model users {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  id               String             @id @default(cuid())
   email            String?            @unique
   name             String
   image            String?
@@ -32,7 +32,7 @@ model users {
 }
 
 model category {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  id          String        @id @default(cuid())
   name        String        @unique
   icon        String
   subCategory subCategory[]
@@ -40,25 +40,25 @@ model category {
 }
 
 model subCategory {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  id         String     @id @default(cuid())
   name       String     @unique
-  categoryId String     @db.ObjectId
+  categoryId String
   category   category?  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   options    options[]
   products   products[]
 }
 
 model options {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  id            String       @id @default(cuid())
   name          String
-  subCategoryId String       @db.ObjectId
+  subCategoryId String
   subCategory   subCategory? @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
   products      products[]
 }
 
 model seller {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String     @unique @db.ObjectId
+  id          String     @id @default(cuid())
+  userId      String     @unique
   user        users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   shopName    String
   shopAddress String
@@ -66,8 +66,8 @@ model seller {
 }
 
 model brands {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String     @unique @db.ObjectId
+  id           String     @id @default(cuid())
+  userId       String     @unique
   user         users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   brandName    String
   brandAddress String
@@ -76,7 +76,7 @@ model brands {
 }
 
 model products {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  id               String             @id @default(cuid())
   price            Int
   coin             Boolean            @default(false)
   title            String
@@ -92,102 +92,103 @@ model products {
   reviews          reviews[]
   flashSellProduct flashSellProduct[]
   verified         Boolean            @default(false)
-  sellerId         String?            @db.ObjectId
+  sellerId         String?
   seller           seller?            @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  brandId          String?            @db.ObjectId
+  brandId          String?
   brand            brands?            @relation(fields: [brandId], references: [id], onDelete: Cascade)
   category         category?          @relation(fields: [categoryId], references: [id])
-  categoryId       String             @db.ObjectId
-  subCategoryId    String             @db.ObjectId
+  categoryId       String
+  subCategoryId    String
   subCategory      subCategory?       @relation(fields: [subCategoryId], references: [id])
-  optionId         String             @db.ObjectId
+  optionId         String
   option           options?           @relation(fields: [optionId], references: [id])
-  userId           String             @db.ObjectId
+  userId           String
   user             users?             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model offers {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id           String    @id @default(cuid())
   money        Int       @default(0)
   percentage   Boolean   @default(false)
   name         String?
   deliveryFree Boolean   @default(false)
-  productId    String    @unique @db.ObjectId
+  productId    String    @unique
   product      products? @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model coins {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(cuid())
   number    Int       @default(0)
   name      String?
-  productId String    @unique @db.ObjectId
+  productId String    @unique
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model colors {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  id       String     @id @default(cuid())
   title    String     @unique
   color    String
   variants variants[]
 }
 
 model size {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  id       String     @id @default(cuid())
   title    String     @unique
   cm       String
   variants variants[]
 }
 
 model variants {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  sizeId    String    @db.ObjectId
-  colorId   String    @db.ObjectId
+  id        String    @id @default(cuid())
+  sizeId    String
+  colorId   String
+  quantity  Int       @default(1)
   color     colors?   @relation(fields: [colorId], references: [id])
   size      size?     @relation(fields: [sizeId], references: [id])
   image     String
-  productId String    @db.ObjectId
+  productId String
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String    @db.ObjectId
+  userId    String
   user      users?    @relation(fields: [userId], references: [id])
 }
 
 model comments {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(cuid())
   message       String
   replay        String
-  userId        String          @db.ObjectId
+  userId        String
   user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId     String          @db.ObjectId
+  productId     String
   product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
   notifications notifications[]
 }
 
 model reviews {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(cuid())
   message       String
   rate          Int             @default(0)
   replay        String
-  userId        String          @db.ObjectId
+  userId        String
   user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId     String          @db.ObjectId
+  productId     String
   product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
   notifications notifications[]
 }
 
 model notifications {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(cuid())
   message   String
   title     String
-  userId    String    @db.ObjectId
+  userId    String
   user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  commentId String    @db.ObjectId
+  commentId String
   comments  comments? @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  reviewId  String    @db.ObjectId
+  reviewId  String
   reviews   reviews?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
 model flashSell {
-  id      String             @id @default(auto()) @map("_id") @db.ObjectId
+  id      String             @id @default(cuid())
   startAt DateTime
   endAt   DateTime
   banner  String
@@ -196,17 +197,17 @@ model flashSell {
 }
 
 model flashSellProduct {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  id           String     @id @default(cuid())
   offer        Int        @default(0)
   percentage   Boolean    @default(false)
   minSell      Int        @default(1)
   quantity     Int        @default(1)
   deliveryFree Boolean    @default(false)
-  flashSellId  String     @db.ObjectId
+  flashSellId  String
   flashSell    flashSell? @relation(fields: [flashSellId], references: [id], onDelete: Cascade)
-  productId    String     @db.ObjectId
+  productId    String
   product      products?  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId       String     @db.ObjectId
+  userId       String
   user         users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
 }

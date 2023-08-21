@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = "http://192.168.1.11:1300";
+const url = "http://192.168.1.9:1300";
 export const postApi = async (route, data, token) =>
   axios.post(`${url}${route}`, data, {
     headers: { Authorization: `Bearer ${token}` },
