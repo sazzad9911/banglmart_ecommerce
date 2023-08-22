@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const url="http://192.168.1.9:1300"
+const url = "localhost:1300";
 
 const signIn=async(email,password)=>{
     const res=await axios.post(`${url}/auth/signIn`,{
