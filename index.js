@@ -52,10 +52,7 @@ app.use("/variant", variants);
 app.use("/uploadImage", [verifyToken, upload.single("image")], uploadImage);
 
 
-const httpServer = createServer({
-  key: fs.readFileSync(path.join(__dirname,"cert", "key.pem")),
-  cert: fs.readFileSync(path.join(__dirname,"cert", "cert.pem")),
-},app);
+const httpServer = createServer(app);
 const port = process.env.PORT || 1300;
 // const server = http.createServer({
 //   port: 1400,
