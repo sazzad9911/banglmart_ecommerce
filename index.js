@@ -15,6 +15,7 @@ import { fileURLToPath } from "url";
 import category from "./routes/category.js";
 import product from "./routes/product.js";
 import variants from "./routes/variants.js";
+import fs from "fs"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,11 +52,14 @@ app.use("/variant", variants);
 app.use("/uploadImage", [verifyToken, upload.single("image")], uploadImage);
 
 
-const httpServer = createServer(app);
+const httpServer = createServer({
+  key: fs.readFileSync(path.join(__dirname,"cert", "key.pem")),
+  cert: fs.readFileSync(path.join(__dirname,"cert", "cert.pem")),
+},app);
 const port = process.env.PORT || 1300;
-const server = http.createServer({
-  port: 1400,
-});
+// const server = http.createServer({
+//   port: 1400,
+// });
 
 const start = async () => {
   try {
