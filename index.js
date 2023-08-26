@@ -37,6 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 //   res.sendFile(path.join(__dirname, 'static/admin/build/index.html'));
 // });
 
+
 app.use("/images", express.static("functions/images"));
 app.use("/icon", express.static("icon"));
 //app.use('/admin', express.static(path.join(__dirname, 'static/admin/build')))
