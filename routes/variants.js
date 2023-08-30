@@ -20,6 +20,6 @@ variants.route("/updateVariant").put([verifyUser,upload.single("image")],updateV
 variants.route("/deleteVariant").delete(verifyUser,deleteVariant);
 variants.route("/getColor").get(getColor);
 variants.route("/getSize").get(getSize);
-variants.route("/getVariant").get(getVariant);
+variants.route("/getSpecifications").get(getVariant);
 
 export default variants;

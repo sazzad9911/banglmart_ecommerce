@@ -26,9 +26,11 @@ model users {
   comments         comments[]
   reviews          reviews[]
   notifications    notifications[]
-  varants          variants[]
   pushToken        String?
   flashSellProduct flashSellProduct[]
+  verified         Boolean            @default(true)
+  conversations    conversations[]
+  orders           orders[]
 }
 
 model category {
@@ -58,21 +60,28 @@ model options {
 
 model seller {
   id          String     @id @default(cuid())
-  userId      String     @unique
+  userId      String
   user        users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shopName    String
+  shopName    String     @unique
   shopAddress String
+  categories  Json?
+  logo        String
   products    products[]
+  verified    Boolean    @default(false)
+  reviews     reviews[]
 }
 
 model brands {
   id           String     @id @default(cuid())
-  userId       String     @unique
+  userId       String
   user         users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  brandName    String
+  brandName    String     @unique
   brandAddress String
   brandIcon    String
+  categories   Json?
   products     products[]
+  verified     Boolean    @default(false)
+  reviews      reviews[]
 }
 
 model products {
@@ -84,14 +93,23 @@ model products {
   thumbnail        String
   quantity         Int                @default(1)
   minOrder         Int                @default(1)
+  freeCoin         Int                @default(0)
+  offer            Int                @default(0)
+  percentage       Boolean            @default(false)
+  freeDelivery     Boolean            @default(false)
+  fixedPrice       Boolean            @default(true)
   createdAt        DateTime           @default(now())
-  offers           offers[]
-  coins            coins[]
-  variants         variants[]
+  colors           colors?            @relation(fields: [colorId], references: [id])
+  colorId          String
+  sizeId           String
+  size             size?              @relation(fields: [sizeId], references: [id])
+  specificationsId String
+  specification    specifications?    @relation(fields: [specificationsId], references: [id])
+  images           Json?
   comments         comments[]
   reviews          reviews[]
   flashSellProduct flashSellProduct[]
-  verified         Boolean            @default(false)
+  verified         Boolean            @default(true)
   sellerId         String?
   seller           seller?            @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   brandId          String?
@@ -104,75 +122,59 @@ model products {
   option           options?           @relation(fields: [optionId], references: [id])
   userId           String
   user             users?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model offers {
-  id           String    @id @default(cuid())
-  money        Int       @default(0)
-  percentage   Boolean   @default(false)
-  name         String?
-  deliveryFree Boolean   @default(false)
-  productId    String    @unique
-  product      products? @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-model coins {
-  id        String    @id @default(cuid())
-  number    Int       @default(0)
-  name      String?
-  productId String    @unique
-  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  banner           banner[]
+  adds             adds[]
+  messages         messages[]
+  orders           orders[]
 }
 
 model colors {
   id       String     @id @default(cuid())
   title    String     @unique
   color    String
-  variants variants[]
+  products products[]
 }
 
 model size {
   id       String     @id @default(cuid())
   title    String     @unique
   cm       String
-  variants variants[]
+  products products[]
 }
 
-model variants {
-  id        String    @id @default(cuid())
-  sizeId    String
-  colorId   String
-  quantity  Int       @default(1)
-  color     colors?   @relation(fields: [colorId], references: [id])
-  size      size?     @relation(fields: [sizeId], references: [id])
-  image     String
-  productId String
-  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String
-  user      users?    @relation(fields: [userId], references: [id])
+model specifications {
+  id       String     @id @default(cuid())
+  title    String     @unique
+  details  String
+  products products[]
 }
 
 model comments {
   id            String          @id @default(cuid())
   message       String
-  replay        String
+  image         String?
+  replay        String?
   userId        String
   user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId     String
   product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
   notifications notifications[]
+  receiverId    String
 }
 
 model reviews {
   id            String          @id @default(cuid())
   message       String
   rate          Int             @default(0)
-  replay        String
   userId        String
   user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId     String
   product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
   notifications notifications[]
+  sellerId      String?
+  seller        seller?         @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  brandId       String?
+  brand         brands?         @relation(fields: [brandId], references: [id], onDelete: Cascade)
 }
 
 model notifications {
@@ -210,4 +212,69 @@ model flashSellProduct {
   userId       String
   user         users?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
+}
+
+model contacts {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.VarChar(300)
+  name        String
+  phone       String
+  email       String
+  date        DateTime @default(now())
+}
+
+model conversations {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     users?   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  date       DateTime @default(now())
+}
+
+model messages {
+  id        String    @id @default(cuid())
+  message   String?
+  image     String?
+  date      DateTime  @default(now())
+  productId String
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model orders {
+  id         String   @id @default(cuid())
+  buyerid    String
+  buyer      users    @relation(fields: [buyerid], references: [id], onDelete: Cascade)
+  productId  String
+  product    products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  offerPrice Int      @default(0)
+  date       DateTime @default(now())
+}
+
+model banner {
+  id        String    @id @default(cuid())
+  title     String    @unique
+  image     String
+  productId String
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model adds {
+  id        String    @id @default(cuid())
+  title     String    @unique
+  image     String
+  productId String
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  visitorId String?   @unique
+  visitors  visitors? @relation(fields: [visitorId], references: [id])
+  date      DateTime  @default(now())
+}
+
+model visitors {
+  id         String   @id @default(cuid())
+  ip         String
+  deviceName String
+  randomId   String   @unique
+  adds       adds?
+  date       DateTime @default(now())
 }

@@ -58,14 +58,11 @@ export const getAllProduct = async (req, res) => {
     const product = await prisma.products.findMany({
       where: {
         userId: userId ? userId : undefined,
-        quantity: {
-          gte: 1,
-        },
       },
       include: {
         user: true,
-        offers: true,
-        coins: true,
+        seller:true,
+        brand:true
       },
     });
     res.status(StatusCodes.OK).json({ data: product });

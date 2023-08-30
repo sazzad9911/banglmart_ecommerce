@@ -168,18 +168,12 @@ export const updateVariant = async (req, res) => {
   }
 };
 export const getVariant = async (req, res) => {
-  const { productId, userId } = req.query;
+  const { productId } = req.query;
 
   try {
-    const variants = await prisma.variants.findMany({
+    const variants = await prisma.specifications.findMany({
       where: {
         productId: productId ? productId : undefined,
-        userId: userId ? userId : undefined,
-      },
-      include: {
-        product: true,
-        color: true,
-        size: true,
       },
     });
     res.status(StatusCodes.OK).json({ data: variants });

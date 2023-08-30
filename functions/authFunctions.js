@@ -202,13 +202,13 @@ const updateUser = async (req, res) => {
 const getAllUser = async (req, res) => {
   const { name } = req.query;
   try {
-    const result = await prisma.user_info.findMany({});
+    const result = await prisma.users.findMany({});
     const sort = result.filter((user) =>
       user.name
         .toLocaleLowerCase()
         .includes(name ? name.toLocaleLowerCase() : "")
     );
-    res.status(StatusCodes.OK).json({ users: sort });
+    res.status(StatusCodes.OK).json({ data: sort });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
