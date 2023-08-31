@@ -294,6 +294,65 @@ const checkSeller = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+const setVisitor = async (req, res) => {
+  const { deviceName, randomId, ip, uid } = req.body;
+  if (!deviceName || !randomId || !ip) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Please provide deviceName,randomId,ip" });
+  }
+  try {
+    const check = await prisma.visitors.findUnique({
+      where: {
+        randomId: randomId,
+      },
+    });
+    if (check) {
+      const info = await prisma.visitors.update({
+        data: {
+          deviceName: deviceName,
+          ip: ip,
+          uid: uid,
+          date: new Date(),
+        },
+        where:{
+          randomId: randomId
+        }
+      });
+      return res.status(StatusCodes.OK).json({ data: info });
+    }
+    const info = await prisma.visitors.create({
+      data: {
+        deviceName: deviceName,
+        randomId: randomId,
+        ip: ip,
+        uid: uid,
+        date: new Date(),
+      },
+    });
+    return res.status(StatusCodes.OK).json({ data: info });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+const getVisitor = async (req, res) => {
+  const { randomId } = req.params;
+  if (!randomId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Please provide randomId" });
+  }
+  try {
+    const check = await prisma.visitors.findUnique({
+      where: {
+        randomId: randomId,
+      },
+    });
+    return res.status(StatusCodes.OK).json({ data: check });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
 export {
   signIn,
   signUp,
@@ -304,4 +363,6 @@ export {
   updateUser,
   getAllUser,
   checkSeller,
+  setVisitor,
+  getVisitor
 };

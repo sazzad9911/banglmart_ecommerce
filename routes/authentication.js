@@ -6,7 +6,9 @@ import {
   emailVerification,
   getAllUser,
   getUser,
+  getVisitor,
   resetPassword,
+  setVisitor,
   signIn,
   signUp,
   thirdPartySignIn,
@@ -30,4 +32,6 @@ authentication.route("/thirdPartySignIn").post(apiLimiter, thirdPartySignIn);
 authentication.route("/updateUser").put(apiLimiter, updateUser);
 authentication.route("/getAllUser").get(getAllUser);
 authentication.route("/checkSellerRequest").get(checkSeller);
+authentication.route("/visitor").post(setVisitor);
+authentication.route("/get/visitor/:randomId").get(getVisitor);
 export default authentication;
