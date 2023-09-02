@@ -13,11 +13,13 @@
     "http": "^0.0.1-security",
     "http-proxy": "^1.18.1",
     "http-status-codes": "^2.2.0",
+    "ip": "^1.1.8",
     "jsonwebtoken": "^9.0.1",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "path": "^0.12.7",
     "sharp": "^0.32.3",
+    "socket.io": "^4.7.2",
     "url": "^0.11.1"
   },
   "name": "server",

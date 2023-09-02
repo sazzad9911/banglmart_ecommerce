@@ -16,6 +16,7 @@ import category from "./routes/category.js";
 import product from "./routes/product.js";
 import variants from "./routes/variants.js";
 import fs from "fs"
+import { Server } from "socket.io";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,7 +59,16 @@ const port = process.env.PORT || 1300;
 // const server = http.createServer({
 //   port: 1400,
 // });
-
+const io = new Server(httpServer,{
+  cors:{
+    origin:"http://localhost:3000",
+    methods:["GET","POST",]
+  }
+});
+io.on('connection', (socket) => {
+  
+  //console.log("connection")
+});
 const start = async () => {
   try {
     app.set("port", port);

@@ -12,6 +12,7 @@ import { auth } from "../firebase.js";
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
+import IP from "ip";
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
@@ -295,8 +296,11 @@ const checkSeller = async (req, res) => {
   }
 };
 const setVisitor = async (req, res) => {
-  const { deviceName, randomId, ip, uid } = req.body;
-  if (!deviceName || !randomId || !ip) {
+  const {randomId, uid, } = req.body;
+  const deviceName=req.headers["user-agent"]
+  const ip=req.ip
+ 
+  if (!deviceName || !randomId||!ip) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Please provide deviceName,randomId,ip" });
@@ -315,9 +319,9 @@ const setVisitor = async (req, res) => {
           uid: uid,
           date: new Date(),
         },
-        where:{
-          randomId: randomId
-        }
+        where: {
+          randomId: randomId,
+        },
       });
       return res.status(StatusCodes.OK).json({ data: info });
     }
@@ -337,6 +341,7 @@ const setVisitor = async (req, res) => {
 };
 const getVisitor = async (req, res) => {
   const { randomId } = req.params;
+  
   if (!randomId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -364,5 +369,5 @@ export {
   getAllUser,
   checkSeller,
   setVisitor,
-  getVisitor
+  getVisitor,
 };
