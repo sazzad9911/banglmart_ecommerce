@@ -17,6 +17,7 @@ import product from "./routes/product.js";
 import variants from "./routes/variants.js";
 import fs from "fs"
 import { Server } from "socket.io";
+import store from "./routes/store.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,6 +52,7 @@ app.use("/auth", authentication);
 app.use("/category", category);
 app.use("/product", product);
 app.use("/variant", variants);
+app.use("/store", store);
 app.use("/uploadImage", [verifyToken, upload.single("image")], uploadImage);
 
 

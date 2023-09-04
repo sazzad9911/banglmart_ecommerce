@@ -77,22 +77,17 @@ export const deleteSize = async (req, res) => {
   }
 };
 export const addVariant = async (req, res) => {
-  const { colorId, sizeId, productId } = req.body;
-  const { id, email } = req.user;
-  if (!colorId || !sizeId || !productId) {
+  const { title, details } = req.body;
+  if (!title || !details ) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "all fields are required" });
   }
-  const { path } = await getProductVariants(req, res);
   try {
-    const size = await prisma.variants.create({
+    const size = await prisma.specifications.create({
       data: {
-        colorId: colorId,
-        sizeId: sizeId,
-        image: path,
-        productId,
-        userId: id,
+        title: title,
+        details: details,
       },
     });
     res.status(StatusCodes.OK).json({ data: size });
@@ -109,7 +104,7 @@ export const deleteVariant = async (req, res) => {
       .json({ message: "all fields are required" });
   }
   try {
-    const size = await prisma.variants.delete({
+    const size = await prisma.specifications.delete({
       where: {
         id: variantId,
       },

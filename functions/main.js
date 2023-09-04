@@ -127,4 +127,21 @@ export const getBannerImageLink = async (req, res) => {
     res.status(400).send(error);
   }
 };
+export const getLogoLink = async (req, res) => {
+
+  if(!req.file){
+    return res.status(StatusCodes.BAD_REQUEST).json({message:"Invalid file"})
+  }
+ 
+  try {
+    await sharp(req.file.buffer)
+      .resize({ width: 500, height: 500 })
+      .png()
+      .toFile(__dirname + `/images/logo${req.file.originalname}`);
+    return {path:`/images/logo${req.file.originalname}`}
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+};
 export { main, getInfo, storeInfo, uploadImage,getImageToUrl };
