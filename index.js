@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import http from "http";
 import express from "express";
 import "express-async-errors";
-import { createServer } from "http";
+//import { createServer } from "http";
 import authentication from "./routes/authentication.js";
 import cors from "cors";
 import helmet from "helmet";
@@ -18,13 +18,17 @@ import variants from "./routes/variants.js";
 import fs from "fs"
 import { Server } from "socket.io";
 import store from "./routes/store.js";
+import { createServer } from "http";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const key = fs.readFileSync('./key.pem');
+const cert = fs.readFileSync('./cert.pem');
+
 
 dotenv.config();
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: true, credentials: false }));
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -56,7 +60,7 @@ app.use("/store", store);
 app.use("/uploadImage", [verifyToken, upload.single("image")], uploadImage);
 
 
-const httpServer = createServer(app);
+const httpServer = createServer({key: key, cert: cert },app);
 const port = process.env.PORT || 1300;
 // const server = http.createServer({
 //   port: 1400,

@@ -13,6 +13,7 @@ import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 import IP from "ip";
+import { getLogoLink } from "./main.js";
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
@@ -173,22 +174,48 @@ const thirdPartySignIn = async (req, res) => {
   }
 };
 const updateUser = async (req, res) => {
-  const { id, email, name, image } = req.body;
-  if (!id || !image) {
+  const { name, email, role, phone, address, birthday, gender } = req.body;
+  const { id } = req.user;
+  if (!id) {
     res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Please provide id and image" });
+      .json({ message: "Please provide id at most" });
     return;
   }
   try {
-    const user = await prisma.user_info.update({
+    if (req.file) {
+      const { path } = await getLogoLink(req, res);
+      const user = await prisma.users.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name,
+          role,
+          phone,
+          address:address?JSON.parse(address):undefined,
+          birthday,
+          gender,
+          image: path,
+        },
+      });
+      const token = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.AUTH_TOKEN
+      );
+      res.status(StatusCodes.OK).json({ user: user, token: token });
+    }
+    const user = await prisma.users.update({
       where: {
         id: id,
       },
       data: {
-        image: image?.toString(),
-        email,
         name,
+        role,
+        phone,
+        address:address?JSON.parse(address):undefined,
+        birthday,
+        gender,
       },
     });
     const token = jwt.sign(
@@ -296,11 +323,11 @@ const checkSeller = async (req, res) => {
   }
 };
 const setVisitor = async (req, res) => {
-  const {randomId, uid, } = req.body;
-  const deviceName=req.headers["user-agent"]
-  const ip=req.ip
- 
-  if (!deviceName || !randomId||!ip) {
+  const { randomId, uid } = req.body;
+  const deviceName = req.headers["user-agent"];
+  const ip = req.ip;
+
+  if (!deviceName || !randomId || !ip) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Please provide deviceName,randomId,ip" });
@@ -341,7 +368,7 @@ const setVisitor = async (req, res) => {
 };
 const getVisitor = async (req, res) => {
   const { randomId } = req.params;
-  
+
   if (!randomId) {
     return res
       .status(StatusCodes.BAD_REQUEST)

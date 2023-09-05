@@ -15,6 +15,7 @@ import {
   updateUser,
 } from "../functions/authFunctions.js";
 import verifyUser from "../middleware/verifyUser.js";
+import upload from "../lib/upload.js";
 
 const authentication = express.Router();
 const apiLimiter = rateLimiter({
@@ -25,11 +26,11 @@ const apiLimiter = rateLimiter({
 
 authentication.route("/signIn").post(apiLimiter,signIn);
 authentication.route("/signUp").post(apiLimiter, signUp);
+authentication.route("/update").put([verifyUser,upload.single("image")], updateUser);
 authentication.route("/getUser").get(verifyUser, getUser);
 authentication.route("/sendVerification").get(apiLimiter, emailVerification);
 authentication.route("/resetEmail").post(apiLimiter, resetPassword);
 authentication.route("/thirdPartySignIn").post(apiLimiter, thirdPartySignIn);
-authentication.route("/updateUser").put(apiLimiter, updateUser);
 authentication.route("/getAllUser").get(getAllUser);
 authentication.route("/checkSellerRequest").get(checkSeller);
 authentication.route("/visitor").post(setVisitor);

@@ -69,6 +69,7 @@ model seller {
   products    products[]
   verified    Boolean    @default(false)
   reviews     reviews[]
+  createdAt  DateTime @default(now())
 }
 
 model brands {
@@ -80,8 +81,9 @@ model brands {
   brandIcon    String
   categories   Json?
   products     products[]
-  verified     Boolean    @default(false)
+  verified     Boolean    @default(true)
   reviews      reviews[]
+  createdAt  DateTime @default(now())
 }
 
 model products {
