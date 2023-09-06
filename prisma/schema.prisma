@@ -69,7 +69,7 @@ model seller {
   products    products[]
   verified    Boolean    @default(false)
   reviews     reviews[]
-  createdAt  DateTime @default(now())
+  createdAt   DateTime   @default(now())
 }
 
 model brands {
@@ -83,7 +83,7 @@ model brands {
   products     products[]
   verified     Boolean    @default(true)
   reviews      reviews[]
-  createdAt  DateTime @default(now())
+  createdAt    DateTime   @default(now())
 }
 
 model products {
@@ -101,12 +101,9 @@ model products {
   freeDelivery     Boolean            @default(false)
   fixedPrice       Boolean            @default(true)
   createdAt        DateTime           @default(now())
-  colors           colors?            @relation(fields: [colorId], references: [id])
-  colorId          String
-  sizeId           String
-  size             size?              @relation(fields: [sizeId], references: [id])
-  specificationsId String
-  specification    specifications?    @relation(fields: [specificationsId], references: [id])
+  colors           Json?
+  sizes            Json?
+  specifications   Json?
   images           Json?
   comments         comments[]
   reviews          reviews[]
@@ -131,24 +128,21 @@ model products {
 }
 
 model colors {
-  id       String     @id @default(cuid())
-  title    String     @unique
-  color    String
-  products products[]
+  id    String @id @default(cuid())
+  title String @unique
+  color String
 }
 
 model size {
-  id       String     @id @default(cuid())
-  title    String     @unique
-  cm       String
-  products products[]
+  id    String @id @default(cuid())
+  title String @unique
+  cm    String
 }
 
 model specifications {
-  id       String     @id @default(cuid())
-  title    String     @unique
-  details  String
-  products products[]
+  id      String @id @default(cuid())
+  title   String @unique
+  details String
 }
 
 model comments {
@@ -262,12 +256,12 @@ model banner {
 }
 
 model adds {
-  id        String          @id @default(cuid())
-  title     String          @unique
+  id        String         @id @default(cuid())
+  title     String         @unique
   image     String
   productId String
-  product   products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  date      DateTime        @default(now())
+  product   products?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date      DateTime       @default(now())
   visitors  adds_visitors?
 }
 

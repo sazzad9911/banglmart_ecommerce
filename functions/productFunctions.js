@@ -1,28 +1,39 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
-import { getProductThumbnail } from "./main.js";
+import { getProductThumbnail, getProductVariants } from "./main.js";
 
 export const addProduct = async (req, res) => {
   const { id, email } = req.user;
   const {
+    price,
+    coin,
+    title,
+    description,
+    quantity,
+    minOrder,
+    freeCoin,
+    offer,
+    percentage,
+    freeDelivery,
+    fixedPrice,
+    colors,
+    sizes,
+    specifications,
+    images,
+    storeId,
     categoryId,
     subCategoryId,
     optionId,
-    price,
-    title,
-    description,
-    verified,
-    sellerId,
-    brandId,
-    coin,
+    storeType,
   } = req.body;
   if (
-    !categoryId ||
-    !subCategoryId ||
-    !optionId ||
     !price ||
     !title ||
-    !description
+    !description ||
+    !quantity ||
+    !minOrder ||
+    !storeId ||
+    !storeType
   ) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -34,17 +45,27 @@ export const addProduct = async (req, res) => {
     const product = await prisma.products.create({
       data: {
         price: parseInt(price),
+        coin: Boolean(coin),
         title,
         description,
         thumbnail: path,
-        verified: Boolean(verified),
+        quantity: parseInt(quantity),
+        minOrder: parseInt(minOrder),
+        freeCoin: freeCoin && parseInt(freeCoin),
+        offer: offer && parseInt(offer),
+        percentage: Boolean(percentage),
+        freeDelivery: Boolean(freeDelivery),
+        fixedPrice: Boolean(fixedPrice),
+        colors: colors && JSON.parse(colors),
+        sizes: sizes && JSON.parse(sizes),
+        specifications: specifications && JSON.parse(specifications),
+        images: images && JSON.parse(images),
+        sellerId: storeType === "Shop" ? storeId : null,
+        brandId: storeType === "Brand" ? storeId : null,
         userId: id,
-        sellerId,
-        brandId,
-        categoryId: categoryId,
+        categoryId,
         subCategoryId,
         optionId,
-        coin: Boolean(coin),
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -58,11 +79,14 @@ export const getAllProduct = async (req, res) => {
     const product = await prisma.products.findMany({
       where: {
         userId: userId ? userId : undefined,
+        seller:{
+          verified:true
+        }
       },
       include: {
         user: true,
-        seller:true,
-        brand:true
+        seller: true,
+        brand: true,
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -73,73 +97,108 @@ export const getAllProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const { id, email } = req.user;
   const {
+    price,
+    coin,
+    title,
+    description,
+    quantity,
+    minOrder,
+    freeCoin,
+    offer,
+    percentage,
+    freeDelivery,
+    fixedPrice,
+    colors,
+    sizes,
+    specifications,
+    images,
+    storeId,
     categoryId,
     subCategoryId,
     optionId,
-    price,
-    title,
-    description,
-    productId,
-    coin,
+    storeType,
+    productId
   } = req.body;
-  //console.log(req.body);
   if (
-    !categoryId ||
-    !subCategoryId ||
-    !optionId ||
     !price ||
     !title ||
     !description ||
-    !productId
+    !quantity ||
+    !minOrder ||
+    !storeId ||
+    !storeType||!productId
   ) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
   }
-  if (!req.file) {
-    try {
-      const product = await prisma.products.update({
-        where: {
-          id: productId,
-        },
-        data: {
-          categoryId,
-          subCategoryId,
-          optionId,
-          price: parseInt(price),
-          title,
-          description,
-          userId: id,
-          coin: Boolean(coin),
-        },
-      });
-      res.status(StatusCodes.OK).json({ data: product });
-    } catch (e) {
-      res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
-    }
-  } else {
-    try {
+  try {
+    if (req.file) {
       const { path } = await getProductThumbnail(req, res);
+
       const product = await prisma.products.update({
-        where: {
-          id: productId,
-        },
         data: {
+          price: parseInt(price),
+          coin: Boolean(coin),
+          title,
+          description,
+          thumbnail: path,
+          quantity: parseInt(quantity),
+          minOrder: parseInt(minOrder),
+          freeCoin: freeCoin && parseInt(freeCoin),
+          offer: offer && parseInt(offer),
+          percentage: Boolean(percentage),
+          freeDelivery: Boolean(freeDelivery),
+          fixedPrice: Boolean(fixedPrice),
+          colors: colors && JSON.parse(colors),
+          sizes: sizes && JSON.parse(sizes),
+          specifications: specifications && JSON.parse(specifications),
+          images: images && JSON.parse(images),
+          sellerId: storeType === "Shop" ? storeId : null,
+          brandId: storeType === "Brand" ? storeId : null,
+          userId: id,
           categoryId,
           subCategoryId,
           optionId,
-          price: parseInt(price),
-          title,
-          description,
-          userId: id,
-          thumbnail: path,
-          coin: Boolean(coin),
         },
+        where:{
+          id:productId
+        }
       });
-      res.status(StatusCodes.OK).json({ data: product });
-    } catch (e) {
-      res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+      return res.status(StatusCodes.OK).json({ data: product });
     }
+
+    const product = await prisma.products.update({
+      data: {
+        price: parseInt(price),
+        coin: Boolean(coin),
+        title,
+        description,
+        quantity: parseInt(quantity),
+        minOrder: parseInt(minOrder),
+        freeCoin: freeCoin && parseInt(freeCoin),
+        offer: offer && parseInt(offer),
+        percentage: Boolean(percentage),
+        freeDelivery: Boolean(freeDelivery),
+        fixedPrice: Boolean(fixedPrice),
+        colors: colors && JSON.parse(colors),
+        sizes: sizes && JSON.parse(sizes),
+        specifications: specifications && JSON.parse(specifications),
+        images: images && JSON.parse(images),
+        sellerId: storeType === "Shop" ? storeId : null,
+        brandId: storeType === "Brand" ? storeId : null,
+        userId: id,
+        categoryId,
+        subCategoryId,
+        optionId,
+      },
+      where:{
+        id:productId
+      }
+    });
+    return res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
 export const deleteProduct = async (req, res) => {
@@ -290,7 +349,7 @@ export const getForYou = async (req, res) => {
   }
 };
 export const addOffers = async (req, res) => {
-  const { productId, money, percentage, name,type,deliveryFree } = req.body;
+  const { productId, money, percentage, name, type, deliveryFree } = req.body;
   // console.log(productId);
   if (!name || !productId) {
     return res
@@ -307,7 +366,7 @@ export const addOffers = async (req, res) => {
           name,
           percentage: Boolean(percentage),
           money: parseInt(money),
-          deliveryFree: Boolean(deliveryFree)
+          deliveryFree: Boolean(deliveryFree),
         },
       });
       return res.status(StatusCodes.OK).json({ data: offers });
@@ -317,8 +376,8 @@ export const addOffers = async (req, res) => {
         name,
         percentage: Boolean(percentage),
         money: parseInt(money),
-        productId:productId,
-        deliveryFree: Boolean(deliveryFree)
+        productId: productId,
+        deliveryFree: Boolean(deliveryFree),
       },
     });
     res.status(StatusCodes.OK).json({ data: offers });
