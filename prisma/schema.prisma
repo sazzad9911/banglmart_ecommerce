@@ -17,7 +17,7 @@ model users {
   birthday         String?
   gender           String?
   role             Int                @default(1)
-  uid              String
+  uid              String?
   address          Json?
   createdAt        DateTime           @default(now())
   seller           seller[]

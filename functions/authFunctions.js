@@ -230,7 +230,11 @@ const updateUser = async (req, res) => {
 const getAllUser = async (req, res) => {
   const { name } = req.query;
   try {
-    const result = await prisma.users.findMany({});
+    const result = await prisma.users.findMany({
+      orderBy:{
+        createdAt:"desc"
+      }
+    });
     const sort = result.filter((user) =>
       user.name
         .toLocaleLowerCase()

@@ -126,6 +126,8 @@ export const updateShop = async (req, res) => {
         data: shop,
       });
     }
+
+    
     const shop = await prisma.seller.update({
       data: {
         shopName,
