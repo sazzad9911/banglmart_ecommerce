@@ -218,6 +218,7 @@ model contacts {
   phone       String
   email       String
   date        DateTime @default(now())
+  replied     Boolean  @default(false)
 }
 
 model conversations {
@@ -245,6 +246,7 @@ model orders {
   product    products @relation(fields: [productId], references: [id], onDelete: Cascade)
   offerPrice Int      @default(0)
   date       DateTime @default(now())
+  status     String
 }
 
 model banner {
