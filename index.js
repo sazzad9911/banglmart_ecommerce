@@ -24,6 +24,7 @@ import {
   uploadImages,
 } from "./lib/uploadController.js";
 import support from "./routes/support.js";
+import order from "./routes/order.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,7 @@ app.use("/product", product);
 app.use("/variant", variants);
 app.use("/store", store);
 app.use("/support", support);
+app.use("/order", order);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 
 const httpServer = createServer({ key: key, cert: cert }, app);

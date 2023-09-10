@@ -31,6 +31,8 @@ model users {
   verified         Boolean            @default(true)
   conversations    conversations[]
   orders           orders[]
+  cart             cart[]
+  wish             wish[]
 }
 
 model category {
@@ -125,6 +127,9 @@ model products {
   adds             adds[]
   messages         messages[]
   orders           orders[]
+  slider           slider[]
+  cart             cart[]
+  wish             wish[]
 }
 
 model colors {
@@ -239,20 +244,51 @@ model messages {
 }
 
 model orders {
-  id         String   @id @default(cuid())
-  buyerid    String
-  buyer      users    @relation(fields: [buyerid], references: [id], onDelete: Cascade)
-  productId  String
-  product    products @relation(fields: [productId], references: [id], onDelete: Cascade)
-  offerPrice Int      @default(0)
-  date       DateTime @default(now())
-  status     String
+  id             String   @id @default(cuid())
+  buyerId        String
+  buyer          users    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  productId      String
+  product        products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  offerPrice     Int      @default(0)
+  date           DateTime @default(now())
+  status         String   @default("PENDING")
+  price          Int      @default(0)
+  quantity       Int      @default(1)
+  colors         Json?
+  sizes          Json?
+  specifications Json?
+  paymentMethod  String
+  address        Json?
 }
 
 model banner {
   id        String    @id @default(cuid())
   title     String    @unique
   image     String
+  productId String
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model slider {
+  id        String    @id @default(cuid())
+  title     String    @unique
+  image     String
+  productId String
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model cart {
+  id        String    @id @default(cuid())
+  userId    String
+  user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model wish {
+  id        String    @id @default(cuid())
+  userId    String
+  user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
