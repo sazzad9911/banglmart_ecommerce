@@ -81,9 +81,6 @@ export const getAllProduct = async (req, res) => {
     const product = await prisma.products.findMany({
       where: {
         userId: userId ? userId : undefined,
-        seller:{
-          verified:true
-        }
       },
       include: {
         user: true,
