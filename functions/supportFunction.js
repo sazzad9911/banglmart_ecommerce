@@ -1,17 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
-import nodemailer from "nodemailer";
+import smtp from "../lib/smtp.js";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.elasticemail.com",
-  port: 2525,
-  secure: false,
-  auth: {
-    // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: "banglamartecommerceltd@gmail.com",
-    pass: "5F21C9A67C7B77D19D5D66E1140C2334E8C4",
-  },
-});
 
 export const createSupport = async (req, res) => {
   const { title, description, name, phone, email } = req.body;
@@ -60,7 +50,7 @@ export const replaySupport = async (req, res) => {
         id: supportId,
       },
     });
-    const info = await transporter.sendMail({
+    const info = await smtp.sendMail({
       from: "banglamartecommerceltd@gmail.com", // sender address
       to: contact.email, // list of receivers
       subject: `Replay of - ${contact.title}`, // Subject line

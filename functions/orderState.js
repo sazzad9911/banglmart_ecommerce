@@ -5,4 +5,6 @@ const orderState = [
   "FAILED",
   "DELIVERED",
   "COMPLETED",
+  "REFUNDED",
 ];
+export default orderState
