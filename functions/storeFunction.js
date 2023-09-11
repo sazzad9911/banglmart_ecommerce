@@ -97,7 +97,7 @@ export const sellerRequest = async (req, res) => {
 };
 export const updateShop = async (req, res) => {
   const { shopName, shopAddress, categories, verified, sellerId } = req.body;
-  const { id } = req.user;
+
 
   if (!sellerId) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -115,7 +115,6 @@ export const updateShop = async (req, res) => {
           shopAddress,
           categories: categories ? JSON.parse(categories) : undefined,
           logo: path,
-          userId: id,
           verified: Boolean(verified),
         },
         where: {
@@ -133,7 +132,6 @@ export const updateShop = async (req, res) => {
         shopName,
         shopAddress,
         categories: categories ? JSON.parse(categories) : undefined,
-        userId: id,
         verified: Boolean(verified),
       },
       where: {
