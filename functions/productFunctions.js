@@ -25,6 +25,7 @@ export const addProduct = async (req, res) => {
     subCategoryId,
     optionId,
     storeType,
+    deliveryCharge
   } = req.body;
   if (
     !price ||
@@ -66,6 +67,7 @@ export const addProduct = async (req, res) => {
         categoryId,
         subCategoryId,
         optionId,
+        deliveryCharge:deliveryCharge?parseInt(deliveryCharge):0
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -117,7 +119,8 @@ export const updateProduct = async (req, res) => {
     subCategoryId,
     optionId,
     storeType,
-    productId
+    productId,
+    deliveryCharge
   } = req.body;
   if (
     !price ||
@@ -160,6 +163,7 @@ export const updateProduct = async (req, res) => {
           categoryId,
           subCategoryId,
           optionId,
+          deliveryCharge:deliveryCharge?parseInt(deliveryCharge):0
         },
         where:{
           id:productId
@@ -191,6 +195,7 @@ export const updateProduct = async (req, res) => {
         categoryId,
         subCategoryId,
         optionId,
+        deliveryCharge:deliveryCharge?parseInt(deliveryCharge):0
       },
       where:{
         id:productId

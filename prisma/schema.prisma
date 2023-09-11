@@ -99,6 +99,7 @@ model products {
   minOrder         Int                @default(1)
   freeCoin         Int                @default(0)
   offer            Int                @default(0)
+  deliveryCharge   Int? 
   percentage       Boolean            @default(false)
   freeDelivery     Boolean            @default(false)
   fixedPrice       Boolean            @default(true)
