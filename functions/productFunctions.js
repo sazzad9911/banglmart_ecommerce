@@ -495,3 +495,40 @@ export const getBargainingProduct = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const getProductDetails = async (req, res) => {
+  const { productId, visitorId } = req.query;
+  if (!visitorId || !productId) {
+    return res
+      .status(StatusCodes.BAD_GATEWAY)
+      .json({ message: "Visitor id and product id is required" });
+  }
+  let info = {};
+  try {
+    await prisma.product_visitors.create({
+      data: {
+        visitorId: visitorId,
+        productId: productId,
+      },
+    });
+  } catch (e) {
+    info = e;
+  }
+  try {
+    const product = await prisma.products.findUnique({
+      where: {
+        id: productId,
+        verified: true,
+      },
+      include: {
+        user: true,
+        seller: true,
+        brand: true,
+        comments: true,
+        reviews: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product,info:info });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
