@@ -314,20 +314,20 @@ model adds_visitors {
 }
 
 model product_visitors {
-  id        String    @id @default(cuid())
-  visitorId String?  
-  visitors  visitors? @relation(fields: [visitorId], references: [id], onDelete: Cascade)
-  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String?  
-  createdAt DateTime @default(now())
+  id           String    @id @default(cuid())
+  visitorsId   String?
+  visitorsInfo visitors? @relation(fields: [visitorsId], references: [id], onDelete: Cascade)
+  productInfo  products? @relation(fields: [productsId], references: [id], onDelete: Cascade)
+  productsId   String?
+  createdAt    DateTime  @default(now())
 }
 
 model visitors {
-  id               String            @id @default(cuid())
+  id               String             @id @default(cuid())
   ip               String
   deviceName       String
-  randomId         String            @unique
-  date             DateTime          @default(now())
+  randomId         String             @unique
+  date             DateTime           @default(now())
   uid              String?
   adds_visitors    adds_visitors?
   product_visitors product_visitors[]

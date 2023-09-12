@@ -367,17 +367,15 @@ export const getForYou = async (req, res) => {
   }
 
   try {
-    const product = await prisma.products.findMany({
+    const product = await prisma.product_visitors.findMany({
       where: {
-       product_visitors:{
-        visitorId: visitorId
-       }
+       visitorsId:visitorId
       },
       orderBy: {
         createdAt: "desc",
       },
       include:{
-        product:true
+        productInfo:true
       }
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -508,18 +506,21 @@ export const getProductDetails = async (req, res) => {
       .status(StatusCodes.BAD_GATEWAY)
       .json({ message: "Visitor id and product id is required" });
   }
-  let info = {};
   try {
-    await prisma.product_visitors.create({
-      data: {
-        visitorId: visitorId,
-        productId: productId,
-      },
-    });
-  } catch (e) {
-    info=e.message
-  }
-  try {
+    const check=await prisma.product_visitors.findMany({
+      where:{
+        visitorsId:visitorId,
+        productsId:productId
+      }
+    })
+    if(check&&check.length===0){
+      await prisma.product_visitors.create({
+        data: {
+          visitorsId: visitorId,
+          productsId: productId,
+        },
+      });
+    }
     const product = await prisma.products.findUnique({
       where: {
         id: productId,
@@ -533,7 +534,7 @@ export const getProductDetails = async (req, res) => {
         reviews: true,
       },
     });
-    res.status(StatusCodes.OK).json({ data: product, info: info });
+    res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
