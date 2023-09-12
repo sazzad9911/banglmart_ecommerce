@@ -1,7 +1,0 @@
--- AlterTable
-ALTER TABLE `orders` ADD COLUMN `colors` JSON NULL,
-    ADD COLUMN `price` INTEGER NOT NULL DEFAULT 0,
-    ADD COLUMN `quantity` INTEGER NOT NULL DEFAULT 1,
-    ADD COLUMN `sizes` JSON NULL,
-    ADD COLUMN `specifications` JSON NULL,
-    MODIFY `status` VARCHAR(191) NOT NULL DEFAULT 'PENDING';
