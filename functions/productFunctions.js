@@ -267,12 +267,10 @@ export const getProductByOption = async (req, res) => {
     const product = await prisma.products.findMany({
       where: {
         optionId: optionId,
+        verified: true,
       },
-      include: {
-        user: true,
-        offers: true,
-        coins: true,
-        variants: true,
+      orderBy: {
+        createdAt: "desc",
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -527,7 +525,7 @@ export const getProductDetails = async (req, res) => {
         reviews: true,
       },
     });
-    res.status(StatusCodes.OK).json({ data: product,info:info });
+    res.status(StatusCodes.OK).json({ data: product, info: info });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
