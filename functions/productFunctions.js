@@ -25,7 +25,7 @@ export const addProduct = async (req, res) => {
     subCategoryId,
     optionId,
     storeType,
-    deliveryCharge
+    deliveryCharge,
   } = req.body;
   if (
     !price ||
@@ -67,7 +67,7 @@ export const addProduct = async (req, res) => {
         categoryId,
         subCategoryId,
         optionId,
-        deliveryCharge:deliveryCharge?parseInt(deliveryCharge):0
+        deliveryCharge: deliveryCharge ? parseInt(deliveryCharge) : 0,
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -82,8 +82,10 @@ export const getAllProduct = async (req, res) => {
       where: {
         userId: userId ? userId : undefined,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
-        user: true,
         seller: true,
         brand: true,
       },
@@ -117,7 +119,7 @@ export const updateProduct = async (req, res) => {
     optionId,
     storeType,
     productId,
-    deliveryCharge
+    deliveryCharge,
   } = req.body;
   if (
     !price ||
@@ -126,7 +128,8 @@ export const updateProduct = async (req, res) => {
     !quantity ||
     !minOrder ||
     !storeId ||
-    !storeType||!productId
+    !storeType ||
+    !productId
   ) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -160,11 +163,11 @@ export const updateProduct = async (req, res) => {
           categoryId,
           subCategoryId,
           optionId,
-          deliveryCharge:deliveryCharge?parseInt(deliveryCharge):0
+          deliveryCharge: deliveryCharge ? parseInt(deliveryCharge) : 0,
         },
-        where:{
-          id:productId
-        }
+        where: {
+          id: productId,
+        },
       });
       return res.status(StatusCodes.OK).json({ data: product });
     }
@@ -192,11 +195,11 @@ export const updateProduct = async (req, res) => {
         categoryId,
         subCategoryId,
         optionId,
-        deliveryCharge:deliveryCharge?parseInt(deliveryCharge):0
+        deliveryCharge: deliveryCharge ? parseInt(deliveryCharge) : 0,
       },
-      where:{
-        id:productId
-      }
+      where: {
+        id: productId,
+      },
     });
     return res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
@@ -216,8 +219,13 @@ export const deleteProduct = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
-export const acceptProduct = async (req, res) => {
-  const { productId } = req.query;
+export const activeProduct = async (req, res) => {
+  const { productId } = req.params;
+  if (!productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are required" });
+  }
   try {
     const product = await prisma.products.update({
       where: {
@@ -225,6 +233,27 @@ export const acceptProduct = async (req, res) => {
       },
       data: {
         verified: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const inactiveProduct = async (req, res) => {
+  const { productId } = req.params;
+  if (!productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are required" });
+  }
+  try {
+    const product = await prisma.products.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        verified: false,
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -383,6 +412,85 @@ export const addOffers = async (req, res) => {
       },
     });
     res.status(StatusCodes.OK).json({ data: offers });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+
+export const getProductByBrand = async (req, res) => {
+  const { brandId } = req.query;
+  if (!brandId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some fields are required" });
+  }
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        brandId: brandId,
+        brand: {
+          verified: true,
+        },
+        verified: true,
+      },
+      // include: {
+      //   user: true,
+      //   seller: true,
+      //   brand: true,
+      //   comments: true,
+      //   reviews: true,
+      // },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getProductBySeller = async (req, res) => {
+  const { sellerId } = req.query;
+  if (!sellerId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some fields are required" });
+  }
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        sellerId: sellerId,
+        seller: {
+          verified: true,
+        },
+        verified: true,
+      },
+      // include: {
+      //   user: true,
+      //   seller: true,
+      //   brand: true,
+      //   comments: true,
+      //   reviews: true,
+      // },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getBargainingProduct = async (req, res) => {
+  try {
+    const product = await prisma.products.findMany({
+      where: {
+        fixedPrice: false,
+        verified: true,
+      },
+      // include: {
+      //   user: true,
+      //   seller: true,
+      //   brand: true,
+      //   comments: true,
+      //   reviews: true,
+      // },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }

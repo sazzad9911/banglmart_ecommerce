@@ -99,7 +99,7 @@ model products {
   minOrder         Int                @default(1)
   freeCoin         Int                @default(0)
   offer            Int                @default(0)
-  deliveryCharge   Int? 
+  deliveryCharge   Int?
   percentage       Boolean            @default(false)
   freeDelivery     Boolean            @default(false)
   fixedPrice       Boolean            @default(true)
@@ -131,6 +131,7 @@ model products {
   slider           slider[]
   cart             cart[]
   wish             wish[]
+  product_visitors product_visitors[]
 }
 
 model colors {
@@ -312,12 +313,21 @@ model adds_visitors {
   addsId    String?   @unique
 }
 
+model product_visitors {
+  id        String    @id @default(cuid())
+  visitorId String?   @unique
+  visitors  visitors? @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String?   @unique
+}
+
 model visitors {
-  id            String         @id @default(cuid())
-  ip            String
-  deviceName    String
-  randomId      String         @unique
-  date          DateTime       @default(now())
-  uid           String?
-  adds_visitors adds_visitors?
+  id               String            @id @default(cuid())
+  ip               String
+  deviceName       String
+  randomId         String            @unique
+  date             DateTime          @default(now())
+  uid              String?
+  adds_visitors    adds_visitors?
+  product_visitors product_visitors?
 }

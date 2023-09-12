@@ -3,17 +3,19 @@ import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
 import upload from "../lib/upload.js";
 import {
-  acceptProduct,
-  addOffers,
+  activeProduct,
   addProduct,
   deleteProduct,
   getAllProduct,
+  getBargainingProduct,
   getForYou,
+  getProductByBrand,
   getProductByOption,
+  getProductBySeller,
   getTop,
   getTopSell,
+  inactiveProduct,
   updateProduct,
-  updateQuantity,
 } from "../functions/productFunctions.js";
 import {
   addFlashSellProduct,
@@ -44,6 +46,12 @@ product.route("/get/top").get(getTop);
 product.route("/get/top/sell").get(getTopSell);
 product.route("/get/for-you").get(getForYou);
 product.route("/getProductByOption").get(getProductByOption);
+product.route("/get-brand-product").get(getProductByBrand);
+product.route("/get-seller-product").get(getProductBySeller);
+product.route("/get-bargaining").get(getBargainingProduct);
+
+
+//product api
 product
   .route("/update")
   .put([verifyUser, upload.single("thumbnail")], updateProduct);
@@ -51,7 +59,7 @@ product.route("/delete").delete(verifyUser, deleteProduct);
 product
   .route("/add")
   .post([verifyUser, upload.single("thumbnail")], addProduct);
-product.route("/accept").get(verifyUser, acceptProduct);
-product.route("/updateQuantity").put(verifyUser, updateQuantity);
-product.route("/addOffers").post(verifyUser, addOffers);
+product.route("/active/:productId").get(verifyUser, activeProduct);
+product.route("/inactive/:productId").get(verifyUser, inactiveProduct);
+
 export default product;

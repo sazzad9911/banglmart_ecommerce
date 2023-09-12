@@ -10,6 +10,12 @@ export const createSupport = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
   }
+  let arr=phone.split("")
+  if(arr[0]!="0"||arr[1]!="1"||arr.length!==11){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Invalid phone number" });
+  }
   try {
     const contact = await prisma.contacts.create({
       data: {
