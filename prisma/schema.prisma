@@ -315,10 +315,10 @@ model adds_visitors {
 
 model product_visitors {
   id        String    @id @default(cuid())
-  visitorId String?   @unique
+  visitorId String?  
   visitors  visitors? @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId String?   @unique
+  productId String?  
   createdAt DateTime @default(now())
 }
 
@@ -330,5 +330,5 @@ model visitors {
   date             DateTime          @default(now())
   uid              String?
   adds_visitors    adds_visitors?
-  product_visitors product_visitors?
+  product_visitors product_visitors[]
 }

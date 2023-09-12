@@ -367,9 +367,11 @@ export const getForYou = async (req, res) => {
   }
 
   try {
-    const product = await prisma.product_visitors.findMany({
+    const product = await prisma.products.findMany({
       where: {
-       visitorId: visitorId
+       product_visitors:{
+        visitorId: visitorId
+       }
       },
       orderBy: {
         createdAt: "desc",
