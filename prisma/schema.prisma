@@ -319,6 +319,7 @@ model product_visitors {
   visitors  visitors? @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String?   @unique
+  createdAt DateTime @default(now())
 }
 
 model visitors {

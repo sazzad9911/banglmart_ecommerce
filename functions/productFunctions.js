@@ -359,18 +359,24 @@ export const getTopSell = async (req, res) => {
   }
 };
 export const getForYou = async (req, res) => {
+  const { visitorId } = req.query;
+  if (!visitorId) {
+    return res
+      .status(StatusCodes.BAD_GATEWAY)
+      .json({ message: "Visitor id is required" });
+  }
+
   try {
-    const product = await prisma.products.findMany({
+    const product = await prisma.product_visitors.findMany({
       where: {
-        quantity: {
-          gte: 10,
-        },
+       visitorId: visitorId
       },
-      include: {
-        user: true,
-        offers: true,
-        coins: true,
+      orderBy: {
+        createdAt: "desc",
       },
+      include:{
+        product:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
@@ -509,7 +515,7 @@ export const getProductDetails = async (req, res) => {
       },
     });
   } catch (e) {
-    info = e;
+    info=e.message
   }
   try {
     const product = await prisma.products.findUnique({
