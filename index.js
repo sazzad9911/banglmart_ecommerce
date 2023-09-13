@@ -25,6 +25,8 @@ import {
 } from "./lib/uploadController.js";
 import support from "./routes/support.js";
 import order from "./routes/order.js";
+import review from "./routes/review.js";
+import comment from "./routes/comment.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +64,8 @@ app.use("/variant", variants);
 app.use("/store", store);
 app.use("/support", support);
 app.use("/order", order);
+app.use("/review", review);
+app.use("/comment", comment);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 
 const httpServer = createServer({ key: key, cert: cert }, app);

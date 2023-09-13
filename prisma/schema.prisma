@@ -99,6 +99,7 @@ model products {
   minOrder         Int                @default(1)
   freeCoin         Int                @default(0)
   offer            Int                @default(0)
+  vat              Float                @default(0)
   deliveryCharge   Int?
   percentage       Boolean            @default(false)
   freeDelivery     Boolean            @default(false)
@@ -162,13 +163,12 @@ model comments {
   productId     String
   product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
   notifications notifications[]
-  receiverId    String
 }
 
 model reviews {
   id            String          @id @default(cuid())
   message       String
-  rate          Int             @default(0)
+  rate          Float           @default(0)
   userId        String
   user          users?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId     String

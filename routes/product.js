@@ -9,6 +9,7 @@ import {
   getAllProduct,
   getBargainingProduct,
   getForYou,
+  getNew,
   getProductByBrand,
   getProductByOption,
   getProductBySeller,
@@ -45,6 +46,8 @@ product.route("/delete/flash/product").delete(deleteFlashSellProduct);
 //Home page
 product.route("/get/top").get(getTop);
 product.route("/get/top/sell").get(getTopSell);
+product.route("/get/new").get(getNew);
+//done
 product.route("/get/for-you").get(getForYou);
 product.route("/getProductByOption").get(getProductByOption);
 product.route("/get-brand-product").get(getProductByBrand);
