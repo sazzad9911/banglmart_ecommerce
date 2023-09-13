@@ -377,10 +377,7 @@ export const getForYou = async (req, res) => {
         productInfo: true,
       },
     });
-    if (product?.length < 5) {
-      const p = await prisma.products.findMany({});
-      return res.status(StatusCodes.OK).json({ data: p });
-    }
+    
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
