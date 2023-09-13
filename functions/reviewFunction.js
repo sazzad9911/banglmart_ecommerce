@@ -39,3 +39,19 @@ export const getReview = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const getReviewByProduct = async (req, res) => {
+  const { productId } = req.query;
+  if(!productId){
+    return res.status(StatusCodes.BAD_GATEWAY).json({ message:"Product Id is required"});
+  }
+  try {
+    const review = await prisma.reviews.findMany({
+      where: {
+        productId: productId,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: review });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};

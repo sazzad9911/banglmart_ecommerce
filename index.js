@@ -27,6 +27,7 @@ import support from "./routes/support.js";
 import order from "./routes/order.js";
 import review from "./routes/review.js";
 import comment from "./routes/comment.js";
+import message from "./routes/message.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +67,7 @@ app.use("/support", support);
 app.use("/order", order);
 app.use("/review", review);
 app.use("/comment", comment);
+app.use("/message", message);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 
 const httpServer = createServer({ key: key, cert: cert }, app);
@@ -73,15 +75,16 @@ const port = process.env.PORT || 1300;
 // const server = http.createServer({
 //   port: 1400,
 // });
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+export const io = new Server(httpServer, {
+  // cors: {
+  //   origin: "http://127.0.0.1:5173",
+  //   methods: ["GET", "POST","PUT"],
+  // },
 });
 io.on("connection", (socket) => {
-  //console.log("connection")
+  console.log(`Connected to ${socket.id}`)
 });
+
 const start = async () => {
   try {
     app.set("port", port);
