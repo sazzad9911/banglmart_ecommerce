@@ -56,6 +56,7 @@ export const closeAllAdds = async (req, res) => {
     });
     const visit = await prisma.adds_visitors.createMany({
       data: arr,
+      skipDuplicates:true
     });
     res.status(StatusCodes.OK).json({ data: visit });
   } catch (e) {
@@ -64,13 +65,17 @@ export const closeAllAdds = async (req, res) => {
 };
 export const getAdds = async (req, res) => {
   const { visitorId } = req.query;
+  if(!visitorId){
+    return res.status(StatusCodes.BAD_REQUEST).json({ message:"Invalid visitor id"});
+    
+  }
   try {
     const visit = await prisma.adds.findMany({
       where: {
         NOT: {
           visitors: {
             some: {
-              id: visitorId,
+              visitorsId: visitorId,
             },
           },
         },
@@ -81,4 +86,45 @@ export const getAdds = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
-
+export const createSlider = async (req, res) => {
+  const { title, productId } = req.body;
+  if (!title || !productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All field are require" });
+  }
+  try {
+    const { path } = await getLogoLink(req, res);
+    const adds = await prisma.adds.create({
+      data: {
+        title,
+        image: path,
+        productId,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: adds });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const createBanner = async (req, res) => {
+  const { title, productId } = req.body;
+  if (!title || !productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All field are require" });
+  }
+  try {
+    const { path } = await getLogoLink(req, res);
+    const adds = await prisma.adds.create({
+      data: {
+        title,
+        image: path,
+        productId,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: adds });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
