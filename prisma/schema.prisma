@@ -99,7 +99,7 @@ model products {
   minOrder         Int                @default(1)
   freeCoin         Int                @default(0)
   offer            Int                @default(0)
-  vat              Float                @default(0)
+  vat              Float              @default(0)
   deliveryCharge   Int?
   percentage       Boolean            @default(false)
   freeDelivery     Boolean            @default(false)
@@ -296,21 +296,21 @@ model wish {
 }
 
 model adds {
-  id        String         @id @default(cuid())
-  title     String         @unique
+  id        String          @id @default(cuid())
+  title     String          @unique
   image     String
   productId String
-  product   products?      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  date      DateTime       @default(now())
-  visitors  adds_visitors?
+  product   products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date      DateTime        @default(now())
+  visitors  adds_visitors[]
 }
 
 model adds_visitors {
-  id        String    @id @default(cuid())
-  visitorId String?   @unique
-  visitors  visitors? @relation(fields: [visitorId], references: [id])
-  adds      adds?     @relation(fields: [addsId], references: [id])
-  addsId    String?   @unique
+  id         String    @id @default(cuid())
+  visitorsId String
+  visitors   visitors? @relation(fields: [visitorsId], references: [id])
+  adds       adds?     @relation(fields: [addsId], references: [id])
+  addsId     String?   @unique
 }
 
 model product_visitors {
@@ -329,6 +329,6 @@ model visitors {
   randomId         String             @unique
   date             DateTime           @default(now())
   uid              String?
-  adds_visitors    adds_visitors?
+  adds_visitors    adds_visitors[]
   product_visitors product_visitors[]
 }

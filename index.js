@@ -28,6 +28,7 @@ import order from "./routes/order.js";
 import review from "./routes/review.js";
 import comment from "./routes/comment.js";
 import message from "./routes/message.js";
+import adds from "./routes/adds.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,6 +69,7 @@ app.use("/order", order);
 app.use("/review", review);
 app.use("/comment", comment);
 app.use("/message", message);
+app.use("/adds", adds);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 
 const httpServer = createServer({ key: key, cert: cert }, app);
