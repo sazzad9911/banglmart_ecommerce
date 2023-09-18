@@ -2,20 +2,19 @@ import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import { getBannerImageLink, getLogoLink } from "./main.js";
 
-export const createCart = async (req, res) => {
-  const { productId, quantity } = req.body;
+export const createWish = async (req, res) => {
+  const { productId } = req.body;
   const { id } = req.user;
-  if (!productId || !quantity) {
+  if (!productId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "All field are require" });
   }
   try {
-    const adds = await prisma.cart.create({
+    const adds = await prisma.wish.create({
       data: {
         productId,
         userId: id,
-        quantity: parseInt(quantity),
       },
     });
     res.status(StatusCodes.OK).json({ data: adds });
@@ -23,11 +22,11 @@ export const createCart = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
-export const getCart = async (req, res) => {
+export const getWish = async (req, res) => {
   const { id } = req.user;
 
   try {
-    const adds = await prisma.cart.findMany({
+    const adds = await prisma.wish.findMany({
       where: {
         userId: id,
       },
@@ -40,40 +39,19 @@ export const getCart = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
-export const updateCart = async (req, res) => {
+
+export const deleteWish = async (req, res) => {
   const { id } = req.user;
-  const { quantity,cartId } = req.body;
-  if (!quantity||!cartId) {
+  const { wishId } = req.query;
+  if (!wishId) {
     return res
       .status(StatusCodes.BAD_GATEWAY)
       .json({ message: "All fields are required" });
   }
   try {
-    const adds = await prisma.cart.update({
+    const adds = await prisma.wish.delete({
       where: {
-        id: cartId,
-      },
-      data: {
-        quantity: parseInt(quantity),
-      },
-    });
-    res.status(StatusCodes.OK).json({ data: adds });
-  } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
-  }
-};
-export const deleteCart = async (req, res) => {
-  const { id } = req.user;
-  const { cartId } = req.query;
-  if (!cartId) {
-    return res
-      .status(StatusCodes.BAD_GATEWAY)
-      .json({ message: "All fields are required" });
-  }
-  try {
-    const adds = await prisma.cart.delete({
-      where: {
-        id: cartId,
+        id: wishId,
       }
     });
     res.status(StatusCodes.OK).json({ data: adds });

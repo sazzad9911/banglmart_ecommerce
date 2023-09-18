@@ -127,7 +127,7 @@ model products {
   user             users?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   banner           banner[]
   adds             adds[]
-  messages         messages[]
+  conversations    conversations[]
   orders           orders[]
   slider           slider[]
   cart             cart[]
@@ -229,20 +229,23 @@ model contacts {
 }
 
 model conversations {
-  id         String   @id @default(cuid())
+  id         String     @id @default(cuid())
   senderId   String
-  sender     users?   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   users?     @relation(fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId String
-  date       DateTime @default(now())
+  date       DateTime   @default(now())
+  productId  String
+  product    products?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  messages   messages[]
 }
 
 model messages {
-  id        String    @id @default(cuid())
-  message   String?
-  image     String?
-  date      DateTime  @default(now())
-  productId String
-  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id             String         @id @default(cuid())
+  message        String?
+  image          String?
+  date           DateTime       @default(now())
+  conversationId String
+  conversation   conversations? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
 
 model orders {
@@ -285,6 +288,7 @@ model cart {
   user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int       @default(1)
 }
 
 model wish {
@@ -310,7 +314,7 @@ model adds_visitors {
   visitorsId String
   visitors   visitors? @relation(fields: [visitorsId], references: [id])
   adds       adds?     @relation(fields: [addId], references: [id])
-  addId     String?   
+  addId      String?
 }
 
 model product_visitors {

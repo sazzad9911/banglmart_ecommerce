@@ -2,7 +2,7 @@ import express from "express";
 import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
 import upload from "../lib/upload.js";
-import { closeAdd, closeAllAdds, createAdds, createBanner, createSlider, deleteSlider, getAdds, getSlider, updateBanner } from "../functions/addsFunction.js";
+import { closeAdd, closeAllAdds, createAdds, createBanner, createSlider, deleteBanner, deleteSlider, getAdds, getBanner, getSlider, updateBanner } from "../functions/addsFunction.js";
 
 const adds = express.Router();
 
@@ -15,5 +15,7 @@ adds.route("/delete/slider").delete(deleteSlider);
 adds.route("/get/slider").get(getSlider);
 adds.route("/create/banner").post(upload.single("image"),createBanner);
 adds.route("/update/banner").put(upload.single("image"),updateBanner);
+adds.route("/delete/banner").delete(deleteBanner);
+adds.route("/get/banner").get(getBanner);
 
 export default adds;

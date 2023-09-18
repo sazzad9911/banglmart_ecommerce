@@ -1,3 +1,4 @@
+import rateLimiter from "express-rate-limit";
 const apiLimiter = rateLimiter({
     windowMs: 5 * 60 * 1000, // 15 minutes
     max: 50,

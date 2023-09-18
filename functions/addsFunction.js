@@ -156,24 +156,52 @@ export const createBanner = async (req, res) => {
   }
 };
 export const updateBanner = async (req, res) => {
-  const { bannerId,title,productId } = req.body;
+  const { bannerId, title, productId } = req.body;
   if (!bannerId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "All field are require" });
   }
   try {
-    const { path } =req.file? await getBannerImageLink(req, res):{path:null};
+    const { path } = req.file
+      ? await getBannerImageLink(req, res)
+      : { path: null };
     const adds = await prisma.banner.update({
       data: {
         title,
-        image: path?path:undefined,
+        image: path ? path : undefined,
         productId,
       },
-      where:{
-        id:bannerId
-      }
+      where: {
+        id: bannerId,
+      },
     });
+    res.status(StatusCodes.OK).json({ data: adds });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const deleteBanner = async (req, res) => {
+  const { bannerId } = req.query;
+  if (!bannerId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All field are require" });
+  }
+  try {
+    const adds = await prisma.banner.delete({
+      where: {
+        id: bannerId,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: adds });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getBanner = async (req, res) => {
+  try {
+    const adds = await prisma.banner.findMany({});
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });

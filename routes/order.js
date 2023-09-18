@@ -12,5 +12,6 @@ const apiLimiter = rateLimiter({
 });
 
 order.route("/create").post(createOrder);
+order.route("/check-out").get(createOrder);
 
 export default order;
