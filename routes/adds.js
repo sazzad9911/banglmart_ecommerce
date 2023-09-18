@@ -12,6 +12,7 @@ adds.route("/closeAll").put(closeAllAdds)
 adds.route("/get").get(getAdds)
 adds.route("/create/slider").post(upload.single("image"),createSlider);
 adds.route("/create/banner").post(upload.single("image"),createBanner);
+adds.route("/delete/slider").delete(createAdds);
 
 
 export default adds;
