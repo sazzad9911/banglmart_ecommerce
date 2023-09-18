@@ -309,8 +309,8 @@ model adds_visitors {
   id         String    @id @default(cuid())
   visitorsId String
   visitors   visitors? @relation(fields: [visitorsId], references: [id])
-  adds       adds?     @relation(fields: [addsId], references: [id])
-  addsId     String?   @unique
+  adds       adds?     @relation(fields: [addId], references: [id])
+  addId     String?   
 }
 
 model product_visitors {
