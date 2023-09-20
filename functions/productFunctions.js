@@ -26,7 +26,7 @@ export const addProduct = async (req, res) => {
     optionId,
     storeType,
     deliveryCharge,
-    vat
+    vat,
   } = req.body;
   if (
     !price ||
@@ -69,7 +69,7 @@ export const addProduct = async (req, res) => {
         subCategoryId,
         optionId,
         deliveryCharge: deliveryCharge ? parseInt(deliveryCharge) : 0,
-        vat:parseInt(vat)
+        vat: parseInt(vat),
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -122,7 +122,7 @@ export const updateProduct = async (req, res) => {
     storeType,
     productId,
     deliveryCharge,
-    vat
+    vat,
   } = req.body;
   if (
     !price ||
@@ -167,7 +167,7 @@ export const updateProduct = async (req, res) => {
           subCategoryId,
           optionId,
           deliveryCharge: deliveryCharge ? parseInt(deliveryCharge) : 0,
-          vat:vat?parseInt(vat):undefined
+          vat: vat ? parseInt(vat) : undefined,
         },
         where: {
           id: productId,
@@ -200,7 +200,7 @@ export const updateProduct = async (req, res) => {
         subCategoryId,
         optionId,
         deliveryCharge: deliveryCharge ? parseInt(deliveryCharge) : 0,
-        vat:vat?parseInt(vat):undefined
+        vat: vat ? parseInt(vat) : undefined,
       },
       where: {
         id: productId,
@@ -377,7 +377,18 @@ export const getForYou = async (req, res) => {
         productInfo: true,
       },
     });
-    
+    if (product.length < 6) {
+      const product = await prisma.product_visitors.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          productInfo: true,
+        },
+      });
+      return res.status(StatusCodes.OK).json({ data: product });
+    }
+
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });

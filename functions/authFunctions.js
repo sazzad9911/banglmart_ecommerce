@@ -75,6 +75,35 @@ const signUp = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+const signUpWithPhone = async (req, res) => {
+  const { email, password, name, role, phone, address, birthday, gender } =
+    req.body;
+  if (!phone || !password || !name) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Please provide phone, password and name at most" });
+    return;
+  }
+  try {
+    
+    const user = await prisma.users.create({
+      data: {
+        name: name,
+        email: email,
+        role: role,
+        phone: phone,
+        address: address,
+        birthday: birthday,
+        gender: gender,
+        uid: userCredential?.user.uid,
+      },
+    });
+    const token = jwt.sign({ id: user.id, email }, process.env.AUTH_TOKEN);
+    res.status(StatusCodes.OK).json({ user: user, token: token });
+  } catch (err) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+};
 
 const getUser = async (req, res) => {
   const id = req?.user?.id;
