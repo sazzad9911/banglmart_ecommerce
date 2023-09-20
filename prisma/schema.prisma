@@ -33,6 +33,8 @@ model users {
   orders           orders[]
   cart             cart[]
   wish             wish[]
+  active           Boolean            @default(false)
+  socketId         String?            @unique
 }
 
 model category {
@@ -272,6 +274,7 @@ model banner {
   image     String
   productId String
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date      DateTime  @default(now())
 }
 
 model slider {
@@ -280,6 +283,7 @@ model slider {
   image     String
   productId String
   product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date      DateTime  @default(now())
 }
 
 model cart {

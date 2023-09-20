@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { io } from "../index.js";
 import prisma from "../lib/prisma.js";
 import { getLogoLink } from "./main.js";
 
@@ -82,6 +83,7 @@ export const sendMessage = async (req, res) => {
         image: path ? path : undefined,
       },
     });
+    io.emit("message", comment)
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });

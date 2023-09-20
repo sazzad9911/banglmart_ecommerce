@@ -193,7 +193,7 @@ const updateUser = async (req, res) => {
           name,
           role,
           phone,
-          address:address?JSON.parse(address):undefined,
+          address: address ? JSON.parse(address) : undefined,
           birthday,
           gender,
           image: path,
@@ -213,7 +213,7 @@ const updateUser = async (req, res) => {
         name,
         role,
         phone,
-        address:address?JSON.parse(address):undefined,
+        address: address ? JSON.parse(address) : undefined,
         birthday,
         gender,
       },
@@ -231,9 +231,9 @@ const getAllUser = async (req, res) => {
   const { name } = req.query;
   try {
     const result = await prisma.users.findMany({
-      orderBy:{
-        createdAt:"desc"
-      }
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     const sort = result.filter((user) =>
       user.name
@@ -389,6 +389,32 @@ const getVisitor = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+const updateStatus = async (userId,socketId) => {
+  const user = await prisma.users.update({
+    data: {
+      active: true,
+      socketId:socketId?socketId:null
+    },
+    where: {
+      id: userId,
+    },
+  });
+  //console.log(`join ${socketId}`)
+  return user
+};
+const disconnectedUser = async (socketId) => {
+
+  const user = await prisma.users.updateMany({
+    data: {
+      active:false,
+    },
+    where: {
+      socketId: socketId,
+    },
+  });
+  //console.log(socketId);
+  return user
+};
 export {
   signIn,
   signUp,
@@ -401,4 +427,6 @@ export {
   checkSeller,
   setVisitor,
   getVisitor,
+  updateStatus,
+  disconnectedUser
 };

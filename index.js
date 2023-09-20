@@ -31,6 +31,7 @@ import message from "./routes/message.js";
 import adds from "./routes/adds.js";
 import cart from "./routes/cart.js";
 import wish from "./routes/wish.js";
+import { disconnectedUser, updateStatus } from "./functions/authFunctions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -87,8 +88,23 @@ export const io = new Server(httpServer, {
   //   methods: ["GET", "POST","PUT"],
   // },
 });
-io.on("connection", (socket) => {
-  console.log(`Connected to ${socket.id}`)
+io.on("connection", async(socket) => {
+
+  socket.on("join", async(e) => {
+    try{
+      //console.log(e);
+      await updateStatus(e?.user?.id,socket?.id)
+    }catch(e){
+      console.error(e.message)
+    }
+  });
+  socket.on("disconnect", async()=> {
+    try{
+      await disconnectedUser(socket.id)
+    }catch(e){
+      console.error(e.message)
+    }
+  });
 });
 
 const start = async () => {

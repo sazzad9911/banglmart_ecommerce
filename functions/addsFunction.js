@@ -87,6 +87,37 @@ export const getAdds = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const getAllAdds = async (req, res) => {
+ 
+  try {
+    const visit = await prisma.adds.findMany({
+      orderBy:{
+        date:"desc"
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: visit });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const deleteAds = async (req, res) => {
+  const { adsId } = req.query;
+  if (!adsId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All field are require" });
+  }
+  try {
+    const adds = await prisma.adds.delete({
+      where: {
+        id: adsId,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: adds });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
 export const createSlider = async (req, res) => {
   const { title, productId } = req.body;
   if (!title || !productId) {
@@ -128,7 +159,11 @@ export const deleteSlider = async (req, res) => {
 };
 export const getSlider = async (req, res) => {
   try {
-    const adds = await prisma.slider.findMany({});
+    const adds = await prisma.slider.findMany({
+      orderBy:{
+        date:"desc"
+      }
+    });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -201,7 +236,11 @@ export const deleteBanner = async (req, res) => {
 };
 export const getBanner = async (req, res) => {
   try {
-    const adds = await prisma.banner.findMany({});
+    const adds = await prisma.banner.findMany({
+      orderBy:{
+        date:"desc"
+      }
+    });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
