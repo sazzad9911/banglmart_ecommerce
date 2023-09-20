@@ -33,6 +33,9 @@ export const getReview = async (req, res) => {
       where: {
         userId: id,
       },
+      include:{
+        user:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: review });
   } catch (e) {
@@ -49,6 +52,9 @@ export const getReviewByProduct = async (req, res) => {
       where: {
         productId: productId,
       },
+      include:{
+        user:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: review });
   } catch (e) {

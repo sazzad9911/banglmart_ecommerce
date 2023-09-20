@@ -63,6 +63,9 @@ export const getComments = async (req, res) => {
     const comment = await prisma.comments.findMany({
       where:{
         userId:id
+      },
+      include:{
+        user:true
       }
     });
     res.status(StatusCodes.OK).json({ data: comment });
@@ -79,6 +82,9 @@ export const getCommentsByProduct = async (req, res) => {
     const comment = await prisma.comments.findMany({
       where:{
         productId:productId
+      },
+      include:{
+        user:true
       }
     });
     res.status(StatusCodes.OK).json({ data: comment });
