@@ -62,9 +62,9 @@ export const deleteConversation = async (req, res) => {
 };
 export const sendMessage = async (req, res) => {
   const { id } = req.user;
-  const { conversationId, message } = req.body;
+  const { conversationId, message ,receiverId} = req.body;
 
-  if (!conversationId) {
+  if (!conversationId||!receiverId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Invalid request" });
@@ -81,6 +81,7 @@ export const sendMessage = async (req, res) => {
         message,
         conversationId,
         image: path ? path : undefined,
+        receiverId
       },
     });
     io.emit("message", comment)
@@ -104,6 +105,9 @@ export const getMessage = async (req, res) => {
       where: {
         conversationId: conversationId,
       },
+      include:{
+        receiver:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {

@@ -33,6 +33,7 @@ model users {
   orders           orders[]
   cart             cart[]
   wish             wish[]
+  messages         messages[]
   active           Boolean            @default(false)
   socketId         String?            @unique
 }
@@ -248,6 +249,8 @@ model messages {
   date           DateTime       @default(now())
   conversationId String
   conversation   conversations? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  receiver       users?         @relation(fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId     String?   
 }
 
 model orders {

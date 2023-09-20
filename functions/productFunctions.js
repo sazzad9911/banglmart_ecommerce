@@ -385,6 +385,7 @@ export const getForYou = async (req, res) => {
         include: {
           productInfo: true,
         },
+        take:50
       });
       return res.status(StatusCodes.OK).json({ data: product });
     }
