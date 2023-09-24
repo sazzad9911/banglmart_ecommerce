@@ -65,7 +65,8 @@ export const getComments = async (req, res) => {
         userId:id
       },
       include:{
-        user:true
+        user:true,
+        product:true
       }
     });
     res.status(StatusCodes.OK).json({ data: comment });

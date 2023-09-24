@@ -166,6 +166,7 @@ model comments {
   productId     String
   product       products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
   notifications notifications[]
+  date          DateTime        @default(now())
 }
 
 model reviews {
@@ -250,7 +251,7 @@ model messages {
   conversationId String
   conversation   conversations? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   receiver       users?         @relation(fields: [receiverId], references: [id], onDelete: Cascade)
-  receiverId     String?   
+  receiverId     String?
 }
 
 model orders {
