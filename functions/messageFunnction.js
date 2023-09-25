@@ -34,6 +34,12 @@ export const getConversation = async (req, res) => {
       include: {
         receiver: true,
         product: true,
+        messages:{
+          orderBy:{
+            date:"desc"
+          },
+          take:1
+        }
       },
     });
     res.status(StatusCodes.OK).json({ data: comment });
@@ -101,13 +107,18 @@ export const getMessage = async (req, res) => {
   }
 
   try {
+    const con = await prisma.conversations.update({
+      where: {
+        id: conversationId,
+      },
+     data:{
+      unread:0
+     }
+    });
     const comment = await prisma.messages.findMany({
       where: {
         conversationId: conversationId,
       },
-      include:{
-        receiver:true
-      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {

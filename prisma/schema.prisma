@@ -241,6 +241,7 @@ model conversations {
   productId  String
   product    products?  @relation(fields: [productId], references: [id], onDelete: Cascade)
   messages   messages[]
+  unread     Int        @default(0)
 }
 
 model messages {

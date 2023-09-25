@@ -44,7 +44,7 @@ app.use(cors({ origin: true, credentials: false }));
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(helmet());
+app.use(helmet({crossOriginResourcePolicy:false}));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
