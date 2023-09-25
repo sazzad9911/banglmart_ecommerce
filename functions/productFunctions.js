@@ -597,6 +597,12 @@ export const search = async (req, res) => {
         title:{
           contains:query
         },
+        price:{
+          gte:byPriceFrom?parseInt(byPriceFrom):undefined,
+          lte:byPriceTo?parseInt(byPriceTo):undefined
+        },
+        brandId:byBrad||undefined,
+        sellerId:bySeller||undefined
         
       },
     });
