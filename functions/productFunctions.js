@@ -606,6 +606,7 @@ export const search = async (req, res) => {
         
       },
     });
+    //const result=check.filter(d=>d.colors.map(s=>s.))
     
     res.status(StatusCodes.OK).json({ data: check });
   } catch (e) {
