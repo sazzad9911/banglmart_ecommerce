@@ -597,11 +597,7 @@ export const search = async (req, res) => {
         title:{
           contains:query
         },
-        colors:{
-          array_contains:{
-            l
-          }
-        }
+        
       },
     });
     
