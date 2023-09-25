@@ -67,6 +67,9 @@ export const getComments = async (req, res) => {
       include:{
         user:true,
         product:true
+      },
+      orderBy:{
+        date:"desc"
       }
     });
     res.status(StatusCodes.OK).json({ data: comment });
@@ -86,6 +89,9 @@ export const getCommentsByProduct = async (req, res) => {
       },
       include:{
         user:true
+      },
+      orderBy:{
+        date:"desc"
       }
     });
     res.status(StatusCodes.OK).json({ data: comment });
