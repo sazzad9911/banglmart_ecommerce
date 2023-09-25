@@ -335,6 +335,9 @@ export const getTop = async (req, res) => {
           _count: "desc",
         },
       },
+      include:{
+        reviews:true
+      },
       take: 50,
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -349,6 +352,9 @@ export const getTopSell = async (req, res) => {
         orders: {
           _count: "desc",
         },
+      },
+      include:{
+        reviews:true
       },
       take: 50,
     });
@@ -385,7 +391,7 @@ export const getForYou = async (req, res) => {
         include: {
           productInfo: true,
         },
-        take:50
+        take: 50,
       });
       return res.status(StatusCodes.OK).json({ data: product });
     }
@@ -400,6 +406,9 @@ export const getNew = async (req, res) => {
     const product = await prisma.products.findMany({
       orderBy: {
         createdAt: "asc",
+      },
+      include:{
+        reviews:true
       },
       take: 50,
     });
@@ -560,6 +569,43 @@ export const getProductDetails = async (req, res) => {
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const search = async (req, res) => {
+  const {
+    query,
+    byCategory,
+    bySubCategory,
+    byOption,
+    byPriceFrom,
+    byPriceTo,
+    byColor,
+    bySize,
+    bySpecification,
+    byBrad,
+    bySeller
+  } = req.query;
+  
+  try {
+    const check = await prisma.products.findMany({
+      where: {
+        categoryId: byCategory||undefined,
+        subCategoryId: bySubCategory||undefined,
+        optionId:byOption||undefined,
+        title:{
+          contains:query
+        },
+        colors:{
+          array_contains:{
+            l
+          }
+        }
+      },
+    });
+    
+    res.status(StatusCodes.OK).json({ data: check });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }

@@ -140,8 +140,9 @@ export const getFlashSellProduct = async (req, res) => {
         flashSellId: flashSellId,
       },
       include:{
-        product:true
-      }
+        product:true,
+        
+      },
     });
     res.status(StatusCodes.OK).json({ data: flash });
   } catch (e) {
