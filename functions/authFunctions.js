@@ -13,7 +13,9 @@ import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 import IP from "ip";
-import { getLogoLink } from "./main.js";
+import { v4 } from "uuid";
+import fs from "fs/promises";
+import { getLogoLink, randomNumber, sendSingleSms } from "./main.js";
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
@@ -75,17 +77,77 @@ const signUp = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+const sendOTP = async (req, res) => {
+  const { phone } = req.body;
+  const code = randomNumber(6);
+
+  try {
+   const data= await sendSingleSms(
+      phone,
+      `Your Banglamart verification code is ${code}`
+    );
+    if(data.status_code!=200){
+      return res.status(StatusCodes.BAD_GATEWAY).json({ message:data.error_message });
+    }
+    const token = jwt.sign(
+      { code: code, phone: phone },
+      process.env.AUTH_TOKEN,
+      { expiresIn: 60 }
+    );
+    return res.status(StatusCodes.OK).json({ token: token,data:data });
+  } catch (e) {
+    return res
+      .status(StatusCodes.EXPECTATION_FAILED)
+      .json({ message: e.message });
+  }
+};
+const verifyOTP = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
+    const newToken = jwt.sign(
+      { code: decoded.code, phone: decoded.phone },
+      process.env.AUTH_TOKEN,
+      { expiresIn: 86400 }
+    );
+    return res.status(StatusCodes.OK).json({ token: newToken });
+  } catch (e) {
+    return res
+      .status(StatusCodes.EXPECTATION_FAILED)
+      .json({ message: e.message });
+  }
+};
+
 const signUpWithPhone = async (req, res) => {
-  const { email, password, name, role, phone, address, birthday, gender } =
-    req.body;
-  if (!phone || !password || !name) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Please provide phone, password and name at most" });
+  const {
+    email,
+    password,
+    name,
+    role,
+    phone,
+    address,
+    birthday,
+    gender,
+    token,
+  } = req.body;
+  if (!phone || !password || !name || !token) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      message: "Please provide phone, password, name and token at most",
+    });
     return;
   }
   try {
-    
+    const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
+    const uid = v4();
+    await fs.writeFile(
+      `OTP/${phone}.txt`,
+      JSON.stringify({
+        password: password,
+        phone: decoded.phone,
+        uid: uid,
+      })
+    );
     const user = await prisma.users.create({
       data: {
         name: name,
@@ -95,15 +157,76 @@ const signUpWithPhone = async (req, res) => {
         address: address,
         birthday: birthday,
         gender: gender,
-        uid: userCredential?.user.uid,
+        uid: uid,
       },
     });
-    const token = jwt.sign({ id: user.id, email }, process.env.AUTH_TOKEN);
+    const token = jwt.sign(
+      { id: user.id, phone, password },
+      process.env.AUTH_TOKEN
+    );
     res.status(StatusCodes.OK).json({ user: user, token: token });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+const signInWithPhone = async (req, res) => {
+  const { password, phone } = req.body;
+  if (!phone || !password) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      message: "Please provide phone, password",
+    });
+    return;
+  }
+  try {
+    const data = await fs.readFile(`OTP/${phone}.txt`, {
+      encoding: "utf8",
+      flag: "r",
+    });
+    data = JSON.parse(data);
+    if (!data.phone.match(phone) || !data.password.match(password)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Invalid password",
+      });
+    }
+    const user = await prisma.users.findUnique({
+      where: {
+        phone: data.phone,
+      },
+    });
+    const token = jwt.sign(
+      { id: user.id, phone, password },
+      process.env.AUTH_TOKEN
+    );
+    res.status(StatusCodes.OK).json({ user: user, token: token });
+  } catch (err) {
+    if(err.code==="ENOENT"){
+      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Invalid phone number" });
+    }
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+};
+const resetPhonePassword=async(req,res)=>{
+  const {token,newPassword}=req.body;
+  try{
+    const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
+    const user = await prisma.users.findUnique({
+      where: {
+        phone: decoded.phone,
+      },
+    });
+    await fs.writeFile(
+      `OTP/${decoded.phone}.txt`,
+      JSON.stringify({
+        password: newPassword,
+        phone: decoded.phone,
+        uid: user.uid,
+      })
+    );
+    res.status(StatusCodes.OK).json({ message:"Reset successful. Please login" });
+  }catch(e){
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+}
 
 const getUser = async (req, res) => {
   const id = req?.user?.id;
@@ -418,31 +541,30 @@ const getVisitor = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
-const updateStatus = async (userId,socketId) => {
+const updateStatus = async (userId, socketId) => {
   const user = await prisma.users.update({
     data: {
       active: true,
-      socketId:socketId?socketId:null
+      socketId: socketId ? socketId : null,
     },
     where: {
       id: userId,
     },
   });
   //console.log(`join ${socketId}`)
-  return user
+  return user;
 };
 const disconnectedUser = async (socketId) => {
-
   const user = await prisma.users.updateMany({
     data: {
-      active:false,
+      active: false,
     },
     where: {
       socketId: socketId,
     },
   });
   //console.log(socketId);
-  return user
+  return user;
 };
 export {
   signIn,
@@ -457,5 +579,10 @@ export {
   setVisitor,
   getVisitor,
   updateStatus,
-  disconnectedUser
+  disconnectedUser,
+  signUpWithPhone,
+  sendOTP,
+  verifyOTP,
+  signInWithPhone,
+  resetPhonePassword
 };
