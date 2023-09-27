@@ -102,10 +102,16 @@ const sendOTP = async (req, res) => {
   }
 };
 const verifyOTP = async (req, res) => {
-  const { token } = req.body;
+  const { token,otp } = req.body;
+  if(!token||!otp){
+    return res.status(StatusCodes.BAD_REQUEST).json({ message:"Token and otp are required"})
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
+    if(decoded.code!=otp){
+      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Invalid OTP" });
+    }
     const newToken = jwt.sign(
       { code: decoded.code, phone: decoded.phone },
       process.env.AUTH_TOKEN,
@@ -125,13 +131,12 @@ const signUpWithPhone = async (req, res) => {
     password,
     name,
     role,
-    phone,
     address,
     birthday,
     gender,
     token,
   } = req.body;
-  if (!phone || !password || !name || !token) {
+  if ( !password || !name || !token) {
     res.status(StatusCodes.BAD_REQUEST).json({
       message: "Please provide phone, password, name and token at most",
     });
@@ -141,7 +146,7 @@ const signUpWithPhone = async (req, res) => {
     const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
     const uid = v4();
     await fs.writeFile(
-      `OTP/${phone}.txt`,
+      `OTP/${decoded.phone}.txt`,
       JSON.stringify({
         password: password,
         phone: decoded.phone,
@@ -153,7 +158,7 @@ const signUpWithPhone = async (req, res) => {
         name: name,
         email: email,
         role: role,
-        phone: phone,
+        phone: decoded.phone,
         address: address,
         birthday: birthday,
         gender: gender,
@@ -161,7 +166,7 @@ const signUpWithPhone = async (req, res) => {
       },
     });
     const token = jwt.sign(
-      { id: user.id, phone, password },
+      { id: user.id, phone:decoded.phone, password },
       process.env.AUTH_TOKEN
     );
     res.status(StatusCodes.OK).json({ user: user, token: token });

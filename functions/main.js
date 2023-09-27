@@ -3,7 +3,7 @@ import prisma from "../lib/prisma.js";
 import sharp from "sharp";
 import path from 'path'
 import {fileURLToPath} from 'url';
-import {v4} from 'uuid';
+import {v1} from 'uuid';
 import axios from "axios";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -147,7 +147,8 @@ export const getLogoLink = async (req, res) => {
   }
 };
 export const sendSingleSms=async(phone,message)=>{
-  const uid=v4()
+  const uid=randomNumber(12)
+  //console.log(uid);
   const res=await axios.get(`${process.env.DOMAIN}/api/v3/send-sms?api_token=${process.env.API_TOKEN}&sid=${process.env.SID}&msisdn=88${phone}&sms=${message}&csms_id=${uid}`)
   return res.data
 }
