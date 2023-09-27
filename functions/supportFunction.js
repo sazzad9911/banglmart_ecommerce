@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import smtp from "../lib/smtp.js";
+import { sendSingleSms } from "./main.js";
 
 
 export const createSupport = async (req, res) => {
@@ -390,6 +391,7 @@ export const replaySupport = async (req, res) => {
       </html>
       `, // html body
     });
+   const response= await sendSingleSms(contact.phone,message)
     await prisma.contacts.update({
       where: {
         id: supportId,
@@ -399,7 +401,7 @@ export const replaySupport = async (req, res) => {
       },
     });
 
-    res.status(StatusCodes.OK).json({ data: info });
+    res.status(StatusCodes.OK).json({ data: {info,response} });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
