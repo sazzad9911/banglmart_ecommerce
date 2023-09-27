@@ -46,7 +46,7 @@ authentication.route("/checkSellerRequest").get(checkSeller);
 authentication.route("/visitor").post(setVisitor);
 authentication.route("/get/visitor/:randomId").get(getVisitor);
 
-authentication.route("/sign-up-with-phone").post(authLimiter, signUpWithPhone);
+authentication.route("/sign-up-with-phone").post(signUpWithPhone);
 authentication.route("/send-otp").post(authLimiter, sendOTP);
 authentication.route("/verify-otp").post(authLimiter, verifyOTP);
 authentication.route("/sign-in-with-phone").post(authLimiter, signInWithPhone);

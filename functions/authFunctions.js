@@ -15,7 +15,11 @@ import jwt from "jsonwebtoken";
 import IP from "ip";
 import { v4 } from "uuid";
 import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 import { getLogoLink, randomNumber, sendSingleSms } from "./main.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
@@ -82,19 +86,21 @@ const sendOTP = async (req, res) => {
   const code = randomNumber(6);
 
   try {
-   const data= await sendSingleSms(
+    const data = await sendSingleSms(
       phone,
       `Your Banglamart verification code is ${code}`
     );
-    if(data.status_code!=200){
-      return res.status(StatusCodes.BAD_GATEWAY).json({ message:data.error_message });
+    if (data.status_code != 200) {
+      return res
+        .status(StatusCodes.BAD_GATEWAY)
+        .json({ message: data.error_message });
     }
     const token = jwt.sign(
       { code: code, phone: phone },
       process.env.AUTH_TOKEN,
       { expiresIn: 60 }
     );
-    return res.status(StatusCodes.OK).json({ token: token,data:data });
+    return res.status(StatusCodes.OK).json({ token: token, data: data });
   } catch (e) {
     return res
       .status(StatusCodes.EXPECTATION_FAILED)
@@ -102,18 +108,22 @@ const sendOTP = async (req, res) => {
   }
 };
 const verifyOTP = async (req, res) => {
-  const { token,otp } = req.body;
-  if(!token||!otp){
-    return res.status(StatusCodes.BAD_REQUEST).json({ message:"Token and otp are required"})
+  const { token, otp } = req.body;
+  if (!token || !otp) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Token and otp are required" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
-    if(decoded.code!=otp){
-      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Invalid OTP" });
+    if (decoded.code != otp) {
+      return res
+        .status(StatusCodes.EXPECTATION_FAILED)
+        .json({ message: "Invalid OTP" });
     }
     const newToken = jwt.sign(
-      { code: decoded.code, phone: decoded.phone },
+      { code: otp, phone: decoded.phone },
       process.env.AUTH_TOKEN,
       { expiresIn: 86400 }
     );
@@ -126,17 +136,9 @@ const verifyOTP = async (req, res) => {
 };
 
 const signUpWithPhone = async (req, res) => {
-  const {
-    email,
-    password,
-    name,
-    role,
-    address,
-    birthday,
-    gender,
-    token,
-  } = req.body;
-  if ( !password || !name || !token) {
+  const { email, password, name, role, address, birthday, gender, token } =
+    req.body;
+  if (!password || !name || !token) {
     res.status(StatusCodes.BAD_REQUEST).json({
       message: "Please provide phone, password, name and token at most",
     });
@@ -144,9 +146,19 @@ const signUpWithPhone = async (req, res) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
+    const check = await prisma.users.findUnique({
+      where: {
+        phone: decoded.phone,
+      },
+    });
+    if (check) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User already authenticated",
+      });
+    }
     const uid = v4();
     await fs.writeFile(
-      `OTP/${decoded.phone}.txt`,
+      path.join(__dirname, `OTP/${decoded.phone}.txt`),
       JSON.stringify({
         password: password,
         phone: decoded.phone,
@@ -165,11 +177,11 @@ const signUpWithPhone = async (req, res) => {
         uid: uid,
       },
     });
-    const token = jwt.sign(
-      { id: user.id, phone:decoded.phone, password },
+    const newToken = jwt.sign(
+      { id: user.id, phone: decoded.phone, password },
       process.env.AUTH_TOKEN
     );
-    res.status(StatusCodes.OK).json({ user: user, token: token });
+    res.status(StatusCodes.OK).json({ user: user, token: newToken });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
@@ -183,12 +195,12 @@ const signInWithPhone = async (req, res) => {
     return;
   }
   try {
-    const data = await fs.readFile(`OTP/${phone}.txt`, {
+    let data = await fs.readFile(path.join(__dirname,`OTP/${phone}.txt`), {
       encoding: "utf8",
       flag: "r",
     });
     data = JSON.parse(data);
-    if (!data.phone.match(phone) || !data.password.match(password)) {
+    if (data.password!=password) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "Invalid password",
       });
@@ -204,15 +216,17 @@ const signInWithPhone = async (req, res) => {
     );
     res.status(StatusCodes.OK).json({ user: user, token: token });
   } catch (err) {
-    if(err.code==="ENOENT"){
-      return res.status(StatusCodes.EXPECTATION_FAILED).json({ message: "Invalid phone number" });
+    if (err.code === "ENOENT") {
+      return res
+        .status(StatusCodes.EXPECTATION_FAILED)
+        .json({ message: "Invalid phone number" });
     }
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
-const resetPhonePassword=async(req,res)=>{
-  const {token,newPassword}=req.body;
-  try{
+const resetPhonePassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
     const decoded = jwt.verify(token, process.env.AUTH_TOKEN);
     const user = await prisma.users.findUnique({
       where: {
@@ -220,18 +234,20 @@ const resetPhonePassword=async(req,res)=>{
       },
     });
     await fs.writeFile(
-      `OTP/${decoded.phone}.txt`,
+      path.join(__dirname,`OTP/${decoded.phone}.txt`),
       JSON.stringify({
         password: newPassword,
         phone: decoded.phone,
         uid: user.uid,
       })
     );
-    res.status(StatusCodes.OK).json({ message:"Reset successful. Please login" });
-  }catch(e){
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Reset successful. Please login" });
+  } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
-}
+};
 
 const getUser = async (req, res) => {
   const id = req?.user?.id;
@@ -589,5 +605,5 @@ export {
   sendOTP,
   verifyOTP,
   signInWithPhone,
-  resetPhonePassword
+  resetPhonePassword,
 };
