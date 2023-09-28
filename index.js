@@ -32,6 +32,7 @@ import adds from "./routes/adds.js";
 import cart from "./routes/cart.js";
 import wish from "./routes/wish.js";
 import { disconnectedUser, updateStatus } from "./functions/authFunctions.js";
+import codes from "./routes/codes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,6 +76,7 @@ app.use("/message", message);
 app.use("/adds", adds);
 app.use("/cart", cart);
 app.use("/wish", wish);
+app.use("/codes", codes);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 
 const httpServer = createServer({ key: key, cert: cert }, app);

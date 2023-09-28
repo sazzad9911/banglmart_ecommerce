@@ -13,9 +13,12 @@ CREATE TABLE `users` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `pushToken` VARCHAR(191) NULL,
     `verified` BOOLEAN NOT NULL DEFAULT true,
+    `active` BOOLEAN NOT NULL DEFAULT false,
+    `socketId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
     UNIQUE INDEX `users_phone_key`(`phone`),
+    UNIQUE INDEX `users_socketId_key`(`socketId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -90,6 +93,7 @@ CREATE TABLE `products` (
     `minOrder` INTEGER NOT NULL DEFAULT 1,
     `freeCoin` INTEGER NOT NULL DEFAULT 0,
     `offer` INTEGER NOT NULL DEFAULT 0,
+    `vat` DOUBLE NOT NULL DEFAULT 0,
     `deliveryCharge` INTEGER NULL,
     `percentage` BOOLEAN NOT NULL DEFAULT false,
     `freeDelivery` BOOLEAN NOT NULL DEFAULT false,
@@ -148,7 +152,7 @@ CREATE TABLE `comments` (
     `replay` VARCHAR(191) NULL,
     `userId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
-    `receiverId` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -157,7 +161,7 @@ CREATE TABLE `comments` (
 CREATE TABLE `reviews` (
     `id` VARCHAR(191) NOT NULL,
     `message` VARCHAR(191) NOT NULL,
-    `rate` INTEGER NOT NULL DEFAULT 0,
+    `rate` DOUBLE NOT NULL DEFAULT 0,
     `userId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
     `sellerId` VARCHAR(191) NULL,
@@ -226,6 +230,8 @@ CREATE TABLE `conversations` (
     `senderId` VARCHAR(191) NOT NULL,
     `receiverId` VARCHAR(191) NOT NULL,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `productId` VARCHAR(191) NOT NULL,
+    `unread` INTEGER NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -236,7 +242,8 @@ CREATE TABLE `messages` (
     `message` VARCHAR(191) NULL,
     `image` VARCHAR(191) NULL,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `productId` VARCHAR(191) NOT NULL,
+    `conversationId` VARCHAR(191) NOT NULL,
+    `receiverId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -246,16 +253,13 @@ CREATE TABLE `orders` (
     `id` VARCHAR(191) NOT NULL,
     `buyerId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
-    `offerPrice` INTEGER NOT NULL DEFAULT 0,
     `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `status` VARCHAR(191) NOT NULL DEFAULT 'PENDING',
-    `price` INTEGER NOT NULL DEFAULT 0,
-    `quantity` INTEGER NOT NULL DEFAULT 1,
-    `colors` JSON NULL,
-    `sizes` JSON NULL,
-    `specifications` JSON NULL,
     `paymentMethod` VARCHAR(191) NOT NULL,
     `address` JSON NULL,
+    `specialCodeId` VARCHAR(191) NULL,
+    `promoId` VARCHAR(191) NULL,
+    `cartId` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -266,6 +270,7 @@ CREATE TABLE `banner` (
     `title` VARCHAR(191) NOT NULL,
     `image` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `banner_title_key`(`title`),
     PRIMARY KEY (`id`)
@@ -277,6 +282,7 @@ CREATE TABLE `slider` (
     `title` VARCHAR(191) NOT NULL,
     `image` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `slider_title_key`(`title`),
     PRIMARY KEY (`id`)
@@ -287,7 +293,14 @@ CREATE TABLE `cart` (
     `id` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
+    `quantity` INTEGER NOT NULL DEFAULT 1,
+    `couponId` VARCHAR(191) NULL,
+    `colors` JSON NULL,
+    `sizes` JSON NULL,
+    `specifications` JSON NULL,
+    `offerPrice` INTEGER NOT NULL DEFAULT 0,
 
+    UNIQUE INDEX `cart_productId_key`(`productId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -315,23 +328,19 @@ CREATE TABLE `adds` (
 -- CreateTable
 CREATE TABLE `adds_visitors` (
     `id` VARCHAR(191) NOT NULL,
-    `visitorId` VARCHAR(191) NULL,
-    `addsId` VARCHAR(191) NULL,
+    `visitorsId` VARCHAR(191) NOT NULL,
+    `addId` VARCHAR(191) NULL,
 
-    UNIQUE INDEX `adds_visitors_visitorId_key`(`visitorId`),
-    UNIQUE INDEX `adds_visitors_addsId_key`(`addsId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `product_visitors` (
     `id` VARCHAR(191) NOT NULL,
-    `visitorId` VARCHAR(191) NULL,
-    `productId` VARCHAR(191) NULL,
+    `visitorsId` VARCHAR(191) NULL,
+    `productsId` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `product_visitors_visitorId_key`(`visitorId`),
-    UNIQUE INDEX `product_visitors_productId_key`(`productId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -345,6 +354,85 @@ CREATE TABLE `visitors` (
     `uid` VARCHAR(191) NULL,
 
     UNIQUE INDEX `visitors_randomId_key`(`randomId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `promo_code` (
+    `id` VARCHAR(191) NOT NULL,
+    `code` VARCHAR(191) NOT NULL,
+    `offer` INTEGER NOT NULL,
+    `percentage` BOOLEAN NOT NULL DEFAULT false,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `userId` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `promo_code_code_key`(`code`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `promo_code_user` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `codeId` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `coupon_code` (
+    `id` VARCHAR(191) NOT NULL,
+    `code` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `offer` INTEGER NOT NULL,
+    `percentage` BOOLEAN NOT NULL DEFAULT false,
+    `userId` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `coupon_code_code_key`(`code`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `coupon_code_products` (
+    `id` VARCHAR(191) NOT NULL,
+    `codeId` VARCHAR(191) NOT NULL,
+    `productId` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `coupon_code_users` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `codeId` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `special_member` (
+    `id` VARCHAR(191) NOT NULL,
+    `code` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `offer` INTEGER NOT NULL,
+    `percentage` BOOLEAN NOT NULL DEFAULT false,
+    `userId` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `special_member_code_key`(`code`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `special_member_users` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `codeId` VARCHAR(191) NOT NULL,
+    `date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `used` BOOLEAN NOT NULL DEFAULT false,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -415,16 +503,31 @@ ALTER TABLE `flashSellProduct` ADD CONSTRAINT `flashSellProduct_productId_fkey` 
 ALTER TABLE `flashSellProduct` ADD CONSTRAINT `flashSellProduct_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `conversations` ADD CONSTRAINT `conversations_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `conversations` ADD CONSTRAINT `conversations_receiverId_fkey` FOREIGN KEY (`receiverId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `messages` ADD CONSTRAINT `messages_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `conversations` ADD CONSTRAINT `conversations_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `messages` ADD CONSTRAINT `messages_conversationId_fkey` FOREIGN KEY (`conversationId`) REFERENCES `conversations`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `messages` ADD CONSTRAINT `messages_receiverId_fkey` FOREIGN KEY (`receiverId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_buyerId_fkey` FOREIGN KEY (`buyerId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_specialCodeId_fkey` FOREIGN KEY (`specialCodeId`) REFERENCES `special_member`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_promoId_fkey` FOREIGN KEY (`promoId`) REFERENCES `promo_code`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_cartId_fkey` FOREIGN KEY (`cartId`) REFERENCES `cart`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `banner` ADD CONSTRAINT `banner_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -439,6 +542,9 @@ ALTER TABLE `cart` ADD CONSTRAINT `cart_userId_fkey` FOREIGN KEY (`userId`) REFE
 ALTER TABLE `cart` ADD CONSTRAINT `cart_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `cart` ADD CONSTRAINT `cart_couponId_fkey` FOREIGN KEY (`couponId`) REFERENCES `coupon_code`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `wish` ADD CONSTRAINT `wish_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -448,13 +554,46 @@ ALTER TABLE `wish` ADD CONSTRAINT `wish_productId_fkey` FOREIGN KEY (`productId`
 ALTER TABLE `adds` ADD CONSTRAINT `adds_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `adds_visitors` ADD CONSTRAINT `adds_visitors_visitorId_fkey` FOREIGN KEY (`visitorId`) REFERENCES `visitors`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `adds_visitors` ADD CONSTRAINT `adds_visitors_visitorsId_fkey` FOREIGN KEY (`visitorsId`) REFERENCES `visitors`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `adds_visitors` ADD CONSTRAINT `adds_visitors_addsId_fkey` FOREIGN KEY (`addsId`) REFERENCES `adds`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `adds_visitors` ADD CONSTRAINT `adds_visitors_addId_fkey` FOREIGN KEY (`addId`) REFERENCES `adds`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `product_visitors` ADD CONSTRAINT `product_visitors_visitorId_fkey` FOREIGN KEY (`visitorId`) REFERENCES `visitors`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `product_visitors` ADD CONSTRAINT `product_visitors_visitorsId_fkey` FOREIGN KEY (`visitorsId`) REFERENCES `visitors`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `product_visitors` ADD CONSTRAINT `product_visitors_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `product_visitors` ADD CONSTRAINT `product_visitors_productsId_fkey` FOREIGN KEY (`productsId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `promo_code` ADD CONSTRAINT `promo_code_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `promo_code_user` ADD CONSTRAINT `promo_code_user_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `promo_code_user` ADD CONSTRAINT `promo_code_user_codeId_fkey` FOREIGN KEY (`codeId`) REFERENCES `promo_code`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `coupon_code` ADD CONSTRAINT `coupon_code_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `coupon_code_products` ADD CONSTRAINT `coupon_code_products_codeId_fkey` FOREIGN KEY (`codeId`) REFERENCES `coupon_code`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `coupon_code_products` ADD CONSTRAINT `coupon_code_products_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `coupon_code_users` ADD CONSTRAINT `coupon_code_users_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `coupon_code_users` ADD CONSTRAINT `coupon_code_users_codeId_fkey` FOREIGN KEY (`codeId`) REFERENCES `coupon_code`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `special_member` ADD CONSTRAINT `special_member_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `special_member_users` ADD CONSTRAINT `special_member_users_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `special_member_users` ADD CONSTRAINT `special_member_users_codeId_fkey` FOREIGN KEY (`codeId`) REFERENCES `special_member`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

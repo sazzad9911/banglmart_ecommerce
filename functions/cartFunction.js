@@ -1,9 +1,11 @@
 import { StatusCodes } from "http-status-codes";
+import { getErrorMessage } from "../lib/errorCode.js";
 import prisma from "../lib/prisma.js";
 import { getBannerImageLink, getLogoLink } from "./main.js";
 
 export const createCart = async (req, res) => {
-  const { productId, quantity } = req.body;
+  const { productId, quantity, codeId, colors, sizes, specifications } =
+    req.body;
   const { id } = req.user;
   if (!productId || !quantity) {
     return res
@@ -16,11 +18,16 @@ export const createCart = async (req, res) => {
         productId,
         userId: id,
         quantity: parseInt(quantity),
+        couponId: codeId || undefined,
+        colors: colors || undefined,
+        sizes: sizes || undefined,
+        specifications: specifications|| undefined,
       },
     });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+    console.log(e.code);
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: getErrorMessage(e) });
   }
 };
 export const getCart = async (req, res) => {
@@ -33,6 +40,7 @@ export const getCart = async (req, res) => {
       },
       include: {
         product: true,
+        coupon: true,
       },
     });
     res.status(StatusCodes.OK).json({ data: adds });
@@ -42,8 +50,8 @@ export const getCart = async (req, res) => {
 };
 export const updateCart = async (req, res) => {
   const { id } = req.user;
-  const { quantity,cartId } = req.body;
-  if (!quantity||!cartId) {
+  const { quantity, cartId } = req.body;
+  if (!quantity || !cartId) {
     return res
       .status(StatusCodes.BAD_GATEWAY)
       .json({ message: "All fields are required" });
@@ -74,7 +82,7 @@ export const deleteCart = async (req, res) => {
     const adds = await prisma.cart.delete({
       where: {
         id: cartId,
-      }
+      },
     });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {

@@ -9,33 +9,39 @@ datasource db {
 }
 
 model users {
-  id               String             @id @default(cuid())
-  email            String?            @unique
-  name             String
-  image            String?
-  phone            String?            @unique
-  birthday         String?
-  gender           String?
-  role             Int                @default(1)
-  uid              String?
-  address          Json?
-  createdAt        DateTime           @default(now())
-  seller           seller[]
-  brand            brands[]
-  products         products[]
-  comments         comments[]
-  reviews          reviews[]
-  notifications    notifications[]
-  pushToken        String?
-  flashSellProduct flashSellProduct[]
-  verified         Boolean            @default(true)
-  conversations    conversations[]
-  orders           orders[]
-  cart             cart[]
-  wish             wish[]
-  messages         messages[]
-  active           Boolean            @default(false)
-  socketId         String?            @unique
+  id                   String                 @id @default(cuid())
+  email                String?                @unique
+  name                 String
+  image                String?
+  phone                String?                @unique
+  birthday             String?
+  gender               String?
+  role                 Int                    @default(1)
+  uid                  String?
+  address              Json?
+  createdAt            DateTime               @default(now())
+  seller               seller[]
+  brand                brands[]
+  products             products[]
+  comments             comments[]
+  reviews              reviews[]
+  notifications        notifications[]
+  pushToken            String?
+  flashSellProduct     flashSellProduct[]
+  verified             Boolean                @default(true)
+  conversations        conversations[]
+  orders               orders[]
+  cart                 cart[]
+  wish                 wish[]
+  messages             messages[]
+  active               Boolean                @default(false)
+  socketId             String?                @unique
+  promo_code_user      promo_code_user[]
+  coupon_code_users    coupon_code_users[]
+  special_member_users special_member_users[]
+  special_member       special_member[]
+  coupon_code          coupon_code[]
+  promo_code           promo_code[]
 }
 
 model category {
@@ -92,50 +98,51 @@ model brands {
 }
 
 model products {
-  id               String             @id @default(cuid())
-  price            Int
-  coin             Boolean            @default(false)
-  title            String
-  description      String             @db.VarChar(10000)
-  thumbnail        String
-  quantity         Int                @default(1)
-  minOrder         Int                @default(1)
-  freeCoin         Int                @default(0)
-  offer            Int                @default(0)
-  vat              Float              @default(0)
-  deliveryCharge   Int?
-  percentage       Boolean            @default(false)
-  freeDelivery     Boolean            @default(false)
-  fixedPrice       Boolean            @default(true)
-  createdAt        DateTime           @default(now())
-  colors           Json?
-  sizes            Json?
-  specifications   Json?
-  images           Json?
-  comments         comments[]
-  reviews          reviews[]
-  flashSellProduct flashSellProduct[]
-  verified         Boolean            @default(true)
-  sellerId         String?
-  seller           seller?            @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  brandId          String?
-  brand            brands?            @relation(fields: [brandId], references: [id], onDelete: Cascade)
-  category         category?          @relation(fields: [categoryId], references: [id])
-  categoryId       String
-  subCategoryId    String
-  subCategory      subCategory?       @relation(fields: [subCategoryId], references: [id])
-  optionId         String
-  option           options?           @relation(fields: [optionId], references: [id])
-  userId           String
-  user             users?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  banner           banner[]
-  adds             adds[]
-  conversations    conversations[]
-  orders           orders[]
-  slider           slider[]
-  cart             cart[]
-  wish             wish[]
-  product_visitors product_visitors[]
+  id                   String                 @id @default(cuid())
+  price                Int
+  coin                 Boolean                @default(false)
+  title                String
+  description          String                 @db.VarChar(10000)
+  thumbnail            String
+  quantity             Int                    @default(1)
+  minOrder             Int                    @default(1)
+  freeCoin             Int                    @default(0)
+  offer                Int                    @default(0)
+  vat                  Float                  @default(0)
+  deliveryCharge       Int?
+  percentage           Boolean                @default(false)
+  freeDelivery         Boolean                @default(false)
+  fixedPrice           Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  colors               Json?
+  sizes                Json?
+  specifications       Json?
+  images               Json?
+  comments             comments[]
+  reviews              reviews[]
+  flashSellProduct     flashSellProduct[]
+  verified             Boolean                @default(true)
+  sellerId             String?
+  seller               seller?                @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  brandId              String?
+  brand                brands?                @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  category             category?              @relation(fields: [categoryId], references: [id])
+  categoryId           String
+  subCategoryId        String
+  subCategory          subCategory?           @relation(fields: [subCategoryId], references: [id])
+  optionId             String
+  option               options?               @relation(fields: [optionId], references: [id])
+  userId               String
+  user                 users?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  banner               banner[]
+  adds                 adds[]
+  conversations        conversations[]
+  orders               orders[]
+  slider               slider[]
+  cart                 cart[]
+  wish                 wish[]
+  product_visitors     product_visitors[]
+  coupon_code_products coupon_code_products[]
 }
 
 model colors {
@@ -256,21 +263,21 @@ model messages {
 }
 
 model orders {
-  id             String   @id @default(cuid())
-  buyerId        String
-  buyer          users    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  productId      String
-  product        products @relation(fields: [productId], references: [id], onDelete: Cascade)
-  offerPrice     Int      @default(0)
-  date           DateTime @default(now())
-  status         String   @default("PENDING")
-  price          Int      @default(0)
-  quantity       Int      @default(1)
-  colors         Json?
-  sizes          Json?
-  specifications Json?
-  paymentMethod  String
-  address        Json?
+  id            String          @id @default(cuid())
+  buyerId       String
+  buyer         users           @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  productId     String
+  product       products        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date          DateTime        @default(now())
+  status        String          @default("PENDING")
+  paymentMethod String
+  address       Json?
+  specialCodeId String?
+  specialCode   special_member? @relation(fields: [specialCodeId], references: [id])
+  promoId       String?
+  promo         promo_code?     @relation(fields: [promoId], references: [id])
+  cartId        String
+  cart          cart            @relation(fields: [cartId], references: [id])
 }
 
 model banner {
@@ -292,12 +299,19 @@ model slider {
 }
 
 model cart {
-  id        String    @id @default(cuid())
-  userId    String
-  user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId String
-  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity  Int       @default(1)
+  id             String       @id @default(cuid())
+  userId         String
+  user           users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId      String       @unique
+  product        products?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity       Int          @default(1)
+  couponId       String?
+  coupon         coupon_code? @relation(fields: [couponId], references: [id])
+  colors         Json?
+  sizes          Json?
+  specifications Json?
+  orders         orders[]
+  offerPrice     Int          @default(0)
 }
 
 model wish {
@@ -344,4 +358,77 @@ model visitors {
   uid              String?
   adds_visitors    adds_visitors[]
   product_visitors product_visitors[]
+}
+
+model promo_code {
+  id         String            @id @default(cuid())
+  code       String            @unique
+  offer      Int
+  percentage Boolean           @default(false)
+  date       DateTime          @default(now())
+  users      promo_code_user[]
+  orders     orders[]
+  userId     String?
+  user       users?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model promo_code_user {
+  id     String     @id @default(cuid())
+  userId String
+  user   users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeId String
+  code   promo_code @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  date   DateTime   @default(now())
+}
+
+model coupon_code {
+  id         String                 @id @default(cuid())
+  code       String                 @unique
+  date       DateTime               @default(now())
+  offer      Int
+  percentage Boolean                @default(false)
+  products   coupon_code_products[]
+  users      coupon_code_users[]
+  cart       cart[]
+  userId     String?
+  user       users?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model coupon_code_products {
+  id        String      @id @default(cuid())
+  codeId    String
+  code      coupon_code @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  productId String
+  products  products    @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model coupon_code_users {
+  id     String      @id @default(cuid())
+  userId String
+  user   users       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeId String
+  code   coupon_code @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  date   DateTime    @default(now())
+}
+
+model special_member {
+  id         String                 @id @default(cuid())
+  code       String                 @unique
+  date       DateTime               @default(now())
+  offer      Int
+  percentage Boolean                @default(false)
+  users      special_member_users[]
+  orders     orders[]
+  userId     String?
+  user       users?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model special_member_users {
+  id     String         @id @default(cuid())
+  userId String
+  user   users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeId String
+  code   special_member @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  date   DateTime       @default(now())
+  used   Boolean        @default(false)
 }
