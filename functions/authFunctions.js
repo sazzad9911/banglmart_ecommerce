@@ -85,6 +85,13 @@ const sendOTP = async (req, res) => {
   const { phone } = req.body;
   const code = randomNumber(6);
 
+  let arr=phone.split("")
+  if(arr[0]!="0"||arr[1]!="1"||arr.length!==11){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Invalid phone number" });
+  }
+
   try {
     const check = await prisma.users.findUnique({
       where: {

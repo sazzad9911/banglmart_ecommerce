@@ -62,7 +62,9 @@ export const getComments = async (req, res) => {
   try {
     const comment = await prisma.comments.findMany({
       where:{
-        userId:id
+        product:{
+          userId:id
+        }
       },
       include:{
         user:true,

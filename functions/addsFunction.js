@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { getErrorMessage } from "../lib/errorCode.js";
 import prisma from "../lib/prisma.js";
 import { getBannerImageLink, getLogoLink } from "./main.js";
 
@@ -20,7 +21,7 @@ export const createAdds = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: getErrorMessage(e) });
   }
 };
 export const closeAdd = async (req, res) => {
@@ -136,7 +137,8 @@ export const createSlider = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+    //console.log(e.code);
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: getErrorMessage(e) });
   }
 };
 export const deleteSlider = async (req, res) => {
@@ -187,7 +189,7 @@ export const createBanner = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: getErrorMessage(e) });
   }
 };
 export const updateBanner = async (req, res) => {
@@ -242,6 +244,30 @@ export const getBanner = async (req, res) => {
       }
     });
     res.status(StatusCodes.OK).json({ data: adds });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getAddAnalytics = async (req, res) => {
+  try {
+    const visitor = await prisma.visitors.findMany({
+      orderBy:{
+        date:"desc"
+      }
+    });
+
+    const adds = await prisma.adds.findMany({
+      orderBy:{
+        date:"desc"
+      }
+    });
+    
+    const visit = await prisma.adds_visitors.findMany({
+      where:{
+        addId:adds[0].id
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: [visitor.length,visit.length] });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
