@@ -4,7 +4,7 @@ import prisma from "../lib/prisma.js";
 import { getBannerImageLink, getLogoLink } from "./main.js";
 
 export const createCart = async (req, res) => {
-  const { productId, quantity, codeId, colors, sizes, specifications } =
+  const { productId, quantity, codeId, colors, sizes, specifications,offerPrice } =
     req.body;
   const { id } = req.user;
   if (!productId || !quantity) {
@@ -22,6 +22,7 @@ export const createCart = async (req, res) => {
         colors: colors || undefined,
         sizes: sizes || undefined,
         specifications: specifications|| undefined,
+        
       },
     });
     res.status(StatusCodes.OK).json({ data: adds });

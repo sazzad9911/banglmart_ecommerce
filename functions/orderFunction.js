@@ -48,10 +48,9 @@ export const createOrder = async (req, res) => {
 };
 export const checkOut = async (req, res) => {
   const {
-    cartId,
-    productId,
-    couponId,
-    price,
+    specialCodeId,
+    promoId,
+    offerPrice,
     quantity,
     colors,
     sizes,
@@ -91,3 +90,4 @@ export const checkOut = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+ 
