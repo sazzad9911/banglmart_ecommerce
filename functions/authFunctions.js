@@ -86,6 +86,16 @@ const sendOTP = async (req, res) => {
   const code = randomNumber(6);
 
   try {
+    const check = await prisma.users.findUnique({
+      where: {
+        phone: phone,
+      },
+    });
+    if (check) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "User already authenticated",
+      });
+    }
     const data = await sendSingleSms(
       phone,
       `Your Banglamart verification code is ${code}`

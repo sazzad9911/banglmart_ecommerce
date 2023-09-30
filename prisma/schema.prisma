@@ -36,6 +36,7 @@ model users {
   messages             messages[]
   active               Boolean                @default(false)
   socketId             String?                @unique
+  coin                 Int                    @default(0)
   promo_code_user      promo_code_user[]
   coupon_code_users    coupon_code_users[]
   special_member_users special_member_users[]
