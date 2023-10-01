@@ -405,7 +405,7 @@ export const getNew = async (req, res) => {
   try {
     const product = await prisma.products.findMany({
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
       include:{
         reviews:true
