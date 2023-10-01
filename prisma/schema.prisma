@@ -286,7 +286,7 @@ model banner {
   title     String    @unique
   image     String
   productId String
-  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   products? @relation(fields: [productId], references: [id])
   date      DateTime  @default(now())
 }
 

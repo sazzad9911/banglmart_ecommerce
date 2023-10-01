@@ -19,6 +19,7 @@ export const createPromoCode = async (req, res) => {
         percentage: Boolean(percentage),
         userId: id,
       },
+      
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
@@ -34,6 +35,9 @@ export const getPromoCode = async (req, res) => {
       where: {
         userId: id,
       },
+      include:{
+        users:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
@@ -236,6 +240,7 @@ export const createMemberCode = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: comment, users });
   } catch (e) {
+    console.log(e.code);
     res
       .status(StatusCodes.EXPECTATION_FAILED)
       .json({ message: getErrorMessage(e) });
@@ -317,6 +322,9 @@ export const getCouponCode = async (req, res) => {
       where: {
         userId: id,
       },
+      include:{
+        users:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
@@ -330,6 +338,9 @@ export const getMemberCode = async (req, res) => {
       where: {
         userId: id,
       },
+      include:{
+        users:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
