@@ -22,7 +22,7 @@ export const createCart = async (req, res) => {
         colors: colors || undefined,
         sizes: sizes || undefined,
         specifications: specifications|| undefined,
-        
+        offerPrice:parseFloat(offerPrice)||undefined,
       },
     });
     res.status(StatusCodes.OK).json({ data: adds });
