@@ -103,7 +103,7 @@ model products {
   price                Int
   coin                 Boolean                @default(false)
   title                String
-  description          String                 @db.Text
+  description          String                 @db.MediumText
   thumbnail            String
   quantity             Int                    @default(1)
   minOrder             Int                    @default(1)
