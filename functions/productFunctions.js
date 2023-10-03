@@ -77,6 +77,34 @@ export const addProduct = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const duplicateProduct = async (req, res) => {
+  const { id, email } = req.user;
+  const {
+    productId,
+  } = req.body;
+  if (
+    !productId
+  ) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const data=await prisma.products.findUnique({
+      where:{
+        id:productId
+      }
+    })
+    const product = await prisma.products.create({
+     data:{
+      ...data,id:undefined
+     }
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
 export const getAllProduct = async (req, res) => {
   const { userId } = req.query;
   try {

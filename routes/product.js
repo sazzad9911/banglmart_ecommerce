@@ -6,6 +6,7 @@ import {
   activeProduct,
   addProduct,
   deleteProduct,
+  duplicateProduct,
   getAllProduct,
   getBargainingProduct,
   getForYou,
@@ -65,6 +66,7 @@ product.route("/delete").delete(verifyUser, deleteProduct);
 product
   .route("/add")
   .post([verifyUser, upload.single("thumbnail")], addProduct);
+product.route("/duplicate").post(verifyUser, duplicateProduct);
 product.route("/active/:productId").get(verifyUser, activeProduct);
 product.route("/inactive/:productId").get(verifyUser, inactiveProduct);
 
