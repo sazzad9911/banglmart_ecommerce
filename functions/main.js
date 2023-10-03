@@ -86,7 +86,7 @@ export const getProductThumbnail = async (req, res) => {
  
   try {
     await sharp(req.file.buffer)
-      .resize({ width: 180, height: 225 })
+      .resize({ width: 580, height: 720 })
       .png()
       .toFile(__dirname + `/images/${req.file.originalname}`);
     return {path:`/images/${req.file.originalname}`}
@@ -103,7 +103,7 @@ export const getProductVariants = async (req, res) => {
  
   try {
     await sharp(req.file.buffer)
-      .resize({ width: 350, height: 400 })
+      .resize({ width: 580, height: 720 })
       .png()
       .toFile(__dirname + `/images/${req.file.originalname}`);
     return {path:`/images/${req.file.originalname}`}

@@ -27,7 +27,7 @@ export const createCart = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: adds });
   } catch (e) {
-    console.log(e.code);
+    //console.log(e.code);
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: getErrorMessage(e) });
   }
 };
