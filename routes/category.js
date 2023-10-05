@@ -1,7 +1,7 @@
 import express from "express";
 import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
-import { deleteCategory, deleteOption, deleteSubCategory, getAllCategory, getOptions, getSubCategory, storeCategory, storeOption, storeSubCategory } from "../functions/categoryFunctions.js";
+import { deleteCategory, deleteOption, deleteSubCategory, editCategory, editOption, editSubCategory, getAllCategory, getOptions, getSubCategory, storeCategory, storeOption, storeSubCategory } from "../functions/categoryFunctions.js";
 import upload from "../lib/upload.js";
 
 const category = express.Router();
@@ -15,8 +15,11 @@ category.route("/getAll").get(getAllCategory);
 category.route("/getSubCategory").get(getSubCategory);
 category.route("/getOptions").get(getOptions);
 category.route("/createCategory").post([verifyUser,upload.single("icon")],storeCategory);
+category.route("/editCategory").put([verifyUser,upload.single("icon")],editCategory);
 category.route("/createSubCategory").post(verifyUser,storeSubCategory);
+category.route("/editSubCategory").put(verifyUser,editSubCategory);
 category.route("/createOption").post(verifyUser,storeOption);
+category.route("/editOption").put(verifyUser,editOption);
 category.route("/deleteCategory").delete(verifyUser,deleteCategory);
 category.route("/deleteSubCategory").delete(verifyUser,deleteSubCategory);
 category.route("/deleteOption").delete(verifyUser,deleteOption);

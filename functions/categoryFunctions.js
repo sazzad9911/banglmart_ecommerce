@@ -1,13 +1,4 @@
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signInWithRedirect,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+
 import { auth } from "../firebase.js";
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
@@ -78,6 +69,30 @@ const storeCategory = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+export const editCategory = async (req, res) => {
+  const { name,id } = req.body;
+  if (!name) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Name need to store data" });
+  }
+  try {
+    const { path } = req.file?await getImageToUrl(req, res):{path:undefined}
+
+    const result = await prisma.category.update({
+      data: {
+        name,
+        icon:path,
+      },
+      where:{
+        id:id
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: result });
+  } catch (err) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+};
 const storeSubCategory = async (req, res) => {
   const { name, categoryId } = req.body;
   if (!name || !categoryId) {
@@ -97,6 +112,28 @@ const storeSubCategory = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+export const editSubCategory = async (req, res) => {
+  const { name, categoryId,id } = req.body;
+  if (!name || !categoryId||!id) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Name and categoryId need to store data" });
+  }
+  try {
+    const result = await prisma.subCategory.update({
+      data: {
+        name,
+        categoryId,
+      },
+      where:{
+        id:id
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: result });
+  } catch (err) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+};
 const storeOption = async (req, res) => {
   const { name, subCategoryId } = req.body;
   if (!name || !subCategoryId) {
@@ -110,6 +147,28 @@ const storeOption = async (req, res) => {
         name,
         subCategoryId,
       },
+    });
+    res.status(StatusCodes.OK).json({ data: result });
+  } catch (err) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+};
+export const editOption = async (req, res) => {
+  const { name, subCategoryId,id } = req.body;
+  if (!name || !subCategoryId||!id) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Name and categoryId need to store data" });
+  }
+  try {
+    const result = await prisma.options.update({
+      data: {
+        name,
+        subCategoryId,
+      },
+      where:{
+        id:id
+      }
     });
     res.status(StatusCodes.OK).json({ data: result });
   } catch (err) {

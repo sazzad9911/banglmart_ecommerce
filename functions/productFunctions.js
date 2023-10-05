@@ -97,7 +97,7 @@ export const duplicateProduct = async (req, res) => {
     })
     const product = await prisma.products.create({
      data:{
-      ...data,id:undefined
+      ...data,id:undefined,createdAt:undefined
      }
     });
     res.status(StatusCodes.OK).json({ data: product });

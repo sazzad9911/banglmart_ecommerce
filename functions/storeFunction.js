@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { getErrorMessage } from "../lib/errorCode.js";
 import prisma from "../lib/prisma.js";
 import { getLogoLink } from "./main.js";
 
@@ -40,7 +41,7 @@ export const addShop = async (req, res) => {
     });
   } catch (err) {
     return res.status(StatusCodes.EXPECTATION_FAILED).json({
-      message: err.message,
+      message: getErrorMessage(err),
     });
   }
 };
