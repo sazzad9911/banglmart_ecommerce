@@ -53,6 +53,34 @@ const signIn = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
 };
+export const sendVerificationUsingEmail = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Please provide email and password" });
+    return;
+  }
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    await sendEmailVerification(auth.currentUser);
+    const result = await prisma.users.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    const token = jwt.sign({ id: result.id, email }, process.env.AUTH_TOKEN);
+    res.status(StatusCodes.OK).json({ user: result, token: token });
+  } catch (err) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
+  }
+};
+
 
 const signUp = async (req, res) => {
   const { email, password, name, role, phone, address, birthday, gender } =

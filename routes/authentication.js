@@ -10,6 +10,7 @@ import {
   resetPassword,
   resetPhonePassword,
   sendOTP,
+  sendVerificationUsingEmail,
   setVisitor,
   signIn,
   signInWithPhone,
@@ -35,6 +36,7 @@ const authLimiter = rateLimiter({
   message: "Too many requests from this IP, please try again after 5 minutes",
 });
 authentication.route("/signIn").post(apiLimiter,signIn);
+authentication.route("/sendVerificationUsingEmailPassword").post(apiLimiter,sendVerificationUsingEmail);
 authentication.route("/signUp").post(apiLimiter, signUp);
 authentication.route("/update").put([verifyUser,upload.single("image")], updateUser);
 authentication.route("/getUser").get(verifyUser, getUser);
