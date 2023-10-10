@@ -36,6 +36,12 @@ const signIn = async (req, res) => {
       email,
       password
     );
+    if (!userCredential.user.emailVerified) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Please verify your email address" });
+      return;
+    }
     const result = await prisma.users.findFirst({
       where: {
         email: email,
@@ -85,8 +91,8 @@ const sendOTP = async (req, res) => {
   const { phone } = req.body;
   const code = randomNumber(6);
 
-  let arr=phone.split("")
-  if(arr[0]!="0"||arr[1]!="1"||arr.length!==11){
+  let arr = phone.split("");
+  if (arr[0] != "0" || arr[1] != "1" || arr.length !== 11) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Invalid phone number" });
@@ -212,12 +218,12 @@ const signInWithPhone = async (req, res) => {
     return;
   }
   try {
-    let data = await fs.readFile(path.join(__dirname,`OTP/${phone}.txt`), {
+    let data = await fs.readFile(path.join(__dirname, `OTP/${phone}.txt`), {
       encoding: "utf8",
       flag: "r",
     });
     data = JSON.parse(data);
-    if (data.password!=password) {
+    if (data.password != password) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: "Invalid password",
       });
@@ -251,7 +257,7 @@ const resetPhonePassword = async (req, res) => {
       },
     });
     await fs.writeFile(
-      path.join(__dirname,`OTP/${decoded.phone}.txt`),
+      path.join(__dirname, `OTP/${decoded.phone}.txt`),
       JSON.stringify({
         password: newPassword,
         phone: decoded.phone,
