@@ -125,6 +125,27 @@ export const getAllProduct = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const getProductById = async (req, res) => {
+  const { id } = req.query;
+  if(!id){
+    console.log(id);
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid id" });
+  }
+  try {
+    const product = await prisma.products.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        seller: true,
+        brand: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
 export const updateProduct = async (req, res) => {
   const { id, email } = req.user;
   const {

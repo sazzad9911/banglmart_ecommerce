@@ -12,6 +12,7 @@ import {
   getForYou,
   getNew,
   getProductByBrand,
+  getProductById,
   getProductByOption,
   getProductBySeller,
   getProductDetails,
@@ -37,6 +38,7 @@ const apiLimiter = rateLimiter({
 });
 
 product.route("/getAll").get(getAllProduct);
+product.route("/get-by-id").get(getProductById);
 //Flash
 product.route("/get/flash").get(getFlashSell);
 product
