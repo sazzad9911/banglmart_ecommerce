@@ -18,18 +18,41 @@ export const createOrder = async (req, res) => {
       .json({ message: "Payment system is not added yet" });
   }
   try {
-    const order = await prisma.orders.create({
-      data: {
+    const {
+      products,
+      subTotal,
+      totalDeliveryFee,
+      specialMemberOffer,
+      specialPromoOffer,
+      address,
+    } = jwt.verify(token, process.env.AUTH_TOKEN);
+
+    let arr = [];
+    products?.map((product) => {
+      arr.push({
         buyerId: id,
-        productId,
-        offerPrice,
-        price,
-        quantity,
-        colors: colors ? JSON.parse(colors) : undefined,
-        sizes: sizes ? JSON.parse(sizes) : undefined,
-        specifications: specifications ? JSON.parse(specifications) : undefined,
-        address: address ? JSON.parse(address) : undefined,
-      },
+        productId: product.productId,
+        paymentMethod: paymentMethod,
+        address: address,
+        token: token,
+        totalAmount: parseFloat(
+          parseFloat(product.totalPrice) + parseFloat(product.deliveryFee)
+        ),
+        quantity: parseInt(product.quantity),
+        deliveryFee: parseFloat(product.deliveryFee),
+        colors: product.color,
+        sizes: product.size,
+        specifications: product.specifications,
+        offerPrice: product?.bargaining ? parseFloat(product.totalPrice) : 0,
+        couponDiscount: parseFloat(product?.couponDiscount),
+        specialMemberOffer: parseFloat(specialMemberOffer / products.length),
+        specialPromoOffer: parseFloat(specialPromoOffer / products.length),
+        freeCoin: parseInt(product.freeCoin),
+      });
+    });
+
+    const order = await prisma.orders.createMany({
+      data: arr,
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -179,22 +202,69 @@ export const checkOut = async (req, res) => {
       (specialMemberOffer + specialPromoOffer)
     ).toFixed(2);
     const newToken = jwt.sign(
-      { products: products, subTotal, totalDeliveryFee,specialMemberOffer,specialPromoOffer, address },
-      process.env.AUTH_TOKEN
-    );
-    res
-      .status(StatusCodes.OK)
-      .json({
+      {
         products: products,
         subTotal,
         totalDeliveryFee,
         specialMemberOffer,
         specialPromoOffer,
-        token: newToken,
-      });
+        address,
+      },
+      process.env.AUTH_TOKEN
+    );
+    res.status(StatusCodes.OK).json({
+      products: products,
+      subTotal,
+      totalDeliveryFee,
+      specialMemberOffer,
+      specialPromoOffer,
+      token: newToken,
+    });
   } catch (e) {
     res
       .status(StatusCodes.EXPECTATION_FAILED)
       .json({ message: e.code ? e.message : "Invalid cart IDs" });
+  }
+};
+export const getUserOrders = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const order = await prisma.orders.findMany({
+      where: {
+        buyerId: id,
+      },
+      include:{
+        product:true,
+        buyer:true
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getSellerOrders = async (req, res) => {
+  const { id } = req.user;
+  const { sellerId } = req.query;
+  if (!sellerId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some fields are require" });
+  }
+  try {
+    const order = await prisma.orders.findMany({
+      where: {
+        product: {
+          userId: sellerId,
+        },
+      },
+      include:{
+        product:true,
+        buyer:true
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
