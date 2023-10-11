@@ -293,7 +293,7 @@ export const getOrder = async (req, res) => {
             id: order.product.sellerId,
           },
         })
-      : await prisma.brand.findUnique({
+      : await prisma.brands.findUnique({
           where: {
             id: order.product.brandId,
           },
