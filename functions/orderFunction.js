@@ -245,17 +245,12 @@ export const getUserOrders = async (req, res) => {
 };
 export const getSellerOrders = async (req, res) => {
   const { id } = req.user;
-  const { sellerId } = req.query;
-  if (!sellerId) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Some fields are require" });
-  }
+  
   try {
     const order = await prisma.orders.findMany({
       where: {
         product: {
-          userId: sellerId,
+          userId: id,
         },
       },
       include:{
