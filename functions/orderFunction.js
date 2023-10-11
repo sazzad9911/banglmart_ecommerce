@@ -282,7 +282,12 @@ export const getOrder = async (req, res) => {
         buyer:true
       }
     });
-    res.status(StatusCodes.OK).json({ data: order });
+    const category = await prisma.category.findUnique({
+      where: {
+        id:order.product.categoryId
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: {...order,category:category} });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
