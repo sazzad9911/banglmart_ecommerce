@@ -1,0 +1,1 @@
+export const orderState=["PENDING","ACCEPTED","REJECTED","CANCELLED","COMPLETED","REFUND","COURIER"]

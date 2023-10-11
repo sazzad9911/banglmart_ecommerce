@@ -236,6 +236,9 @@ export const getUserOrders = async (req, res) => {
       include:{
         product:true,
         buyer:true
+      },
+      orderBy:{
+        date:"desc"
       }
     });
     res.status(StatusCodes.OK).json({ data: order });
@@ -252,6 +255,27 @@ export const getSellerOrders = async (req, res) => {
         product: {
           userId: id,
         },
+      },
+      include:{
+        product:true,
+        buyer:true
+      },
+      orderBy:{
+        date:"desc"
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getOrder = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const order = await prisma.orders.findUnique({
+      where: {
+        id:id
       },
       include:{
         product:true,

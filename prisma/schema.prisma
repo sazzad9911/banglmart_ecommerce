@@ -285,6 +285,7 @@ model orders {
   specialMemberOffer Float     @default(0)
   specialPromoOffer  Float     @default(0)
   freeCoin           Int       @default(0)
+  paid               Boolean   @default(false)
 }
 
 model banner {
@@ -309,7 +310,7 @@ model cart {
   id             String       @id @default(cuid())
   userId         String
   user           users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productIds     String       
+  productIds     String
   product        products?    @relation(fields: [productIds], references: [id], onDelete: Cascade)
   quantity       Int          @default(1)
   couponId       String?
