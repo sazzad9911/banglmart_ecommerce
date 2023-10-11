@@ -15,7 +15,7 @@ export const createCart = async (req, res) => {
   try {
     const adds = await prisma.cart.create({
       data: {
-        productId,
+        productIds:productId,
         userId: id,
         quantity: parseInt(quantity),
         couponId: codeId || undefined,
