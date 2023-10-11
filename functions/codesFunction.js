@@ -99,7 +99,7 @@ export const verifyPromoCode = async (req, res) => {
         codeId: codes.id,
       },
     });
-    res.status(StatusCodes.OK).json({ data: user });
+    res.status(StatusCodes.OK).json({ code:codes });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
@@ -205,7 +205,7 @@ export const verifyCouponCode = async (req, res) => {
         codeId: codes.id,
       },
     });
-    res.status(StatusCodes.OK).json({ data: user });
+    res.status(StatusCodes.OK).json({ code:codes });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
@@ -310,7 +310,7 @@ export const verifyMemberCode = async (req, res) => {
         used: true,
       },
     });
-    res.status(StatusCodes.OK).json({ data: user });
+    res.status(StatusCodes.OK).json({ code: codes });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }

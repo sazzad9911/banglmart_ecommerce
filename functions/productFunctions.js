@@ -128,7 +128,7 @@ export const getAllProduct = async (req, res) => {
 export const getProductById = async (req, res) => {
   const { id } = req.query;
   if(!id){
-    console.log(id);
+    //console.log(id);
     return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid id" });
   }
   try {

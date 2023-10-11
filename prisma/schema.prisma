@@ -264,27 +264,27 @@ model messages {
 }
 
 model orders {
-  id             String          @id @default(cuid())
-  buyerId        String
-  buyer          users           @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  productId      String?
-  product        products?        @relation(fields: [productId], references: [id])
-  date           DateTime        @default(now())
-  status         String          @default("PENDING")
-  paymentMethod  String
-  address        Json?
-  specialCodeId  String?
-  specialCode    special_member? @relation(fields: [specialCodeId], references: [id])
-  promoId        String?
-  promo          promo_code?     @relation(fields: [promoId], references: [id])
-  totalAmount    Float           @default(0)
-  quantity       Int             @default(1)
-  couponId       String?
-  coupon         coupon_code?    @relation(fields: [couponId], references: [id])
-  colors         Json?
-  sizes          Json?
-  specifications Json?
-  offerPrice     Float             @default(0)
+  id                 String    @id @default(cuid())
+  buyerId            String
+  buyer              users     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  productId          String?
+  product            products? @relation(fields: [productId], references: [id])
+  date               DateTime  @default(now())
+  status             String    @default("PENDING")
+  paymentMethod      String
+  address            Json?
+  token              String    @db.Text
+  totalAmount        Float     @default(0)
+  quantity           Int       @default(1)
+  deliveryFee        Float     @default(0)
+  colors             Json?
+  sizes              Json?
+  specifications     Json?
+  offerPrice         Float     @default(0)
+  couponDiscount     Float     @default(0)
+  specialMemberOffer Float     @default(0)
+  specialPromoOffer  Float     @default(0)
+  freeCoin           Int       @default(0)
 }
 
 model banner {
@@ -309,8 +309,8 @@ model cart {
   id             String       @id @default(cuid())
   userId         String
   user           users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId      String       @unique
-  product        products?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productIds     String       
+  product        products?    @relation(fields: [productIds], references: [id], onDelete: Cascade)
   quantity       Int          @default(1)
   couponId       String?
   coupon         coupon_code? @relation(fields: [couponId], references: [id])
@@ -373,7 +373,6 @@ model promo_code {
   percentage Boolean           @default(false)
   date       DateTime          @default(now())
   users      promo_code_user[]
-  orders     orders[]
   userId     String?
   user       users?            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -398,7 +397,6 @@ model coupon_code {
   cart       cart[]
   userId     String?
   user       users?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders     orders[]
 }
 
 model coupon_code_products {
@@ -425,7 +423,6 @@ model special_member {
   offer      Int
   percentage Boolean                @default(false)
   users      special_member_users[]
-  orders     orders[]
   userId     String?
   user       users?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
