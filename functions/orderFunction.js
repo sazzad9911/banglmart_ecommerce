@@ -233,13 +233,13 @@ export const getUserOrders = async (req, res) => {
       where: {
         buyerId: id,
       },
-      include:{
-        product:true,
-        buyer:true
+      include: {
+        product: true,
+        buyer: true,
       },
-      orderBy:{
-        date:"desc"
-      }
+      orderBy: {
+        date: "desc",
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -248,7 +248,7 @@ export const getUserOrders = async (req, res) => {
 };
 export const getSellerOrders = async (req, res) => {
   const { id } = req.user;
-  
+
   try {
     const order = await prisma.orders.findMany({
       where: {
@@ -256,13 +256,13 @@ export const getSellerOrders = async (req, res) => {
           userId: id,
         },
       },
-      include:{
-        product:true,
-        buyer:true
+      include: {
+        product: true,
+        buyer: true,
       },
-      orderBy:{
-        date:"desc"
-      }
+      orderBy: {
+        date: "desc",
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -271,23 +271,34 @@ export const getSellerOrders = async (req, res) => {
 };
 export const getOrder = async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const order = await prisma.orders.findUnique({
       where: {
-        id:id
+        id: id,
       },
-      include:{
-        product:true,
-        buyer:true
-      }
+      include: {
+        product: true,
+        buyer: true,
+      },
     });
     const category = await prisma.category.findUnique({
       where: {
-        id:order.product.categoryId
+        id: order.product.categoryId,
       },
     });
-    res.status(StatusCodes.OK).json({ data: {...order,category:category} });
+    const store = order.product.sellerId
+      ? await prisma.seller.findUnique({
+          where: {
+            id: order.product.sellerId,
+          },
+        })
+      : await prisma.brand.findUnique({
+          where: {
+            id: order.product.brandId,
+          },
+        });
+    res.status(StatusCodes.OK).json({ data: { ...order, category: category,store:store } });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
