@@ -398,7 +398,7 @@ const thirdPartySignIn = async (req, res) => {
   }
 };
 const updateUser = async (req, res) => {
-  const { name, email, role, phone, address, birthday, gender } = req.body;
+  const { name, email, role, phone, address, birthday, gender,pushToken } = req.body;
   const { id } = req.user;
   if (!id) {
     res
@@ -421,6 +421,7 @@ const updateUser = async (req, res) => {
           birthday,
           gender,
           image: path,
+          pushToken
         },
       });
       const token = jwt.sign(
