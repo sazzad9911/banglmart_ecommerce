@@ -441,6 +441,7 @@ const updateUser = async (req, res) => {
         address: address ? JSON.parse(address) : undefined,
         birthday,
         gender,
+        pushToken
       },
     });
     const token = jwt.sign(
