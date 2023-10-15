@@ -198,10 +198,12 @@ model notifications {
   title     String
   userId    String
   user      users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  commentId String
+  commentId String?
   comments  comments? @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  reviewId  String
+  reviewId  String?
   reviews   reviews?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  orderId   String?
+  order     orders?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model flashSell {
@@ -264,28 +266,29 @@ model messages {
 }
 
 model orders {
-  id                 String    @id @default(cuid())
+  id                 String          @id @default(cuid())
   buyerId            String
-  buyer              users     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyer              users           @relation(fields: [buyerId], references: [id], onDelete: Cascade)
   productId          String?
-  product            products? @relation(fields: [productId], references: [id])
-  date               DateTime  @default(now())
-  status             String    @default("PENDING")
+  product            products?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date               DateTime        @default(now())
+  status             String          @default("PENDING")
   paymentMethod      String
   address            Json?
-  token              String    @db.Text
-  totalAmount        Float     @default(0)
-  quantity           Int       @default(1)
-  deliveryFee        Float     @default(0)
+  token              String          @db.Text
+  totalAmount        Float           @default(0)
+  quantity           Int             @default(1)
+  deliveryFee        Float           @default(0)
   colors             Json?
   sizes              Json?
   specifications     Json?
-  offerPrice         Float     @default(0)
-  couponDiscount     Float     @default(0)
-  specialMemberOffer Float     @default(0)
-  specialPromoOffer  Float     @default(0)
-  freeCoin           Int       @default(0)
-  paid               Boolean   @default(false)
+  offerPrice         Float           @default(0)
+  couponDiscount     Float           @default(0)
+  specialMemberOffer Float           @default(0)
+  specialPromoOffer  Float           @default(0)
+  freeCoin           Int             @default(0)
+  paid               Boolean         @default(false)
+  notifications      notifications[]
 }
 
 model banner {

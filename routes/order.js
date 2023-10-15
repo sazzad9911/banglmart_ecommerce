@@ -2,7 +2,7 @@ import express from "express";
 import rateLimiter from "express-rate-limit";
 import verifyUser from "../middleware/verifyUser.js";
 import upload from "../lib/upload.js";
-import { checkOut, createOrder, getOrder, getSellerOrders, getUserOrders } from "../functions/orderFunction.js";
+import { acceptOrder, cancelOrder, checkOut, completeOrder, courierOrder, createOrder, getOrder, getSellerOrders, getUserOrders, paidOrder, refundOrder, rejectOrder } from "../functions/orderFunction.js";
 
 const order = express.Router();
 const apiLimiter = rateLimiter({
@@ -16,5 +16,12 @@ order.route("/check-out").post(verifyUser,checkOut);
 order.route("/user").get(verifyUser,getUserOrders);
 order.route("/seller").get(verifyUser,getSellerOrders);
 order.route("/get/:id").get(getOrder);
-
+//order state
+order.route("/paid/:id").get(paidOrder);
+order.route("/courier/:id").get(courierOrder);
+order.route("/refund/:id").get(refundOrder);
+order.route("/complete/:id").get(completeOrder);
+order.route("/cancel/:id").get(cancelOrder);
+order.route("/reject/:id").get(rejectOrder);
+order.route("/accept/:id").get(acceptOrder);
 export default order;

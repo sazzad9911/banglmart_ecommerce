@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
+import { orderState } from "./state.js";
 
 export const createOrder = async (req, res) => {
   const { token, paymentMethod } = req.body;
@@ -228,6 +229,7 @@ export const checkOut = async (req, res) => {
 };
 export const getUserOrders = async (req, res) => {
   const { id } = req.user;
+  
   try {
     const order = await prisma.orders.findMany({
       where: {
@@ -271,7 +273,11 @@ export const getSellerOrders = async (req, res) => {
 };
 export const getOrder = async (req, res) => {
   const { id } = req.params;
-
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
   try {
     const order = await prisma.orders.findUnique({
       where: {
@@ -299,6 +305,203 @@ export const getOrder = async (req, res) => {
           },
         });
     res.status(StatusCodes.OK).json({ data: { ...order, category: category,store:store } });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const acceptOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        status:orderState[1]
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const rejectOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        status:orderState[2]
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const cancelOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const isOrder = await prisma.orders.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if(isOrder.status!=orderState[0]){
+      return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "You can not cancel the order. The order has been accepted. Please contact the seller" });
+    }
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        status:orderState[3]
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const completeOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const isOrder = await prisma.orders.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if(!isOrder.paid){
+      return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Payment is pending." });
+    }
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        status:orderState[4]
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const refundOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const isOrder = await prisma.orders.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if(!isOrder.status!=orderState[4]){
+      return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Invalid refund policy" });
+    }
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        status:orderState[5]
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const courierOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const isOrder = await prisma.orders.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if(!isOrder.status!=orderState[1]){
+      return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Order has not accepted yet" });
+    }
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        status:orderState[6]
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const paidOrder = async (req, res) => {
+  const { id } = req.params;
+  if(!id){
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Some field are missing" });
+  }
+  try {
+    const isOrder = await prisma.orders.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if(!isOrder.status!=orderState[6]){
+      return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Order has not send to courier yet" });
+    }
+    const order = await prisma.orders.update({
+      where: {
+        id: id,
+      },
+      data:{
+        paid:true
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
