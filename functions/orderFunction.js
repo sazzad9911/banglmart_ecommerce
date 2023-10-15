@@ -2,21 +2,22 @@ import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 import { orderState } from "./state.js";
+import admin from "../admin.js";
+import { sendNotification } from "../lib/sendNotification.js";
+import { v1 } from "uuid";
 
 export const createOrder = async (req, res) => {
-  const { token, paymentMethod } = req.body;
+  const { token, paymentMethod,redirectUrl } = req.body;
   const { id } = req.user;
 
-  if (!token || !paymentMethod) {
+  if (!token || !paymentMethod||!redirectUrl) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
   }
 
   if (paymentMethod === "online") {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Payment system is not added yet" });
+    return res.redirect(redirectUrl)
   }
   try {
     const {
@@ -27,35 +28,38 @@ export const createOrder = async (req, res) => {
       specialPromoOffer,
       address,
     } = jwt.verify(token, process.env.AUTH_TOKEN);
-
-    let arr = [];
-    products?.map((product) => {
-      arr.push({
-        buyerId: id,
-        productId: product.productId,
-        paymentMethod: paymentMethod,
-        address: address,
-        token: token,
-        totalAmount: parseFloat(
-          parseFloat(product.totalPrice) + parseFloat(product.deliveryFee)
-        ),
-        quantity: parseInt(product.quantity),
-        deliveryFee: parseFloat(product.deliveryFee),
-        colors: product.color,
-        sizes: product.size,
-        specifications: product.specifications,
-        offerPrice: product?.bargaining ? parseFloat(product.totalPrice) : 0,
-        couponDiscount: parseFloat(product?.couponDiscount),
-        specialMemberOffer: parseFloat(specialMemberOffer / products.length),
-        specialPromoOffer: parseFloat(specialPromoOffer / products.length),
-        freeCoin: parseInt(product.freeCoin),
-      });
-    });
-
-    const order = await prisma.orders.createMany({
-      data: arr,
-    });
-    res.status(StatusCodes.OK).json({ data: order });
+   
+    
+    await Promise.all(
+      products.map(async (product) => {
+        let title = "You have new order!";
+        let text = `You have new order request for the product ${product.productTitle}`;
+        const order = await prisma.orders.create({
+          data: {
+            buyerId: id,
+            productId: product.productId,
+            paymentMethod: paymentMethod,
+            address: address,
+            token: token,
+            totalAmount: parseFloat(
+              parseFloat(product.totalPrice) + parseFloat(product.deliveryFee)
+            ),
+            quantity: parseInt(product.quantity),
+            deliveryFee: parseFloat(product.deliveryFee),
+            colors: product.color,
+            sizes: product.size,
+            specifications: product.specifications,
+            offerPrice: product?.bargaining ? parseFloat(product.totalPrice) : 0,
+            couponDiscount: parseFloat(product?.couponDiscount),
+            specialMemberOffer: parseFloat(specialMemberOffer / products.length),
+            specialPromoOffer: parseFloat(specialPromoOffer / products.length),
+            freeCoin: parseInt(product.freeCoin),
+          }
+        });
+        await sendNotification(title, text, product.userId,order.id);
+      })
+    );
+    res.redirect(redirectUrl)
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
@@ -159,6 +163,8 @@ export const checkOut = async (req, res) => {
         freeCoin: doc.product.freeCoin * doc.quantity,
         sellerId: doc.product.sellerId,
         brandId: doc.product.brandId,
+        userId: doc.product.userId,
+        id:doc.id,
         quantity: doc.quantity,
         color: doc.colors,
         size: doc.sizes,
@@ -229,7 +235,7 @@ export const checkOut = async (req, res) => {
 };
 export const getUserOrders = async (req, res) => {
   const { id } = req.user;
-  
+
   try {
     const order = await prisma.orders.findMany({
       where: {
@@ -273,7 +279,7 @@ export const getSellerOrders = async (req, res) => {
 };
 export const getOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -304,14 +310,16 @@ export const getOrder = async (req, res) => {
             id: order.product.brandId,
           },
         });
-    res.status(StatusCodes.OK).json({ data: { ...order, category: category,store:store } });
+    res
+      .status(StatusCodes.OK)
+      .json({ data: { ...order, category: category, store: store } });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
 export const acceptOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -321,9 +329,9 @@ export const acceptOrder = async (req, res) => {
       where: {
         id: id,
       },
-      data:{
-        status:orderState[1]
-      }
+      data: {
+        status: orderState[1],
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -332,7 +340,7 @@ export const acceptOrder = async (req, res) => {
 };
 export const rejectOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -342,9 +350,9 @@ export const rejectOrder = async (req, res) => {
       where: {
         id: id,
       },
-      data:{
-        status:orderState[2]
-      }
+      data: {
+        status: orderState[2],
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -353,7 +361,7 @@ export const rejectOrder = async (req, res) => {
 };
 export const cancelOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -364,18 +372,21 @@ export const cancelOrder = async (req, res) => {
         id: id,
       },
     });
-    if(isOrder.status!=orderState[0]){
+    if (isOrder.status != orderState[0]) {
       return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "You can not cancel the order. The order has been accepted. Please contact the seller" });
+        .status(StatusCodes.BAD_REQUEST)
+        .json({
+          message:
+            "You can not cancel the order. The order has been accepted. Please contact the seller",
+        });
     }
     const order = await prisma.orders.update({
       where: {
         id: id,
       },
-      data:{
-        status:orderState[3]
-      }
+      data: {
+        status: orderState[3],
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -384,7 +395,7 @@ export const cancelOrder = async (req, res) => {
 };
 export const completeOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -395,18 +406,18 @@ export const completeOrder = async (req, res) => {
         id: id,
       },
     });
-    if(!isOrder.paid){
+    if (!isOrder.paid) {
       return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Payment is pending." });
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Payment is pending." });
     }
     const order = await prisma.orders.update({
       where: {
         id: id,
       },
-      data:{
-        status:orderState[4]
-      }
+      data: {
+        status: orderState[4],
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -415,7 +426,7 @@ export const completeOrder = async (req, res) => {
 };
 export const refundOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -426,18 +437,18 @@ export const refundOrder = async (req, res) => {
         id: id,
       },
     });
-    if(!isOrder.status!=orderState[4]){
+    if (!isOrder.status != orderState[4]) {
       return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Invalid refund policy" });
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Invalid refund policy" });
     }
     const order = await prisma.orders.update({
       where: {
         id: id,
       },
-      data:{
-        status:orderState[5]
-      }
+      data: {
+        status: orderState[5],
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -446,7 +457,7 @@ export const refundOrder = async (req, res) => {
 };
 export const courierOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -457,18 +468,18 @@ export const courierOrder = async (req, res) => {
         id: id,
       },
     });
-    if(!isOrder.status!=orderState[1]){
+    if (!isOrder.status != orderState[1]) {
       return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Order has not accepted yet" });
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Order has not accepted yet" });
     }
     const order = await prisma.orders.update({
       where: {
         id: id,
       },
-      data:{
-        status:orderState[6]
-      }
+      data: {
+        status: orderState[6],
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
@@ -477,7 +488,7 @@ export const courierOrder = async (req, res) => {
 };
 export const paidOrder = async (req, res) => {
   const { id } = req.params;
-  if(!id){
+  if (!id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
@@ -488,18 +499,18 @@ export const paidOrder = async (req, res) => {
         id: id,
       },
     });
-    if(!isOrder.status!=orderState[6]){
+    if (!isOrder.status != orderState[6]) {
       return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Order has not send to courier yet" });
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Order has not send to courier yet" });
     }
     const order = await prisma.orders.update({
       where: {
         id: id,
       },
-      data:{
-        paid:true
-      }
+      data: {
+        paid: true,
+      },
     });
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {

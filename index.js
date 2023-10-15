@@ -33,6 +33,7 @@ import cart from "./routes/cart.js";
 import wish from "./routes/wish.js";
 import { disconnectedUser, updateStatus } from "./functions/authFunctions.js";
 import codes from "./routes/codes.js";
+import notification from "./routes/notification.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -77,6 +78,7 @@ app.use("/adds", adds);
 app.use("/cart", cart);
 app.use("/wish", wish);
 app.use("/codes", codes);
+app.use("/notification", notification);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 
 const httpServer = createServer({ key: key, cert: cert }, app);

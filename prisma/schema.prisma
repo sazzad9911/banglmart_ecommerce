@@ -204,6 +204,8 @@ model notifications {
   reviews   reviews?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   orderId   String?
   order     orders?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  read      Boolean   @default(false)
+  date DateTime @default(now())
 }
 
 model flashSell {
