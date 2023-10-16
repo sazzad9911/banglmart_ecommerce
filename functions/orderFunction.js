@@ -5,6 +5,8 @@ import { orderState } from "./state.js";
 import admin from "../admin.js";
 import { sendNotification } from "../lib/sendNotification.js";
 import { v1 } from "uuid";
+import httpProxy from "http-proxy"
+const proxy = httpProxy.createServer({});
 
 export const createOrder = async (req, res) => {
   const { token, paymentMethod,redirectUrl } = req.body;
@@ -17,7 +19,8 @@ export const createOrder = async (req, res) => {
   }
 
   if (paymentMethod === "online") {
-    return res.redirect(redirectUrl)
+   
+    return res.status(StatusCodes.OK).json({url:redirectUrl})
   }
   try {
     const {
@@ -59,7 +62,8 @@ export const createOrder = async (req, res) => {
         await sendNotification(title, text, product.userId,order.id);
       })
     );
-    res.redirect(redirectUrl)
+    return res.status(StatusCodes.OK).json({url:redirectUrl})
+    //res.redirect(redirectUrl)
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
