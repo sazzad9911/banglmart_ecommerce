@@ -5,8 +5,7 @@ import { orderState } from "./state.js";
 import admin from "../admin.js";
 import { sendNotification } from "../lib/sendNotification.js";
 import { v1 } from "uuid";
-import httpProxy from "http-proxy"
-const proxy = httpProxy.createServer({});
+
 
 export const createOrder = async (req, res) => {
   const { token, paymentMethod,redirectUrl } = req.body;
