@@ -440,7 +440,7 @@ export const refundOrder = async (req, res) => {
         id: id,
       },
     });
-    if (!isOrder.status != orderState[4]) {
+    if (isOrder.status != orderState[4]) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Invalid refund policy" });
@@ -471,7 +471,8 @@ export const courierOrder = async (req, res) => {
         id: id,
       },
     });
-    if (!isOrder.status != orderState[1]) {
+    if (isOrder.status != orderState[1]) {
+     
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Order has not accepted yet" });
@@ -502,7 +503,7 @@ export const paidOrder = async (req, res) => {
         id: id,
       },
     });
-    if (!isOrder.status != orderState[6]) {
+    if (isOrder.status != orderState[6]) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Order has not send to courier yet" });
