@@ -122,7 +122,12 @@ export const getAllProduct = async (req, res) => {
       take:page&&perPage?(page*perPage):undefined,
       skip:page&&perPage?(page-1)*perPage:undefined
     });
-    res.status(StatusCodes.OK).json({ data: product });
+    const length = await prisma.products.count({
+      where: {
+        userId: userId ? userId : undefined,
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: product,length });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
@@ -526,7 +531,16 @@ export const getProductByBrand = async (req, res) => {
       skip:page&&perPage?(page-1)*perPage:undefined
      
     });
-    res.status(StatusCodes.OK).json({ data: product });
+    const length = await prisma.products.count({
+      where: {
+        brandId: brandId,
+        brand: {
+          verified: true,
+        },
+        verified: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product,length });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
@@ -550,7 +564,16 @@ export const getProductBySeller = async (req, res) => {
       take:page&&perPage?(page*perPage):undefined,
       skip:page&&perPage?(page-1)*perPage:undefined
     });
-    res.status(StatusCodes.OK).json({ data: product });
+    const length = await prisma.products.count({
+      where: {
+        sellerId: sellerId,
+        seller: {
+          verified: true,
+        },
+        verified: true,
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: product,length });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
