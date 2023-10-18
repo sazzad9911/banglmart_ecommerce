@@ -106,7 +106,7 @@ export const duplicateProduct = async (req, res) => {
   }
 };
 export const getAllProduct = async (req, res) => {
-  const { userId } = req.query;
+  const { userId,page,perPage } = req.query;
   try {
     const product = await prisma.products.findMany({
       where: {
@@ -119,6 +119,8 @@ export const getAllProduct = async (req, res) => {
         seller: true,
         brand: true,
       },
+      take:page&&perPage?(page*perPage):undefined,
+      skip:page&&perPage?(page-1)*perPage:undefined
     });
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
@@ -505,7 +507,7 @@ export const addOffers = async (req, res) => {
 };
 
 export const getProductByBrand = async (req, res) => {
-  const { brandId } = req.query;
+  const { brandId,page,perPage } = req.query;
   if (!brandId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -520,13 +522,9 @@ export const getProductByBrand = async (req, res) => {
         },
         verified: true,
       },
-      // include: {
-      //   user: true,
-      //   seller: true,
-      //   brand: true,
-      //   comments: true,
-      //   reviews: true,
-      // },
+      take:page&&perPage?(page*perPage):undefined,
+      skip:page&&perPage?(page-1)*perPage:undefined
+     
     });
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
@@ -534,7 +532,7 @@ export const getProductByBrand = async (req, res) => {
   }
 };
 export const getProductBySeller = async (req, res) => {
-  const { sellerId } = req.query;
+  const { sellerId,page,perPage } = req.query;
   if (!sellerId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -549,13 +547,8 @@ export const getProductBySeller = async (req, res) => {
         },
         verified: true,
       },
-      // include: {
-      //   user: true,
-      //   seller: true,
-      //   brand: true,
-      //   comments: true,
-      //   reviews: true,
-      // },
+      take:page&&perPage?(page*perPage):undefined,
+      skip:page&&perPage?(page-1)*perPage:undefined
     });
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
