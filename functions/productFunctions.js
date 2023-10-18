@@ -79,26 +79,24 @@ export const addProduct = async (req, res) => {
 };
 export const duplicateProduct = async (req, res) => {
   const { id, email } = req.user;
-  const {
-    productId,
-  } = req.body;
-  if (
-    !productId
-  ) {
+  const { productId } = req.body;
+  if (!productId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
   }
   try {
-    const data=await prisma.products.findUnique({
-      where:{
-        id:productId
-      }
-    })
+    const data = await prisma.products.findUnique({
+      where: {
+        id: productId,
+      },
+    });
     const product = await prisma.products.create({
-     data:{
-      ...data,id:undefined,createdAt:undefined
-     }
+      data: {
+        ...data,
+        id: undefined,
+        createdAt: undefined,
+      },
     });
     res.status(StatusCodes.OK).json({ data: product });
   } catch (e) {
@@ -106,7 +104,8 @@ export const duplicateProduct = async (req, res) => {
   }
 };
 export const getAllProduct = async (req, res) => {
-  const { userId,page,perPage } = req.query;
+  const { userId, page, perPage } = req.query;
+
   try {
     const product = await prisma.products.findMany({
       where: {
@@ -119,22 +118,24 @@ export const getAllProduct = async (req, res) => {
         seller: true,
         brand: true,
       },
-      take:page&&perPage?(page*perPage):undefined,
-      skip:page&&perPage?(page-1)*perPage:undefined
+      take: page && perPage? parseInt(perPage) : undefined,
+      skip:
+        page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
+
     const length = await prisma.products.count({
       where: {
         userId: userId ? userId : undefined,
-      }
+      },
     });
-    res.status(StatusCodes.OK).json({ data: product,length });
+    res.status(StatusCodes.OK).json({ data: product, length });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
 export const getProductById = async (req, res) => {
   const { id } = req.query;
-  if(!id){
+  if (!id) {
     //console.log(id);
     return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid id" });
   }
@@ -391,8 +392,8 @@ export const getTop = async (req, res) => {
           _count: "desc",
         },
       },
-      include:{
-        reviews:true
+      include: {
+        reviews: true,
       },
       take: 50,
     });
@@ -409,8 +410,8 @@ export const getTopSell = async (req, res) => {
           _count: "desc",
         },
       },
-      include:{
-        reviews:true
+      include: {
+        reviews: true,
       },
       take: 50,
     });
@@ -463,8 +464,8 @@ export const getNew = async (req, res) => {
       orderBy: {
         createdAt: "desc",
       },
-      include:{
-        reviews:true
+      include: {
+        reviews: true,
       },
       take: 50,
     });
@@ -512,7 +513,7 @@ export const addOffers = async (req, res) => {
 };
 
 export const getProductByBrand = async (req, res) => {
-  const { brandId,page,perPage } = req.query;
+  const { brandId, page, perPage } = req.query;
   if (!brandId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -527,9 +528,9 @@ export const getProductByBrand = async (req, res) => {
         },
         verified: true,
       },
-      take:page&&perPage?(page*perPage):undefined,
-      skip:page&&perPage?(page-1)*perPage:undefined
-     
+      take: page && perPage? parseInt(perPage) : undefined,
+      skip:
+        page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
     const length = await prisma.products.count({
       where: {
@@ -540,13 +541,13 @@ export const getProductByBrand = async (req, res) => {
         verified: true,
       },
     });
-    res.status(StatusCodes.OK).json({ data: product,length });
+    res.status(StatusCodes.OK).json({ data: product, length });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
 export const getProductBySeller = async (req, res) => {
-  const { sellerId,page,perPage } = req.query;
+  const { sellerId, page, perPage } = req.query;
   if (!sellerId) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -561,8 +562,9 @@ export const getProductBySeller = async (req, res) => {
         },
         verified: true,
       },
-      take:page&&perPage?(page*perPage):undefined,
-      skip:page&&perPage?(page-1)*perPage:undefined
+      take: page && perPage? parseInt(perPage) : undefined,
+      skip:
+        page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
     const length = await prisma.products.count({
       where: {
@@ -573,7 +575,7 @@ export const getProductBySeller = async (req, res) => {
         verified: true,
       },
     });
-    res.status(StatusCodes.OK).json({ data: product,length });
+    res.status(StatusCodes.OK).json({ data: product, length });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
@@ -650,29 +652,28 @@ export const search = async (req, res) => {
     bySize,
     bySpecification,
     byBrad,
-    bySeller
+    bySeller,
   } = req.query;
-  
+
   try {
     const check = await prisma.products.findMany({
       where: {
-        categoryId: byCategory||undefined,
-        subCategoryId: bySubCategory||undefined,
-        optionId:byOption||undefined,
-        title:{
-          contains:query
+        categoryId: byCategory || undefined,
+        subCategoryId: bySubCategory || undefined,
+        optionId: byOption || undefined,
+        title: {
+          contains: query,
         },
-        price:{
-          gte:byPriceFrom?parseInt(byPriceFrom):undefined,
-          lte:byPriceTo?parseInt(byPriceTo):undefined
+        price: {
+          gte: byPriceFrom ? parseInt(byPriceFrom) : undefined,
+          lte: byPriceTo ? parseInt(byPriceTo) : undefined,
         },
-        brandId:byBrad||undefined,
-        sellerId:bySeller||undefined
-        
+        brandId: byBrad || undefined,
+        sellerId: bySeller || undefined,
       },
     });
     //const result=check.filter(d=>d.colors.map(s=>s.))
-    
+
     res.status(StatusCodes.OK).json({ data: check });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
