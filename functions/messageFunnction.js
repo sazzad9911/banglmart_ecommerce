@@ -42,6 +42,7 @@ export const createConversation = async (req, res) => {
 };
 export const getConversation = async (req, res) => {
   const { id } = req.user;
+
   try {
     const comment = await prisma.conversations.findMany({
       where: {
@@ -53,6 +54,29 @@ export const getConversation = async (req, res) => {
             senderId:id
           }
         ]
+      },
+      include: {
+        receiver: true,
+        product: true,
+        messages:{
+          orderBy:{
+            date:"desc"
+          },
+          take:1
+        }
+      },
+    });
+    res.status(StatusCodes.OK).json({ data: comment });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+export const getSingleConversation = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const comment = await prisma.conversations.findUnique({
+      where: {
+        id:id
       },
       include: {
         receiver: true,
