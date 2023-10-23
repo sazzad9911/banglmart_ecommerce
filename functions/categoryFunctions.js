@@ -10,12 +10,21 @@ const getAllCategory = async (req, res) => {
     const result = await prisma.category.findMany({
       include:{
         subCategory:true
-      },
-      orderBy:{
-        name:"asc"
       }
     })
-    res.status(StatusCodes.OK).json({ data: result });
+    const last=result.filter(c=>c.name.matchAll("Automotive & Motorbike"))
+    const first=result.filter(c=>!c.name.matchAll("Automotive & Motorbike"))
+    let arr=[]
+    if(last.length>0){
+      arr.push(last[0])
+      first.map((item)=>{
+        arr.push(item)
+      })
+    }else{
+      arr=result
+    }
+
+    res.status(StatusCodes.OK).json({ data: arr });
   } catch (err) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: err.message });
   }
