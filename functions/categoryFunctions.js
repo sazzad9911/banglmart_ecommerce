@@ -12,8 +12,8 @@ const getAllCategory = async (req, res) => {
         subCategory:true
       }
     })
-    const last=result.filter(c=>c.name.matchAll("Automotive & Motorbike"))
-    const first=result.filter(c=>!c.name.matchAll("Automotive & Motorbike"))
+    const last=result.filter(c=>c.name.match("Automotive & Motorbike"))
+    const first=result.filter(c=>!c.name.match("Automotive & Motorbike"))
     let arr=[]
     if(last.length>0){
       arr.push(last[0])
