@@ -318,6 +318,24 @@ const getUser = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const getUserById = async (req, res) => {
+  const {id}=req.params;
+  if (!id) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: "No user logged in" });
+    return;
+  }
+  try {
+    //console.log(email)
+    const result = await prisma.users.findFirst({
+      where: {
+        id: id,
+      },
+    });
+    res.status(StatusCodes.OK).json({ user: result });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
 const emailVerification = async (req, res) => {
   const currentUser = auth?.currentUser;
   if (!currentUser) {

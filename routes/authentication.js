@@ -6,6 +6,7 @@ import {
   emailVerification,
   getAllUser,
   getUser,
+  getUserById,
   getVisitor,
   resetPassword,
   resetPhonePassword,
@@ -53,4 +54,5 @@ authentication.route("/send-otp").post(authLimiter, sendOTP);
 authentication.route("/verify-otp").post(authLimiter, verifyOTP);
 authentication.route("/sign-in-with-phone").post(authLimiter, signInWithPhone);
 authentication.route("/forget-phone-password").post(authLimiter, resetPhonePassword);
+authentication.route("/get-user-by-id/:id").get(getUserById);
 export default authentication;
