@@ -10,6 +10,9 @@ const getAllCategory = async (req, res) => {
     const result = await prisma.category.findMany({
       include:{
         subCategory:true
+      },
+      orderBy:{
+        name:"asc"
       }
     })
     res.status(StatusCodes.OK).json({ data: result });
