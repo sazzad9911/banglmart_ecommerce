@@ -12,6 +12,19 @@ export const createConversation = async (req, res) => {
       .json({ message: "All field are require" });
   }
   try {
+    const conversations = await prisma.conversations.findMany({
+      where: {
+        senderId: id,
+        receiverId: userId,
+        productId,
+      },
+      include:{
+        receiver:true
+      }
+    });
+    if(conversations.length>0){
+      return res.status(StatusCodes.OK).json({ data: conversations[0] });
+    }
     const comment = await prisma.conversations.create({
       data: {
         senderId: id,
