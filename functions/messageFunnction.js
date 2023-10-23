@@ -45,7 +45,14 @@ export const getConversation = async (req, res) => {
   try {
     const comment = await prisma.conversations.findMany({
       where: {
-        senderId: id,
+        OR:[
+          {
+            receiverId:id
+          },
+          {
+            senderId:id
+          }
+        ]
       },
       include: {
         receiver: true,
