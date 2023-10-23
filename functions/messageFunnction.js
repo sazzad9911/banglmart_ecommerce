@@ -18,6 +18,9 @@ export const createConversation = async (req, res) => {
         receiverId: userId,
         productId,
       },
+      include:{
+        receiver:true
+      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
