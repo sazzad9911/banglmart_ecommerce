@@ -65,6 +65,9 @@ export const getConversation = async (req, res) => {
           take:1
         }
       },
+      orderBy:{
+        date:"desc"
+      }
     });
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
