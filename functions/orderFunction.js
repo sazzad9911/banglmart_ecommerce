@@ -58,6 +58,11 @@ export const createOrder = async (req, res) => {
             freeCoin: parseInt(product.freeCoin),
           }
         });
+        await prisma.cart.delete({
+          where:{
+            id:product.id,
+          }
+        })
         await sendNotification(title, text, product.userId,order.id);
       })
     );
