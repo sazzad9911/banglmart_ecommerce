@@ -147,10 +147,10 @@ export const checkOut = async (req, res) => {
         parseFloat(
           doc?.offerPrice
             ? doc.offerPrice * doc.quantity
-            : doc?.product.price * doc?.quantity -
+            : (doc?.product.price * doc?.quantity+(doc?.product.vat * doc.quantity)) -
                 (offerDiscount * doc?.quantity +
-                  couponDiscount +
-                  doc?.product.vat * doc.quantity)
+                  couponDiscount 
+                  )
         )
       ).toFixed(2);
       totalDeliveryFee = (
