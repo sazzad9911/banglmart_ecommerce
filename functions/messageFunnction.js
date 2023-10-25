@@ -188,7 +188,10 @@ export const getUnRead=async (req, res) => {
           {
             senderId:id
           }
-        ]
+        ],
+        unread:{
+          gt:0
+        }
       },
      
     });
