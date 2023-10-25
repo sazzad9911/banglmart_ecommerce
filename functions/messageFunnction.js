@@ -140,6 +140,14 @@ export const sendMessage = async (req, res) => {
         receiverId
       },
     });
+    await prisma.conversations.update({
+      where:{
+        id:conversationId,
+      },
+      data:{
+        unread:{increment:1}
+      }
+    })
     io.emit("message", comment)
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
