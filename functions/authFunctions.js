@@ -36,6 +36,7 @@ const signIn = async (req, res) => {
       email,
       password
     );
+    console.log(await userCredential.user.getIdToken());
     if (!userCredential.user.emailVerified) {
       res
         .status(StatusCodes.BAD_REQUEST)
