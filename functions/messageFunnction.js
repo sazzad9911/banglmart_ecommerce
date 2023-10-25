@@ -175,3 +175,25 @@ export const getMessage = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const getUnRead=async (req, res) => {
+  const { id } = req.user;
+
+  try {
+    const comment = await prisma.conversations.count({
+      where: {
+        OR:[
+          {
+            receiverId:id
+          },
+          {
+            senderId:id
+          }
+        ]
+      },
+     
+    });
+    res.status(StatusCodes.OK).json({ data: comment });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
