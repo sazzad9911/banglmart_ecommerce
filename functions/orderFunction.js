@@ -627,6 +627,7 @@ export const confirmPayment = async (req, res) => {
             ),
             specialPromoOffer: parseFloat(specialPromoOffer / products.length),
             freeCoin: parseInt(product.freeCoin),
+            paid:true
           },
         });
         await prisma.cart.delete({
