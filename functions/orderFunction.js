@@ -340,7 +340,11 @@ export const acceptOrder = async (req, res) => {
       data: {
         status: orderState[1],
       },
+      include:{
+        product:true
+      }
     });
+    await sendNotification(`Order Accepted`, `Your order ${order.product.title} has accepted by seller`, order.buyerId,order.id);
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
