@@ -64,6 +64,7 @@ app.use("/upload", express.static("upload"));
 //   res.sendFile(path.join(__dirname, '/static/admin/build/index.html'));
 //   res.end()
 // })
+app.set('view engine', 'ejs')
 app.use("/auth", authentication);
 app.use("/category", category);
 app.use("/product", product);

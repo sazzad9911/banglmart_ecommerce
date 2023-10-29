@@ -5,21 +5,73 @@ import { orderState } from "./state.js";
 import admin from "../admin.js";
 import { sendNotification } from "../lib/sendNotification.js";
 import { v1 } from "uuid";
-
+import { createPayment } from "../lib/amarpay.js";
+import path, { join } from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createOrder = async (req, res) => {
-  const { token, paymentMethod,redirectUrl } = req.body;
+  const { token, paymentMethod, redirectUrl } = req.body;
   const { id } = req.user;
 
-  if (!token || !paymentMethod||!redirectUrl) {
+  if (!token || !paymentMethod || !redirectUrl) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
   }
 
-  if (paymentMethod === "online") {
-   
-    return res.status(StatusCodes.OK).json({url:redirectUrl})
+  if (paymentMethod === "amarpay") {
+    try {
+      const {
+        products,
+        subTotal,
+        totalDeliveryFee,
+        specialMemberOffer,
+        specialPromoOffer,
+        address,
+      } = jwt.verify(token, process.env.AUTH_TOKEN);
+      const amount = parseFloat(
+        parseFloat(subTotal) + parseFloat(totalDeliveryFee)
+      ).toFixed(2);
+      const user = await prisma.users.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      let arr = [];
+      products.map((d) => {
+        arr.push(d.id);
+      });
+      const successUrl = `http://192.168.1.23:1300/order/acceptPay?paymentMethod=${paymentMethod}&token=${token}&id=${id}&url=${redirectUrl}&color=green&name=${
+        user.name
+      }&title=Payment Success&description=Your payment has accepted. Order has created.&amount=${amount}&contact=${
+        user.email || user.phone
+      }`;
+      const failedUrl = `http://192.168.1.23:1300/order/acceptPay?url=${redirectUrl}&color=red&name=${
+        user.name
+      }&title=Payment Failed&description=Your payment has failed. Go to cart.&amount=${amount}&contact=${
+        user.email || user.phone
+      }`;
+
+      const data = await createPayment(
+        amount,
+        user.name,
+        arr.join(","),
+        user.email || "bangla@gmail.com",
+        user.phone || "34949292838329",
+        successUrl,
+        failedUrl,
+        failedUrl
+      );
+      if (data?.result === "true") {
+        return res.status(StatusCodes.OK).json({ url: data.payment_url });
+      } else {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: data });
+      }
+    } catch (e) {
+      return res.status(StatusCodes.BAD_GATEWAY).json({ message: e.message });
+    }
   }
   try {
     const {
@@ -30,8 +82,7 @@ export const createOrder = async (req, res) => {
       specialPromoOffer,
       address,
     } = jwt.verify(token, process.env.AUTH_TOKEN);
-   
-    
+
     await Promise.all(
       products.map(async (product) => {
         let title = "You have new order!";
@@ -51,22 +102,26 @@ export const createOrder = async (req, res) => {
             colors: product.color,
             sizes: product.size,
             specifications: product.specifications,
-            offerPrice: product?.bargaining ? parseFloat(product.totalPrice) : 0,
+            offerPrice: product?.bargaining
+              ? parseFloat(product.totalPrice)
+              : 0,
             couponDiscount: parseFloat(product?.couponDiscount),
-            specialMemberOffer: parseFloat(specialMemberOffer / products.length),
+            specialMemberOffer: parseFloat(
+              specialMemberOffer / products.length
+            ),
             specialPromoOffer: parseFloat(specialPromoOffer / products.length),
             freeCoin: parseInt(product.freeCoin),
-          }
+          },
         });
         await prisma.cart.delete({
-          where:{
-            id:product.id,
-          }
-        })
-        await sendNotification(title, text, product.userId,order.id);
+          where: {
+            id: product.id,
+          },
+        });
+        await sendNotification(title, text, product.userId, order.id);
       })
     );
-    return res.status(StatusCodes.OK).json({url:redirectUrl})
+    return res.status(StatusCodes.OK).json({ url: redirectUrl });
     //res.redirect(redirectUrl)
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -147,10 +202,9 @@ export const checkOut = async (req, res) => {
         parseFloat(
           doc?.offerPrice
             ? doc.offerPrice * doc.quantity
-            : (doc?.product.price * doc?.quantity+(doc?.product.vat * doc.quantity)) -
-                (offerDiscount * doc?.quantity +
-                  couponDiscount 
-                  )
+            : doc?.product.price * doc?.quantity +
+                doc?.product.vat * doc.quantity -
+                (offerDiscount * doc?.quantity + couponDiscount)
         )
       ).toFixed(2);
       totalDeliveryFee = (
@@ -172,7 +226,7 @@ export const checkOut = async (req, res) => {
         sellerId: doc.product.sellerId,
         brandId: doc.product.brandId,
         userId: doc.product.userId,
-        id:doc.id,
+        id: doc.id,
         quantity: doc.quantity,
         color: doc.colors,
         size: doc.sizes,
@@ -340,11 +394,16 @@ export const acceptOrder = async (req, res) => {
       data: {
         status: orderState[1],
       },
-      include:{
-        product:true
-      }
+      include: {
+        product: true,
+      },
     });
-    await sendNotification(`Order Accepted`, `Your order ${order.product.title} has accepted by seller`, order.buyerId,order.id);
+    await sendNotification(
+      `Order Accepted`,
+      `Your order ${order.product.title} has accepted by seller`,
+      order.buyerId,
+      order.id
+    );
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -385,12 +444,10 @@ export const cancelOrder = async (req, res) => {
       },
     });
     if (isOrder.status != orderState[0]) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({
-          message:
-            "You can not cancel the order. The order has been accepted. Please contact the seller",
-        });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message:
+          "You can not cancel the order. The order has been accepted. Please contact the seller",
+      });
     }
     const order = await prisma.orders.update({
       where: {
@@ -481,7 +538,6 @@ export const courierOrder = async (req, res) => {
       },
     });
     if (isOrder.status != orderState[1]) {
-     
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Order has not accepted yet" });
@@ -529,4 +585,66 @@ export const paidOrder = async (req, res) => {
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
+};
+export const confirmPayment = async (req, res) => {
+  const { token,paymentMethod, id, url, name, color, title, description, amount, contact } =
+    req.query;
+  if (id && token) {
+    const {
+      products,
+      subTotal,
+      totalDeliveryFee,
+      specialMemberOffer,
+      specialPromoOffer,
+      address,
+    } = jwt.verify(token, process.env.AUTH_TOKEN);
+
+    await Promise.all(
+      products.map(async (product) => {
+        let title = "You have new order!";
+        let text = `You have new order request for the product ${product.productTitle}`;
+        const order = await prisma.orders.create({
+          data: {
+            buyerId: id,
+            productId: product.productId,
+            paymentMethod: paymentMethod,
+            address: address,
+            token: token,
+            totalAmount: parseFloat(
+              parseFloat(product.totalPrice) + parseFloat(product.deliveryFee)
+            ),
+            quantity: parseInt(product.quantity),
+            deliveryFee: parseFloat(product.deliveryFee),
+            colors: product.color,
+            sizes: product.size,
+            specifications: product.specifications,
+            offerPrice: product?.bargaining
+              ? parseFloat(product.totalPrice)
+              : 0,
+            couponDiscount: parseFloat(product?.couponDiscount),
+            specialMemberOffer: parseFloat(
+              specialMemberOffer / products.length
+            ),
+            specialPromoOffer: parseFloat(specialPromoOffer / products.length),
+            freeCoin: parseInt(product.freeCoin),
+          },
+        });
+        await prisma.cart.delete({
+          where: {
+            id: product.id,
+          },
+        });
+        await sendNotification(title, text, product.userId, order.id);
+      })
+    );
+  }
+  res.render(path.join(__dirname, "views/success"), {
+    url: url,
+    name: name,
+    color: color,
+    title: title,
+    description: description,
+    amount: amount,
+    contact: contact,
+  });
 };
