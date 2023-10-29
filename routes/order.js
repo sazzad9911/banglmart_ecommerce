@@ -25,4 +25,5 @@ order.route("/cancel/:id").get(cancelOrder);
 order.route("/reject/:id").get(rejectOrder);
 order.route("/accept/:id").get(acceptOrder);
 order.route("/acceptPay").get(confirmPayment);
+order.route("/acceptPay").post(confirmPayment);
 export default order;
