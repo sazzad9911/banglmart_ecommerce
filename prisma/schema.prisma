@@ -205,7 +205,7 @@ model notifications {
   orderId   String?
   order     orders?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   read      Boolean   @default(false)
-  date DateTime @default(now())
+  date      DateTime  @default(now())
 }
 
 model flashSell {
@@ -291,6 +291,8 @@ model orders {
   freeCoin           Int             @default(0)
   paid               Boolean         @default(false)
   notifications      notifications[]
+  paymentId          String?
+  payment            payment?        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
 }
 
 model banner {
@@ -450,4 +452,14 @@ model delivery_fee {
   subDistrict String
   union       String
   fee         Int
+}
+
+model payment {
+  id            String   @id @default(cuid())
+  paymentMethod String
+  amount        Float
+  trxID         String?
+  paymentID     String?
+  sku           String?
+  orders        orders[]
 }
