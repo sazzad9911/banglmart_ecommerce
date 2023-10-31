@@ -8,6 +8,7 @@ import { v1 } from "uuid";
 import { createPayment } from "../lib/amarpay.js";
 import path, { join } from "path";
 import { fileURLToPath } from "url";
+import bkash from "../lib/bkash.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,6 +20,36 @@ export const createOrder = async (req, res) => {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
+  }
+  if(paymentMethod==="bkash"){
+    try{
+      const {
+        products,
+        subTotal,
+        totalDeliveryFee,
+        specialMemberOffer,
+        specialPromoOffer,
+        address,
+      } = jwt.verify(token, process.env.AUTH_TOKEN);
+      const amount = parseFloat(
+        parseFloat(subTotal) + parseFloat(totalDeliveryFee)
+      ).toFixed(2);
+      const user = await prisma.users.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      const paymentRequest = {
+        amount: 1000,
+        orderID: 'ORD1020069',
+        intent: 'sale',
+      };
+      const result = await bkash.createPayment(paymentRequest);
+      return res.status(StatusCodes.OK).json({ result });
+    }catch(e){
+      return res.status(StatusCodes.BAD_GATEWAY).json({ message: e.message });
+    }
+
   }
 
   if (paymentMethod === "amarpay") {
