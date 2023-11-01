@@ -9,20 +9,22 @@ import { createPayment } from "../lib/amarpay.js";
 import path, { join } from "path";
 import { fileURLToPath } from "url";
 import bkash from "../lib/bkash.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const createOrder = async (req, res) => {
   const { token, paymentMethod, redirectUrl } = req.body;
   const { id } = req.user;
+  const { bkashToken } = req;
 
   if (!token || !paymentMethod || !redirectUrl) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Some field are missing" });
   }
-  if(paymentMethod==="bkash"){
-    try{
+  if (paymentMethod === "bkash") {
+    try {
       const {
         products,
         subTotal,
@@ -34,22 +36,29 @@ export const createOrder = async (req, res) => {
       const amount = parseFloat(
         parseFloat(subTotal) + parseFloat(totalDeliveryFee)
       ).toFixed(2);
-      const user = await prisma.users.findUnique({
-        where: {
-          id: id,
-        },
+      let arr = [];
+      products.map((d) => {
+        arr.push(d.id);
       });
-      const paymentRequest = {
-        amount: 1000,
-        orderID: 'ORD1020069',
-        intent: 'sale',
-      };
-      const result = await bkash.createPayment(paymentRequest);
-      return res.status(StatusCodes.OK).json({ result });
-    }catch(e){
+
+      const result = await bkash.createPayment(
+        bkashToken,
+        amount,
+        arr.join(","),
+        `https://api.banglamartecommerce.com.bd/order/acceptBkashPay/${token}/${id}/${
+          redirectUrl?.split("/")[2]
+        }/${amount}/${bkashToken}`
+      );
+      if (result.statusCode == "0000") {
+        return res.status(StatusCodes.OK).json({ url: result.bkashURL });
+      } else {
+        return res
+          .status(StatusCodes.BAD_GATEWAY)
+          .json({ message: result.statusMessage });
+      }
+    } catch (e) {
       return res.status(StatusCodes.BAD_GATEWAY).json({ message: e.message });
     }
-
   }
 
   if (paymentMethod === "amarpay") {
@@ -618,65 +627,186 @@ export const paidOrder = async (req, res) => {
   }
 };
 export const confirmPayment = async (req, res) => {
-  const { token,paymentMethod, id, url, name, color, title, description, amount, contact } =
-    req.query;
-  if (id && token) {
-    const {
-      products,
-      subTotal,
-      totalDeliveryFee,
-      specialMemberOffer,
-      specialPromoOffer,
-      address,
-    } = jwt.verify(token, process.env.AUTH_TOKEN);
+  const {
+    token,
+    paymentMethod,
+    id,
+    url,
+    name,
+    color,
+    title,
+    description,
+    amount,
+    contact,
+  } = req.query;
+  try {
+    if (id && token) {
+      const payment = await prisma.payment.create({
+        data: {
+          paymentMethod: paymentMethod,
+          amount: parseFloat(amount),
+          sku: token,
+        },
+      });
+      const {
+        products,
+        subTotal,
+        totalDeliveryFee,
+        specialMemberOffer,
+        specialPromoOffer,
+        address,
+      } = jwt.verify(token, process.env.AUTH_TOKEN);
 
-    await Promise.all(
-      products.map(async (product) => {
-        let title = "You have new order!";
-        let text = `You have new order request for the product ${product.productTitle}`;
-        const order = await prisma.orders.create({
-          data: {
-            buyerId: id,
-            productId: product.productId,
-            paymentMethod: paymentMethod,
-            address: address,
-            token: token,
-            totalAmount: parseFloat(
-              parseFloat(product.totalPrice) + parseFloat(product.deliveryFee)
-            ),
-            quantity: parseInt(product.quantity),
-            deliveryFee: parseFloat(product.deliveryFee),
-            colors: product.color,
-            sizes: product.size,
-            specifications: product.specifications,
-            offerPrice: product?.bargaining
-              ? parseFloat(product.totalPrice)
-              : 0,
-            couponDiscount: parseFloat(product?.couponDiscount),
-            specialMemberOffer: parseFloat(
-              specialMemberOffer / products.length
-            ),
-            specialPromoOffer: parseFloat(specialPromoOffer / products.length),
-            freeCoin: parseInt(product.freeCoin),
-            paid:true
-          },
-        });
-        await prisma.cart.delete({
-          where: {
-            id: product.id,
-          },
-        });
-        await sendNotification(title, text, product.userId, order.id);
-      })
-    );
+      await Promise.all(
+        products.map(async (product) => {
+          let title = "You have new order!";
+          let text = `You have new order request for the product ${product.productTitle}`;
+          const order = await prisma.orders.create({
+            data: {
+              buyerId: id,
+              productId: product.productId,
+              paymentMethod: paymentMethod,
+              address: address,
+              token: token,
+              totalAmount: parseFloat(
+                parseFloat(product.totalPrice) + parseFloat(product.deliveryFee)
+              ),
+              quantity: parseInt(product.quantity),
+              deliveryFee: parseFloat(product.deliveryFee),
+              colors: product.color,
+              sizes: product.size,
+              specifications: product.specifications,
+              offerPrice: product?.bargaining
+                ? parseFloat(product.totalPrice)
+                : 0,
+              couponDiscount: parseFloat(product?.couponDiscount),
+              specialMemberOffer: parseFloat(
+                specialMemberOffer / products.length
+              ),
+              specialPromoOffer: parseFloat(
+                specialPromoOffer / products.length
+              ),
+              freeCoin: parseInt(product.freeCoin),
+              paid: true,
+              paymentId: payment.id,
+            },
+          });
+          await prisma.cart.delete({
+            where: {
+              id: product.id,
+            },
+          });
+          await sendNotification(title, text, product.userId, order.id);
+        })
+      );
+    }
+    res.render(path.join(__dirname, "views/success"), {
+      url: url,
+      name: name,
+      color: color,
+      title: title,
+      description: description,
+      amount: amount,
+      contact: contact,
+    });
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-  res.render(path.join(__dirname, "views/success"), {
-    url: url,
-    name: name,
-    color: color,
-    title: title,
-    description: description,
-    amount: amount,
-    contact: contact,
-  });
+};
+export const confirmBkashPayment = async (req, res) => {
+  const { token, id, url, amount, bToken } = req.params;
+  const { paymentID, status } = req.query;
+  try {
+    if (status === "success") {
+      const result = await bkash.executePayment(bToken, paymentID);
+      if (result.statusCode != "0000") {
+        return res.send(`<div>
+        <p>Some thing is went wrong</p>
+        <a href="https://${url}">Back to Home</a>
+        </div>`);
+      }
+      const payment = await prisma.payment.create({
+        data: {
+          paymentID: paymentID,
+          trxID: result.trxID,
+          paymentMethod: "bkash",
+          amount: parseFloat(amount),
+          sku: token,
+        },
+      });
+      if (id && token) {
+        const {
+          products,
+          subTotal,
+          totalDeliveryFee,
+          specialMemberOffer,
+          specialPromoOffer,
+          address,
+        } = jwt.verify(token, process.env.AUTH_TOKEN);
+
+        await Promise.all(
+          products.map(async (product) => {
+            let title = "You have new order!";
+            let text = `You have new order request for the product ${product.productTitle}`;
+            const order = await prisma.orders.create({
+              data: {
+                buyerId: id,
+                productId: product.productId,
+                paymentMethod: paymentMethod,
+                address: address,
+                token: token,
+                totalAmount: parseFloat(
+                  parseFloat(product.totalPrice) +
+                    parseFloat(product.deliveryFee)
+                ),
+                quantity: parseInt(product.quantity),
+                deliveryFee: parseFloat(product.deliveryFee),
+                colors: product.color,
+                sizes: product.size,
+                specifications: product.specifications,
+                offerPrice: product?.bargaining
+                  ? parseFloat(product.totalPrice)
+                  : 0,
+                couponDiscount: parseFloat(product?.couponDiscount),
+                specialMemberOffer: parseFloat(
+                  specialMemberOffer / products.length
+                ),
+                specialPromoOffer: parseFloat(
+                  specialPromoOffer / products.length
+                ),
+                freeCoin: parseInt(product.freeCoin),
+                paid: true,
+                paymentId: payment.id,
+              },
+            });
+            await prisma.cart.delete({
+              where: {
+                id: product.id,
+              },
+            });
+            await sendNotification(title, text, product.userId, order.id);
+          })
+        );
+      }
+    }
+    const user = await prisma.users.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    res.render(path.join(__dirname, "views/success"), {
+      url: `https://${url}`,
+      name: user.name,
+      color: status == "success" ? "green" : "red",
+      title: status == "success" ? "Payment Success" : "Payment Failed",
+      description:
+        status == "success"
+          ? "Your payment has accepted by merchant"
+          : "Your payment has failed of some restrictions",
+      amount: amount,
+      contact: user.email || user.phone,
+    });
+  } catch (error) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: error.message });
+  }
 };
