@@ -752,7 +752,7 @@ export const confirmBkashPayment = async (req, res) => {
               data: {
                 buyerId: id,
                 productId: product.productId,
-                paymentMethod: paymentMethod,
+                paymentMethod: "bkash",
                 address: address,
                 token: token,
                 totalAmount: parseFloat(
