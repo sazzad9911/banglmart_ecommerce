@@ -718,17 +718,17 @@ export const confirmBkashPayment = async (req, res) => {
   const { paymentID, status } = req.query;
   try {
     if (status === "success") {
-      // const result = await bkash.executePayment(bToken, paymentID);
-      // if (result.statusCode != "0000") {
-      //   return res.send(`<div>
-      //   <p>Some thing is went wrong</p>
-      //   <a href="https://${url}">Back to Home</a>
-      //   </div>`);
-      // }
+      const result = await bkash.executePayment(bToken, paymentID);
+      if (result.statusCode != "0000") {
+        return res.send(`<div>
+        <p>Some thing is went wrong</p>
+        <a href="https://${url}">Back to Home</a>
+        </div>`);
+      }
       const payment = await prisma.payment.create({
         data: {
           paymentID: paymentID,
-          //trxID: result.trxID,
+          trxID: result?.trxID,
           paymentMethod:"bkash",
           amount: parseFloat(amount),
           sku: id,
@@ -779,11 +779,11 @@ export const confirmBkashPayment = async (req, res) => {
                 paymentId: payment.id,
               },
             });
-            // await prisma.cart.delete({
-            //   where: {
-            //     id: product.id,
-            //   },
-            // });
+            await prisma.cart.delete({
+              where: {
+                id: product.id,
+              },
+            });
             await sendNotification(title, text, product.userId, order.id);
           })
         );
