@@ -40,7 +40,7 @@ export const createOrder = async (req, res) => {
       products.map((d) => {
         arr.push(d.id);
       });
-
+      //https://api.banglamartecommerce.com.bd
       const result = await bkash.createPayment(
         bkashToken,
         amount,
@@ -645,7 +645,7 @@ export const confirmPayment = async (req, res) => {
         data: {
           paymentMethod: paymentMethod,
           amount: parseFloat(amount),
-          sku: token,
+          sku: id,
         },
       });
       const {
@@ -729,9 +729,9 @@ export const confirmBkashPayment = async (req, res) => {
         data: {
           paymentID: paymentID,
           trxID: result.trxID,
-          paymentMethod: "bkash",
+          paymentMethod:"bkash",
           amount: parseFloat(amount),
-          sku: token,
+          sku: id,
         },
       });
       if (id && token) {
