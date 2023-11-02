@@ -46,7 +46,7 @@ export const createOrder = async (req, res) => {
         amount,
         arr.join(","),
         `https://api.banglamartecommerce.com.bd/order/acceptBkashPay/${token}/${id}/${
-          redirectUrl?.split("/")[2]
+          redirectUrl?.split("/").join("-")
         }/${amount}/${bkashToken}`
       );
       if (result.statusCode == "0000") {
@@ -795,7 +795,7 @@ export const confirmBkashPayment = async (req, res) => {
       },
     });
     res.render(path.join(__dirname, "views/success"), {
-      url: `https://${url}`,
+      url: `${url.split("-").join("/")}`,
       name: user.name,
       color: status == "success" ? "green" : "red",
       title: status == "success" ? "Payment Success" : "Payment Failed",
