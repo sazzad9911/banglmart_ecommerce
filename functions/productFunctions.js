@@ -662,9 +662,26 @@ export const search = async (req, res) => {
         categoryId: byCategory || undefined,
         subCategoryId: bySubCategory || undefined,
         optionId: byOption || undefined,
-        title: {
-          contains: query,
-        },
+        OR:[
+          {
+            option:{
+              name:{
+                contains: query,
+              }
+            },
+          },
+          {
+            subCategory:{
+              name:query
+            }
+          },
+          {
+            title:{
+              contains:query
+            }
+          }
+          
+        ],
         price: {
           gte: byPriceFrom ? parseInt(byPriceFrom) : undefined,
           lte: byPriceTo ? parseInt(byPriceTo) : undefined,
