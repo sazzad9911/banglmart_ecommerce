@@ -118,7 +118,7 @@ export const getAllProduct = async (req, res) => {
         seller: true,
         brand: true,
       },
-      take: page && perPage? parseInt(perPage) : undefined,
+      take: page && perPage ? parseInt(perPage) : undefined,
       skip:
         page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
@@ -528,7 +528,7 @@ export const getProductByBrand = async (req, res) => {
         },
         verified: true,
       },
-      take: page && perPage? parseInt(perPage) : undefined,
+      take: page && perPage ? parseInt(perPage) : undefined,
       skip:
         page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
@@ -562,7 +562,7 @@ export const getProductBySeller = async (req, res) => {
         },
         verified: true,
       },
-      take: page && perPage? parseInt(perPage) : undefined,
+      take: page && perPage ? parseInt(perPage) : undefined,
       skip:
         page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
@@ -653,7 +653,7 @@ export const search = async (req, res) => {
     bySpecification,
     byBrad,
     bySeller,
-    limit
+    limit,
   } = req.query;
 
   try {
@@ -662,25 +662,24 @@ export const search = async (req, res) => {
         categoryId: byCategory || undefined,
         subCategoryId: bySubCategory || undefined,
         optionId: byOption || undefined,
-        OR:[
+        OR: [
           {
-            option:{
-              name:{
+            option: {
+              name: {
                 contains: query,
-              }
+              },
             },
           },
           {
-            subCategory:{
-              name:query
-            }
+            subCategory: {
+              name: query,
+            },
           },
           {
-            title:{
-              contains:query
-            }
-          }
-          
+            title: {
+              contains: query,
+            },
+          },
         ],
         price: {
           gte: byPriceFrom ? parseInt(byPriceFrom) : undefined,
@@ -689,7 +688,7 @@ export const search = async (req, res) => {
         brandId: byBrad || undefined,
         sellerId: bySeller || undefined,
       },
-      take:limit?parseInt(limit):undefined
+      take: limit ? parseInt(limit) : undefined,
     });
     //const result=check.filter(d=>d.colors.map(s=>s.))
 
@@ -698,3 +697,77 @@ export const search = async (req, res) => {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
+export const searchFilter = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const check = await prisma.products.findMany({
+      where: {
+        OR: [
+          {
+            option: {
+              name: {
+                contains: query,
+              },
+            },
+          },
+          {
+            subCategory: {
+              name: query,
+            },
+          },
+          {
+            title: {
+              contains: query,
+            },
+          },
+        ],
+      },
+      include:{
+        category:true,
+        subCategory:true,
+        option:true,
+        seller:true,
+        brand:true
+      }
+    });
+    let category=[]
+    let subCategory=[]
+    let option=[]
+    let seller=[]
+    let brand=[]
+    let color=[]
+    let size=[]
+    check.map((doc)=>{
+      category.push(doc.category)
+      subCategory.push(doc.subCategory)
+      option.push(doc.option)
+      doc.seller&&seller.push(doc.seller)
+      doc.brand&&brand.push(doc.brand)
+      doc?.colors?.map((col=>{
+        color.push(col)
+      }))
+      doc?.sizes?.map((sz=>{
+        size.push(sz)
+      }))
+    })
+    //const result=check.filter(d=>d.colors.map(s=>s.))
+
+    res.status(StatusCodes.OK).json({ 
+      category:[...new Map(category.map(item =>[item["id"], item])).values()], 
+      subCategory:[...new Map(subCategory.map(item =>[item["id"], item])).values()], 
+      option:[...new Map(option.map(item =>[item["id"], item])).values()],
+      seller:[...new Map(seller.map(item =>[item["id"], item])).values()],
+     brand:[...new Map(brand.map(item =>[item["id"], item])).values()],
+      color:[...new Map(color.map(item =>[item["value"], item])).values()],
+      size:[...new Map(size.map(item =>[item["value"], item])).values()]
+    });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
+function uniq(a) {
+  return a.sort().filter(function(item, pos, ary) {
+      return !pos || item != ary[pos - 1];
+  });
+}

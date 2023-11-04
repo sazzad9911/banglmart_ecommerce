@@ -20,6 +20,7 @@ import {
   getTopSell,
   inactiveProduct,
   search,
+  searchFilter,
   updateProduct,
 } from "../functions/productFunctions.js";
 import {
@@ -60,6 +61,7 @@ product.route("/get-bargaining").get(getBargainingProduct);
 product.route("/details").get(getProductDetails);
 
 product.route("/search").get(search);
+product.route("/searchFilter").get(searchFilter);
 //product api
 product
   .route("/update")
