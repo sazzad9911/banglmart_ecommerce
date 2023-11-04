@@ -144,6 +144,7 @@ model products {
   wish                 wish[]
   product_visitors     product_visitors[]
   coupon_code_products coupon_code_products[]
+  campaignOffer        campaignOffer?
 }
 
 model colors {
@@ -462,4 +463,27 @@ model payment {
   paymentID     String?
   sku           String?
   orders        orders[]
+}
+
+model campaign {
+  id            String          @id @default(cuid())
+  date          DateTime        @default(now())
+  durationMonth Int
+  startAt       DateTime        @default(now())
+  endAt         DateTime
+  products      campaignOffer[]
+  image         String
+}
+
+model campaignOffer {
+  id         String    @id @default(cuid())
+  offer      Int
+  percentage Boolean   @default(false)
+  date       DateTime  @default(now())
+  sale       Int       @default(0)
+  total      Int       @default(1)
+  campaign   campaign? @relation(fields: [campaignId], references: [id])
+  campaignId String?
+  productId  String    @unique
+  product    products  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
