@@ -653,6 +653,7 @@ export const search = async (req, res) => {
     bySpecification,
     byBrad,
     bySeller,
+    limit
   } = req.query;
 
   try {
@@ -671,6 +672,7 @@ export const search = async (req, res) => {
         brandId: byBrad || undefined,
         sellerId: bySeller || undefined,
       },
+      take:limit?parseInt(limit):undefined
     });
     //const result=check.filter(d=>d.colors.map(s=>s.))
 
