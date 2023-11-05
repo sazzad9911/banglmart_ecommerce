@@ -690,9 +690,25 @@ export const search = async (req, res) => {
       },
       take: limit ? parseInt(limit) : undefined,
     });
-    //const result=check.filter(d=>d.colors.map(s=>s.))
+    let result=[]
+   check.map(d=>{
+      d.colors?.map(e=>{
+        if(e.label.match(byColor)){
+          
+          result.push(d)
+        }
+      })
+      bySize&& d.sizes?.map(s=>{
+        if(s.label.match(bySize.split(":")[0])&&s.value.match(bySize.split(":")[1])){
+          console.log(bySize.split(":")[0]);
+          result.push(d)
+        }
+      })
+    })
 
-    res.status(StatusCodes.OK).json({ data: check });
+  
+
+    res.status(StatusCodes.OK).json({ data: byColor||bySize?result: check });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
