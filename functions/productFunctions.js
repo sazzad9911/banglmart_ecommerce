@@ -654,6 +654,8 @@ export const search = async (req, res) => {
     byBrad,
     bySeller,
     limit,
+    page,
+    perPage
   } = req.query;
 
   try {
@@ -689,6 +691,9 @@ export const search = async (req, res) => {
         sellerId: bySeller || undefined,
       },
       take: limit ? parseInt(limit) : undefined,
+      take: page && perPage ? parseInt(perPage) : undefined,
+      skip:
+        page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
     let result = [];
     check.map((d) => {
