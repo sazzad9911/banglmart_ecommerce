@@ -690,35 +690,41 @@ export const search = async (req, res) => {
       },
       take: limit ? parseInt(limit) : undefined,
     });
-    let result=[]
-   check.map(d=>{
-      d.colors?.map(e=>{
-        if(e.label.match(byColor)){
-          
-          result.push(d)
+    let result = [];
+    check.map((d) => {
+      d.colors?.map((e) => {
+        if (e.label.match(byColor)) {
+          result.push(d);
         }
-      })
-      bySize&& d.sizes?.map(s=>{
-        if(s.label.match(bySize.split(":")[0])&&s.value.match(bySize.split(":")[1])){
-          console.log(bySize.split(":")[0]);
-          result.push(d)
-        }
-      })
-    })
+      });
+      bySize &&
+        d.sizes?.map((s) => {
+          if (
+            s.label.match(bySize.split(":")[0]) &&
+            s.value.match(bySize.split(":")[1])
+          ) {
+            console.log(bySize.split(":")[0]);
+            result.push(d);
+          }
+        });
+    });
 
-  
-
-    res.status(StatusCodes.OK).json({ data: byColor||bySize?result: check });
+    res
+      .status(StatusCodes.OK)
+      .json({ data: byColor || bySize ? result : check });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
 export const searchFilter = async (req, res) => {
-  const { query } = req.query;
+  const { query, byCategory, bySubCategory, byOption } = req.query;
 
   try {
     const check = await prisma.products.findMany({
       where: {
+        categoryId: byCategory || undefined,
+        subCategoryId: bySubCategory || undefined,
+        optionId: byOption || undefined,
         OR: [
           {
             option: {
@@ -739,51 +745,55 @@ export const searchFilter = async (req, res) => {
           },
         ],
       },
-      include:{
-        category:true,
-        subCategory:true,
-        option:true,
-        seller:true,
-        brand:true
-      }
+      include: {
+        category: true,
+        subCategory: true,
+        option: true,
+        seller: true,
+        brand: true,
+      },
     });
-    let category=[]
-    let subCategory=[]
-    let option=[]
-    let seller=[]
-    let brand=[]
-    let color=[]
-    let size=[]
-    check.map((doc)=>{
-      category.push(doc.category)
-      subCategory.push(doc.subCategory)
-      option.push(doc.option)
-      doc.seller&&seller.push(doc.seller)
-      doc.brand&&brand.push(doc.brand)
-      doc?.colors?.map((col=>{
-        color.push(col)
-      }))
-      doc?.sizes?.map((sz=>{
-        size.push(sz)
-      }))
-    })
+    let category = [];
+    let subCategory = [];
+    let option = [];
+    let seller = [];
+    let brand = [];
+    let color = [];
+    let size = [];
+    check.map((doc) => {
+      category.push(doc.category);
+      subCategory.push(doc.subCategory);
+      option.push(doc.option);
+      doc.seller && seller.push(doc.seller);
+      doc.brand && brand.push(doc.brand);
+      doc?.colors?.map((col) => {
+        color.push(col);
+      });
+      doc?.sizes?.map((sz) => {
+        size.push(sz);
+      });
+    });
     //const result=check.filter(d=>d.colors.map(s=>s.))
 
-    res.status(StatusCodes.OK).json({ 
-      category:[...new Map(category.map(item =>[item["id"], item])).values()], 
-      subCategory:[...new Map(subCategory.map(item =>[item["id"], item])).values()], 
-      option:[...new Map(option.map(item =>[item["id"], item])).values()],
-      seller:[...new Map(seller.map(item =>[item["id"], item])).values()],
-     brand:[...new Map(brand.map(item =>[item["id"], item])).values()],
-      color:[...new Map(color.map(item =>[item["value"], item])).values()],
-      size:[...new Map(size.map(item =>[item["value"], item])).values()]
+    res.status(StatusCodes.OK).json({
+      category: [
+        ...new Map(category.map((item) => [item["id"], item])).values(),
+      ],
+      subCategory: [
+        ...new Map(subCategory.map((item) => [item["id"], item])).values(),
+      ],
+      option: [...new Map(option.map((item) => [item["id"], item])).values()],
+      seller: [...new Map(seller.map((item) => [item["id"], item])).values()],
+      brand: [...new Map(brand.map((item) => [item["id"], item])).values()],
+      color: [...new Map(color.map((item) => [item["value"], item])).values()],
+      size: [...new Map(size.map((item) => [item["value"], item])).values()],
     });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
   }
 };
 function uniq(a) {
-  return a.sort().filter(function(item, pos, ary) {
-      return !pos || item != ary[pos - 1];
+  return a.sort().filter(function (item, pos, ary) {
+    return !pos || item != ary[pos - 1];
   });
 }
