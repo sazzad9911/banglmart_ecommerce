@@ -655,7 +655,7 @@ export const search = async (req, res) => {
     bySeller,
     limit,
     page,
-    perPage
+    perPage,
   } = req.query;
 
   try {
@@ -690,8 +690,12 @@ export const search = async (req, res) => {
         brandId: byBrad || undefined,
         sellerId: bySeller || undefined,
       },
-      take: limit ? parseInt(limit) : undefined,
-      take: page && perPage ? parseInt(perPage) : undefined,
+      take:
+        page && perPage
+          ? parseInt(perPage)
+          : limit
+          ? parseInt(limit)
+          : undefined,
       skip:
         page && perPage ? (parseInt(page) - 1) * parseInt(perPage) : undefined,
     });
