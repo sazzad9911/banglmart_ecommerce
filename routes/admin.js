@@ -1,6 +1,6 @@
 import express from "express";
 import rateLimiter from "express-rate-limit";
-import { getInfo, main, storeInfo } from "../functions/main.js";
+import { englishToBangla, getInfo, main, storeInfo } from "../functions/main.js";
 import {
   emailVerification,
   getAllUser,
@@ -25,5 +25,5 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const adminFolder=path.join(__dirname, '../static/admin/build');
 
-admin.route()
+admin.route("/translate").post(englishToBangla)
 export default admin;

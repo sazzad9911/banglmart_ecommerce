@@ -104,9 +104,32 @@ export const duplicateProduct = async (req, res) => {
   }
 };
 export const getAllProduct = async (req, res) => {
-  const { userId, page, perPage } = req.query;
+  const { userId, page, perPage, search } = req.query;
 
   try {
+    if (search) {
+      const p = await prisma.products.findMany({
+        where: {
+          userId: userId ? userId : undefined,
+          title: {
+            contains: search,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          seller: true,
+          brand: true,
+        },
+        take: page && perPage ? parseInt(perPage) : undefined,
+        skip:
+          page && perPage
+            ? (parseInt(page) - 1) * parseInt(perPage)
+            : undefined,
+      });
+      return res.status(StatusCodes.OK).json({ data: p, length: p.length });
+    }
     const product = await prisma.products.findMany({
       where: {
         userId: userId ? userId : undefined,

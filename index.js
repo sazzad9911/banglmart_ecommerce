@@ -35,6 +35,8 @@ import { disconnectedUser, updateStatus } from "./functions/authFunctions.js";
 import codes from "./routes/codes.js";
 import notification from "./routes/notification.js";
 import campaign from "./routes/campaign.js";
+import { englishToBangla } from "./functions/main.js";
+import admin from "./routes/admin.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -83,6 +85,7 @@ app.use("/codes", codes);
 app.use("/notification", notification);
 app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
+app.use("/admin",admin)
 
 const httpServer = createServer({ key: key, cert: cert }, app);
 const port = process.env.PORT || 1300;
