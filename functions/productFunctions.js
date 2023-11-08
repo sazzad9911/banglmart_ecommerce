@@ -792,6 +792,8 @@ export const searchFilter = async (req, res) => {
     let brand = [];
     let color = [];
     let size = [];
+    let minPrice=43955677;
+    let maxPrice=0;
     check.map((doc) => {
       category.push(doc.category);
       subCategory.push(doc.subCategory);
@@ -804,6 +806,13 @@ export const searchFilter = async (req, res) => {
       doc?.sizes?.map((sz) => {
         size.push(sz);
       });
+      const productPrice = doc.price;
+      if (productPrice < minPrice) {
+        minPrice = productPrice;
+      }
+      if (productPrice > maxPrice) {
+        maxPrice = productPrice;
+      }
     });
     //const result=check.filter(d=>d.colors.map(s=>s.))
 
@@ -819,6 +828,8 @@ export const searchFilter = async (req, res) => {
       brand: [...new Map(brand.map((item) => [item["id"], item])).values()],
       color: [...new Map(color.map((item) => [item["value"], item])).values()],
       size: [...new Map(size.map((item) => [item["value"], item])).values()],
+      minPrice,
+      maxPrice
     });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
