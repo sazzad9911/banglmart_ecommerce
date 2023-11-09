@@ -488,4 +488,5 @@ model campaignOffer {
   product      products  @relation(fields: [productId], references: [id], onDelete: Cascade)
   freeDelivery Boolean   @default(false)
   minOrder     Int       @default(1)
+  userId       String    @default("")
 }

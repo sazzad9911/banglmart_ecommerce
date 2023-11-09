@@ -9,7 +9,7 @@ import { campaignDelete, campaignProductDelete, createCampaign, getCampaignProdu
 const campaign = express.Router();
 
 campaign.route("/create").post(upload.single("image"),createCampaign);
-campaign.route("/storeCampaign").post(storeCampaign);
+campaign.route("/storeCampaign").post(verifyUser,storeCampaign);
 campaign.route("/upcoming").get(upcomingCampaign);
 campaign.route("/current").get(startedCampaign);
 campaign.route("/products/:id").get(getCampaignProduct)

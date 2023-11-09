@@ -27,6 +27,7 @@ export const createCampaign = async (req, res) => {
 };
 export const storeCampaign = async (req, res) => {
   const { offer, percentage, total, campaignId, productId,freeDelivery,minOrder } = req.body;
+  const {id}=req.user
   if (!offer || !total || !campaignId || !productId||!minOrder) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -41,7 +42,8 @@ export const storeCampaign = async (req, res) => {
         campaignId,
         productId,
         freeDelivery:Boolean(freeDelivery),
-        minOrder:parseInt(minOrder)
+        minOrder:parseInt(minOrder),
+        userId:id
       },
     });
     res.status(StatusCodes.OK).json({ data: result });
