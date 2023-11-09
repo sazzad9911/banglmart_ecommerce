@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
-import { getBannerImageLink, uploadImage } from "./main.js";
+import { getBannerImageLink, uploadCampaignImage, uploadImage } from "./main.js";
 
 export const createCampaign = async (req, res) => {
   const { month, startAt,endAt } = req.body;
@@ -11,7 +11,7 @@ export const createCampaign = async (req, res) => {
   }
 
   try {
-    const { path } = await uploadImage(req, res);
+    const { path } = await uploadCampaignImage(req, res);
     const result = await prisma.campaign.create({
       data: {
         durationMonth: parseInt(month),
@@ -139,7 +139,7 @@ export const updateCampaign = async (req, res) => {
   }
 
   try {
-    const { path } =req.file? await uploadImage(req, res):{path:undefined}
+    const { path } =req.file? await uploadCampaignImage(req, res):{path:undefined}
     const result = await prisma.campaign.update({
       data: {
         durationMonth: parseInt(month),

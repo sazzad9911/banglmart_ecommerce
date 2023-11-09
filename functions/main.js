@@ -64,6 +64,24 @@ const uploadImage = async (req, res) => {
     res.status(400).send(error);
   }
 };
+export const uploadCampaignImage = async (req, res) => {
+  if (!req.file) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "Invalid file" });
+  }
+
+  try {
+    await sharp(req.file.buffer)
+      .resize({ width: 800, height: 400 })
+      .png()
+      .toFile(__dirname + `/images/${req.file.originalname}`);
+    return { path: `/images/${req.file.originalname}` };
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
+  }
+};
 const getImageToUrl = async (req, res) => {
   if (!req.file) {
     return res
@@ -179,7 +197,7 @@ export const englishToBangla = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "All field are required" });
   }
- 
+
   const encodedParams = new URLSearchParams();
   encodedParams.set("q", text);
   encodedParams.set("target", "bn");
