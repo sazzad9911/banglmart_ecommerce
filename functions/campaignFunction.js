@@ -99,3 +99,56 @@ export const getCampaignProduct=async(req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 }
+export const campaignProductDelete=async(req, res) => {
+  const {id}=req.params;
+  try {
+    const data=await prisma.campaignOffer.delete({
+      where:{
+        id:id
+      },
+    })
+    res.status(StatusCodes.OK).json({ data: data });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+}
+export const campaignDelete=async(req, res) => {
+  const {id}=req.params;
+  try {
+    const data=await prisma.campaign.delete({
+      where:{
+        id:id
+      },
+    })
+    res.status(StatusCodes.OK).json({ data: data });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+  }
+}
+export const updateCampaign = async (req, res) => {
+  const { month, startAt,endAt } = req.body;
+  const {id}=req.params;
+  if (!month || !startAt || !endAt) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All fields are required" });
+  }
+
+  try {
+    const { path } =req.file? await getBannerImageLink(req, res):{path:undefined}
+    const result = await prisma.campaign.update({
+      data: {
+        durationMonth: parseInt(month),
+        startAt: new Date(startAt),
+        image: path,
+        endAt:new Date(endAt)
+      },
+      where:{
+        id:id
+      }
+    });
+    res.status(StatusCodes.OK).json({ data: result });
+  } catch (e) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+  }
+};
