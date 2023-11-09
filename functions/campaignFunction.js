@@ -26,8 +26,8 @@ export const createCampaign = async (req, res) => {
   }
 };
 export const storeCampaign = async (req, res) => {
-  const { offer, percentage, total, campaignId, productId,freeDelivery } = req.body;
-  if (!offer || !percentage || !total || !campaignId || !productId) {
+  const { offer, percentage, total, campaignId, productId,freeDelivery,minOrder } = req.body;
+  if (!offer || !percentage || !total || !campaignId || !productId||!minOrder) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "All fields are required" });
@@ -40,7 +40,8 @@ export const storeCampaign = async (req, res) => {
         total:parseInt(total),
         campaignId,
         productId,
-        freeDelivery:Boolean(freeDelivery)
+        freeDelivery:Boolean(freeDelivery),
+        minOrder:parseInt(minOrder)
       },
     });
     res.status(StatusCodes.OK).json({ data: result });
