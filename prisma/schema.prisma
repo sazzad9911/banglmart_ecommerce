@@ -476,14 +476,15 @@ model campaign {
 }
 
 model campaignOffer {
-  id         String    @id @default(cuid())
-  offer      Int
-  percentage Boolean   @default(false)
-  date       DateTime  @default(now())
-  sale       Int       @default(0)
-  total      Int       @default(1)
-  campaign   campaign? @relation(fields: [campaignId], references: [id])
-  campaignId String?
-  productId  String    @unique
-  product    products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id           String    @id @default(cuid())
+  offer        Int
+  percentage   Boolean   @default(false)
+  date         DateTime  @default(now())
+  sale         Int       @default(0)
+  total        Int       @default(1)
+  campaign     campaign? @relation(fields: [campaignId], references: [id])
+  campaignId   String?
+  productId    String    @unique
+  product      products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  freeDelivery Boolean   @default(false)
 }

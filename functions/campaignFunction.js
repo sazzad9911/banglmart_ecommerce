@@ -26,12 +26,12 @@ export const createCampaign = async (req, res) => {
   }
 };
 export const storeCampaign = async (req, res) => {
-  const { offer, percentage, total, campaignId, productId } = req.body;
-  // if (!offer || !percentage || !sale || !total || !campaignId || !productId) {
-  //   return res
-  //     .status(StatusCodes.BAD_REQUEST)
-  //     .json({ message: "All fields are required" });
-  // }
+  const { offer, percentage, total, campaignId, productId,freeDelivery } = req.body;
+  if (!offer || !percentage || !total || !campaignId || !productId) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "All fields are required" });
+  }
   try {
     const result = await prisma.campaignOffer.create({
       data: {
@@ -39,7 +39,8 @@ export const storeCampaign = async (req, res) => {
         percentage:Boolean(percentage),
         total:parseInt(total),
         campaignId,
-        productId
+        productId,
+        freeDelivery:Boolean(freeDelivery)
       },
     });
     res.status(StatusCodes.OK).json({ data: result });
