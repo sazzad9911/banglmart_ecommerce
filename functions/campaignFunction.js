@@ -48,7 +48,7 @@ export const storeCampaign = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: result });
   } catch (e) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: e.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message:e.code==="P2002"?"This product has already used in another campaign. Delete that for add from new.": e.message });
   }
 };
 export const upcomingCampaign=async(req, res) => {
