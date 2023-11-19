@@ -52,13 +52,14 @@ const uploadImage = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 800, height: 400 })
       .png()
-      .toFile(__dirname + `/images/${req.file.originalname}`);
+      .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
     res
       .status(StatusCodes.OK)
-      .json({ path: `images/${req.file.originalname}` });
+      .json({ path: `images/${name}-${req.file.originalname}` });
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
@@ -72,11 +73,12 @@ export const uploadCampaignImage = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 800, height: 400 })
       .png()
-      .toFile(__dirname + `/images/${req.file.originalname}`);
-    return { path: `/images/${req.file.originalname}` };
+      .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
+    return { path: `/images/${name}-${req.file.originalname}` };
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
@@ -90,11 +92,12 @@ const getImageToUrl = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 50, height: 50 })
       .png()
-      .toFile(__dirname + `/images/icon/${req.file.originalname}`);
-    return { path: `/images/icon/${req.file.originalname}` };
+      .toFile(__dirname + `/images/icon/${name}-${req.file.originalname}`);
+    return { path: `/images/icon/${name}-${req.file.originalname}` };
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
@@ -108,11 +111,12 @@ export const getProductThumbnail = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 580, height: 720 })
       .png()
-      .toFile(__dirname + `/images/${req.file.originalname}`);
-    return { path: `/images/${req.file.originalname}` };
+      .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
+    return { path: `/images/${name}-${req.file.originalname}` };
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
@@ -126,11 +130,12 @@ export const getProductVariants = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 580, height: 720 })
       .png()
-      .toFile(__dirname + `/images/${req.file.originalname}`);
-    return { path: `/images/${req.file.originalname}` };
+      .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
+    return { path: `/images/${name}-${req.file.originalname}` };
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
@@ -144,11 +149,12 @@ export const getBannerImageLink = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 1200, height: 500 })
       .png()
-      .toFile(__dirname + `/images/${req.file.originalname}`);
-    return { path: `/images/${req.file.originalname}` };
+      .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
+    return { path: `/images/${name}-${req.file.originalname}` };
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
@@ -162,11 +168,12 @@ export const getLogoLink = async (req, res) => {
   }
 
   try {
+    const name=v1()
     await sharp(req.file.buffer)
       .resize({ width: 500, height: 500 })
       .png()
-      .toFile(__dirname + `/images/logo${req.file.originalname}`);
-    return { path: `/images/logo${req.file.originalname}` };
+      .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
+    return { path: `/images/${name}-${req.file.originalname}` };
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
