@@ -243,7 +243,7 @@ export const checkOut = async (req, res) => {
           doc?.offerPrice
             ? doc.offerPrice * doc.quantity
             : doc?.product.price * doc?.quantity +
-                doc?.product.vat * doc.quantity -
+                (doc?.product.vat*doc?.product.price)/100 * doc.quantity -
                 (offerDiscount * doc?.quantity + couponDiscount)
         )
       ).toFixed(2);
