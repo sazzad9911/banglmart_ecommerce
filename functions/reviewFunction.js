@@ -35,6 +35,9 @@ export const getReview = async (req, res) => {
       },
       include:{
         user:true
+      },
+      orderBy:{
+        date:"desc"
       }
     });
     res.status(StatusCodes.OK).json({ data: review });
@@ -54,6 +57,9 @@ export const getReviewByProduct = async (req, res) => {
       },
       include:{
         user:true
+      },
+      orderBy:{
+        date:"desc"
       }
     });
     res.status(StatusCodes.OK).json({ data: review });

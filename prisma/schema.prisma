@@ -191,6 +191,7 @@ model reviews {
   seller        seller?         @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   brandId       String?
   brand         brands?         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  date          DateTime        @default(now())
 }
 
 model notifications {
