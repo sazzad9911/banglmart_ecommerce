@@ -45,9 +45,9 @@ export const createOrder = async (req, res) => {
         bkashToken,
         amount,
         arr.join(","),
-        `https://api.banglamartecommerce.com.bd/order/acceptBkashPay/${token}/${id}/${
-          redirectUrl?.split("/").join("_")
-        }/${amount}/${bkashToken}`
+        `https://api.banglamartecommerce.com.bd/order/acceptBkashPay/${token}/${id}/${redirectUrl
+          ?.split("/")
+          .join("_")}/${amount}/${bkashToken}`
       );
       if (result.statusCode == "0000") {
         return res.status(StatusCodes.OK).json({ url: result.bkashURL });
@@ -243,7 +243,7 @@ export const checkOut = async (req, res) => {
           doc?.offerPrice
             ? doc.offerPrice * doc.quantity
             : doc?.product.price * doc?.quantity +
-                (doc?.product.vat*doc?.product.price)/100 * doc.quantity -
+                ((doc?.product.vat * doc?.product.price) / 100) * doc.quantity -
                 (offerDiscount * doc?.quantity + couponDiscount)
         )
       ).toFixed(2);
@@ -278,7 +278,7 @@ export const checkOut = async (req, res) => {
               doc.product.price * doc.quantity -
               (offerDiscount * doc.quantity +
                 couponDiscount +
-                doc.product.vat * doc.quantity)
+                (doc?.product.vat * doc?.product.price) / 100)
             ).toFixed(2),
         couponDiscount: doc.offerPrice ? 0 : couponDiscount.toFixed(2),
         offerDiscount: doc.offerPrice
@@ -729,7 +729,7 @@ export const confirmBkashPayment = async (req, res) => {
         data: {
           paymentID: paymentID,
           trxID: result?.trxID,
-          paymentMethod:"bkash",
+          paymentMethod: "bkash",
           amount: parseFloat(amount),
           sku: id,
         },
