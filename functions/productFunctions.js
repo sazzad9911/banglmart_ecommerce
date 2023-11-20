@@ -170,6 +170,8 @@ export const getProductById = async (req, res) => {
       include: {
         seller: true,
         brand: true,
+        comments:true,
+        reviews:true
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
