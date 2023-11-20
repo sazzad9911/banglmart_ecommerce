@@ -151,7 +151,7 @@ export const getBannerImageLink = async (req, res) => {
   try {
     const name=v1()
     await sharp(req.file.buffer)
-      .resize({ width: 1200, height: 500 })
+      .resize({ width: 1300, height: 500 })
       .png()
       .toFile(__dirname + `/images/${name}-${req.file.originalname}`);
     return { path: `/images/${name}-${req.file.originalname}` };
