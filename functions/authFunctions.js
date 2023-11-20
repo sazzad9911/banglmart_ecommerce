@@ -469,7 +469,7 @@ const updateUser = async (req, res) => {
     );
     res.status(StatusCodes.OK).json({ user: user, token: token });
   } catch (e) {
-    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.code === "P2002" ?`This ${e.message.split("`")[3].split("_")[1]} has already used. Please use different`:e.message });
   }
 };
 const getAllUser = async (req, res) => {
