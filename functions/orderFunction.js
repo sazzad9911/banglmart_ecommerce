@@ -274,12 +274,9 @@ export const checkOut = async (req, res) => {
         bargaining: doc.offerPrice ? true : false,
         totalPrice: doc.offerPrice
           ? doc.offerPrice * doc.quantity
-          : (
-              doc.product.price * doc.quantity -
-              (offerDiscount * doc.quantity +
-                couponDiscount +
-                (doc?.product.vat * doc?.product.price) / 100)
-            ).toFixed(2),
+          : doc?.product.price * doc?.quantity +
+          ((doc?.product.vat * doc?.product.price) / 100) * doc.quantity -
+          (offerDiscount * doc?.quantity + couponDiscount).toFixed(2),
         couponDiscount: doc.offerPrice ? 0 : couponDiscount.toFixed(2),
         offerDiscount: doc.offerPrice
           ? 0
