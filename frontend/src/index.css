@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+p {
+    font-size: 12px;
+    font-weight: 300;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.active {
+    text-decoration: underline;
+    color: #e25d5d;
+    /* You can adjust this to your desired active link color */
+}
