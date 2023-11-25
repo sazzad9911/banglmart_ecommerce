@@ -45,7 +45,7 @@ const cert = fs.readFileSync("./cert.pem");
 
 dotenv.config();
 const app = express();
-app.use(cors({ origin: true, credentials: false }));
+app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173"]}))
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -53,10 +53,10 @@ app.use(helmet({crossOriginResourcePolicy:false}));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/",express.static(path.join(__dirname, 'static')));
-// app.get('/app', async (req, res) => {
-//   res.sendFile(path.join(__dirname, 'static/admin/build/index.html'));
-// });
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
+app.get('/', async (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+});
 
 app.use("/images", express.static("functions/images"));
 app.use("/icon", express.static("icon"));

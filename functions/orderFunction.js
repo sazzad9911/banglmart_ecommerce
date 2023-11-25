@@ -40,12 +40,12 @@ export const createOrder = async (req, res) => {
       products.map((d) => {
         arr.push(d.id);
       });
-      //https://api.banglamartecommerce.com.bd
+      //http://localhost:1300
       const result = await bkash.createPayment(
         bkashToken,
         amount,
         arr.join(","),
-        `https://api.banglamartecommerce.com.bd/order/acceptBkashPay/${token}/${id}/${redirectUrl
+        `http://localhost:1300/order/acceptBkashPay/${token}/${id}/${redirectUrl
           ?.split("/")
           .join("_")}/${amount}/${bkashToken}`
       );
@@ -83,12 +83,12 @@ export const createOrder = async (req, res) => {
       products.map((d) => {
         arr.push(d.id);
       });
-      const successUrl = `https://api.banglamartecommerce.com.bd/order/acceptPay?paymentMethod=${paymentMethod}&token=${token}&id=${id}&url=${redirectUrl}&color=green&name=${
+      const successUrl = `http://localhost:1300/order/acceptPay?paymentMethod=${paymentMethod}&token=${token}&id=${id}&url=${redirectUrl}&color=green&name=${
         user.name
       }&title=Payment Success&description=Your payment has accepted. Order has created.&amount=${amount}&contact=${
         user.email || user.phone
       }`;
-      const failedUrl = `https://api.banglamartecommerce.com.bd/order/acceptPay?url=${redirectUrl}&color=red&name=${
+      const failedUrl = `http://localhost:1300/order/acceptPay?url=${redirectUrl}&color=red&name=${
         user.name
       }&title=Payment Failed&description=Your payment has failed. Go to cart.&amount=${amount}&contact=${
         user.email || user.phone
