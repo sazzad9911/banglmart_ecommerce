@@ -45,7 +45,7 @@ const cert = fs.readFileSync("./cert.pem");
 
 dotenv.config();
 const app = express();
-app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173"]}))
+app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173","https://banglamartecommerce.com.bd"]}))
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
