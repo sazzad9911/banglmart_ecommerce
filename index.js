@@ -5,7 +5,6 @@ import "express-async-errors";
 //import { createServer } from "http";
 import authentication from "./routes/authentication.js";
 import cors from "cors";
-import helmet from "helmet";
 import path from "path";
 import verifyToken from "./middleware/verifyUser.js";
 import bodyParser from "body-parser";
@@ -40,8 +39,8 @@ import admin from "./routes/admin.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const key = fs.readFileSync("./key.pem");
-const cert = fs.readFileSync("./cert.pem");
+// const key = fs.readFileSync("./key.pem");
+// const cert = fs.readFileSync("./cert.pem");
 
 dotenv.config();
 const app = express();
@@ -49,7 +48,7 @@ app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(helmet({crossOriginResourcePolicy:false}));
+//app.use(helmet({crossOriginResourcePolicy:false}));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -87,16 +86,16 @@ app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 app.use("/admin",admin)
 
-const httpServer = createServer({ key: key, cert: cert }, app);
+const httpServer = createServer(app);
 const port = process.env.PORT || 1300;
 // const server = http.createServer({
 //   port: 1400,
 // });
 export const io = new Server(httpServer, {
-  // cors: {
-  //   origin: "http://127.0.0.1:5173",
-  //   methods: ["GET", "POST","PUT"],
-  // },
+  cors: {
+    origin: "http://localhost:1300",
+    methods: ["GET", "POST","PUT"],
+  },
 });
 io.on("connection", async(socket) => {
 

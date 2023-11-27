@@ -12,12 +12,16 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ForYouProducts from "../ForYouProduct/ForYouProduct";
 import Campaign from "../Campaign/Campaign";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const { user } = useContext(AuthContext);
 
   return (
     <div>
+      <Helmet>
+        <title>Home | Banglamart E-commerce</title>
+      </Helmet>
       <TopBannerSection></TopBannerSection>
       <Campaign></Campaign>
       <FlashSaleBanner></FlashSaleBanner>

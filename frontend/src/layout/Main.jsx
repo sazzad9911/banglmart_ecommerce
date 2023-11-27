@@ -123,9 +123,7 @@ const Main = () => {
   }, [user]);
   return (
     <div>
-      <Helmet>
-        <title>Home | Banglamart E-commerce</title>
-      </Helmet>
+      
       <div className={`${adds ? "h-screen overflow-y-hidden" : ""}`}>
         <div className={`${adds ? "block" : "hidden"}`}>
           <PopUpAdd setAdds={setAdds}></PopUpAdd>

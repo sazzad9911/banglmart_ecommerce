@@ -149,6 +149,7 @@ const Header = () => {
                     className="h-16 w-16 lg:h-20 lg:w-20 "
                     src="https://i.ibb.co/GPpX7Bd/banglamart-logo.png"
                     alt=""
+                    
                   />
                 </Link>
               </div>
