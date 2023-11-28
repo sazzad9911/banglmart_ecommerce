@@ -53,9 +53,7 @@ app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
-app.get('/', async (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
-});
+
 
 app.use("/images", express.static("functions/images"));
 app.use("/icon", express.static("icon"));
@@ -85,6 +83,9 @@ app.use("/notification", notification);
 app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 app.use("/admin",admin)
+app.get('/', async (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+});
 
 const httpServer = createServer(app);
 const port = process.env.PORT || 1300;
