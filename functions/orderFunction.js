@@ -17,6 +17,7 @@ export const createOrder = async (req, res) => {
   const { token, paymentMethod, redirectUrl } = req.body;
   const { id } = req.user;
   const { bkashToken } = req;
+  const siteUrl="https://api.banglamartecommerce.com.bd"
 
   if (!token || !paymentMethod || !redirectUrl) {
     return res
@@ -45,7 +46,7 @@ export const createOrder = async (req, res) => {
         bkashToken,
         amount,
         arr.join(","),
-        `http://localhost:1300/order/acceptBkashPay/${token}/${id}/${redirectUrl
+        `${siteUrl}/order/acceptBkashPay/${token}/${id}/${redirectUrl
           ?.split("/")
           .join("_")}/${amount}/${bkashToken}`
       );
@@ -83,12 +84,12 @@ export const createOrder = async (req, res) => {
       products.map((d) => {
         arr.push(d.id);
       });
-      const successUrl = `http://localhost:1300/order/acceptPay?paymentMethod=${paymentMethod}&token=${token}&id=${id}&url=${redirectUrl}&color=green&name=${
+      const successUrl = `${siteUrl}/order/acceptPay?paymentMethod=${paymentMethod}&token=${token}&id=${id}&url=${redirectUrl}&color=green&name=${
         user.name
       }&title=Payment Success&description=Your payment has accepted. Order has created.&amount=${amount}&contact=${
         user.email || user.phone
       }`;
-      const failedUrl = `http://localhost:1300/order/acceptPay?url=${redirectUrl}&color=red&name=${
+      const failedUrl = `${siteUrl}/order/acceptPay?url=${redirectUrl}&color=red&name=${
         user.name
       }&title=Payment Failed&description=Your payment has failed. Go to cart.&amount=${amount}&contact=${
         user.email || user.phone
