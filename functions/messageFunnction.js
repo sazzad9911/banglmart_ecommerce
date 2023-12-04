@@ -146,7 +146,8 @@ export const sendMessage = async (req, res) => {
         id:conversationId,
       },
       data:{
-        unread:{increment:1}
+        unread:{increment:1},
+        date:new Date()
       }
     })
     io.emit("message", comment)
