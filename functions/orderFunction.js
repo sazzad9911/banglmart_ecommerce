@@ -463,6 +463,12 @@ export const rejectOrder = async (req, res) => {
         status: orderState[2],
       },
     });
+    await sendNotification(
+      `Order Rejected!`,
+      `Your order ${order.product.title} has reject by seller`,
+      order.buyerId,
+      order.id
+    );
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -495,6 +501,12 @@ export const cancelOrder = async (req, res) => {
         status: orderState[3],
       },
     });
+    await sendNotification(
+      `Order Cancelled!`,
+      `Your order ${order.product.title} has cancelled by seller`,
+      order.buyerId,
+      order.id
+    );
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -557,6 +569,7 @@ export const refundOrder = async (req, res) => {
         status: orderState[5],
       },
     });
+   
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -588,6 +601,12 @@ export const courierOrder = async (req, res) => {
         status: orderState[6],
       },
     });
+    await sendNotification(
+      `Order is On the way!`,
+      `Your order ${order.product.title} has shifted into courier by seller`,
+      order.buyerId,
+      order.id
+    );
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });

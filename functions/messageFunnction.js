@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { io } from "../index.js";
 import prisma from "../lib/prisma.js";
 import { getLogoLink } from "./main.js";
+import { sendNotification } from "../lib/sendNotification.js";
 
 export const createConversation = async (req, res) => {
   const { userId, productId } = req.body;
@@ -125,7 +126,7 @@ export const sendMessage = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Invalid request" });
   }
-  if (!message && !req.file) {
+  if (!message && !req.file) { 
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "Invalid message" });
@@ -149,6 +150,12 @@ export const sendMessage = async (req, res) => {
       }
     })
     io.emit("message", comment)
+    await sendNotification(
+      `You have New Message`,
+      `You have new message, please open chat box`,
+      receiverId,
+      null
+    );
     res.status(StatusCodes.OK).json({ data: comment });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
