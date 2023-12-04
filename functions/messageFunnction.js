@@ -152,7 +152,7 @@ export const sendMessage = async (req, res) => {
     io.emit("message", comment)
     await sendNotification(
       `You have New Message`,
-      `You have new message, please open chat box`,
+      `${message}`,
       receiverId,
       null
     );
