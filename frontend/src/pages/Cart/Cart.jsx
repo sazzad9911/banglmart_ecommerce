@@ -142,7 +142,7 @@ const Cart = () => {
       {
         token: orderToken,
         paymentMethod: paymentName,
-        redirectUrl: "http://localhost:1300/track-order",
+        redirectUrl: "https://api.banglamartecommerce.com.bd/track-order",
       },
       token
     )

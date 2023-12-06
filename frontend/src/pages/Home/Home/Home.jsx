@@ -12,7 +12,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ForYouProducts from "../ForYouProduct/ForYouProduct";
 import Campaign from "../Campaign/Campaign";
+import logo from "../../../logo.png"
 import { Helmet } from "react-helmet";
+const hostname="https://api.banglamartecommerce.com.bd"
 
 const Home = () => {
   const { user } = useContext(AuthContext);
@@ -20,7 +22,39 @@ const Home = () => {
   return (
     <div>
       <Helmet>
-        <title>Home | Banglamart E-commerce</title>
+        <title>Banglamart Ecommerce- Home</title>
+        <meta name="title" content="Banglamart Ecommerce- Home"></meta>
+        <meta name="description" content="Banglamart is the operator of the eCommerce platform intended to provide food, grocery, classifieds, accounting, and inventory solutions. The company platform provides a wide range of food, grocery, electronics, clothing, and other similar products, enabling customers to access all products on one platform." />
+        <meta name="keywords" content="shop, shoping, bangla, banglamart, ecommerce, bm, banglamartecommerce, store, seller, buy"></meta>
+        <meta
+          name="msapplication-TileImage"
+          content={hostname+logo}
+        ></meta>
+
+        <meta property="og:site_name" content="Banglamart E-commerce"></meta>
+        <meta property="og:title" content="Banglamart E-commerce"></meta>
+        {/* <meta
+          property="og:description"
+          content="The best photo studio for your events"
+        /> */}
+
+        <meta
+          property="og:image"
+          content={hostname+logo}
+        ></meta>
+
+        <meta property="og:type" content="ecommerce"></meta>
+        <meta property="og:image:type" content="image/jpeg"></meta>
+        <meta property="og:image:width" content="300"></meta>
+        <meta property="og:image:height" content="300"></meta>
+
+        <meta
+          property="og:url"
+          content={hostname+window.location.pathname+window.location.search}
+        ></meta>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="og:site_name" content="Banglamart E-commerce" />
+        <meta name="twitter:image:alt" content="Alt text for image"></meta>
       </Helmet>
       <TopBannerSection></TopBannerSection>
       <Campaign></Campaign>

@@ -23,7 +23,7 @@ const Search = () => {
   const [brand, setBrand] = useState();
   const [option, setOption] = useState();
   // console.log(products);
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
   useEffect(() => {
     const fetchOptionProducts = async () => {
       try {

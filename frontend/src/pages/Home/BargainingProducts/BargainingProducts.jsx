@@ -87,7 +87,7 @@ const Cart2 = ({ product }) => {
   // const { user,setCartUpdate } = useContext(AuthContext);
   // const navigate = useNavigate();
   // TODO
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   const [hover, setHover] = useState(false);
   // const [heartIconHover, setHeartIconHover] = useState(false);

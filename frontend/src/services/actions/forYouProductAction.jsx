@@ -23,7 +23,7 @@ export const fetchForYouProducts = () => {
   return (dispatch) => {
     dispatch(fetchForYouProductsRequest());
     axios
-      .get(`http://localhost:1300/product/get/for-you?visitorId=${visitorId}`)
+      .get(`https://api.banglamartecommerce.com.bd/product/get/for-you?visitorId=${visitorId}`)
       .then((response) => {
         const forYouProducts = response.data;
         dispatch(fetchForYouProductsSuccess(forYouProducts));

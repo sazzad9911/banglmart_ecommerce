@@ -45,6 +45,8 @@ import ReviewSection from "../../components/ReviewSection";
 import { PiSmileySadLight } from "react-icons/pi";
 import socket from "../../socket";
 import ImageZoom from "react-image-zooom";
+import logo from "../../logo.png"
+const hostname="https://api.banglamartecommerce.com.bd"
 
 const ProductDetails = () => {
   const { user, setCartUpdate, language } = useContext(AuthContext);
@@ -56,7 +58,7 @@ const ProductDetails = () => {
   const [product, setProductDetails] = useState(null);
   const [shopDetails, setShopDetails] = useState(null);
   // console.log(product);
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
   useEffect(() => {
     const visitorId = localStorage.getItem("visitorId");
     const fetchProductDetails = async () => {
@@ -371,8 +373,9 @@ const ProductDetails = () => {
   useEffect(() => {
     scrollToBottom();
   }, [allMessages]);
+  //console.log(logo);
 
-  const shareUrl = `http://localhost:1300/productDetails/${id}`;
+  const shareUrl = `https://api.banglamartecommerce.com.bd/productDetails/${id}`;
   if (product == null) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center">
@@ -389,32 +392,38 @@ const ProductDetails = () => {
   return (
     <div className="container mx-auto mt-4">
       <Helmet>
-        <title>Product Details | Banglamart E-commerce</title>
-        <meta name="title" content={product?.title} />
-        <meta name="keywords" content="" />
+        <title>{product?.title}</title>
+        <meta name="title" content={product?.title}></meta>
+        <meta name="keywords" content=""></meta>
         <meta
           name="msapplication-TileImage"
-          content={`${url}${product?.thumbnail}`}
-        />
+          content={hostname+product?.thumbnail}
+        ></meta>
 
-        <meta property="og:site_name" content="Banglamart E-commerce" />
-        <meta property="og:title" content={product?.title} />
+        <meta property="og:site_name" content="Banglamart E-commerce"></meta>
+        <meta property="og:title" content={product?.title}></meta>
         {/* <meta
           property="og:description"
           content="The best photo studio for your events"
         /> */}
 
-        <meta property="og:image" content={`${url}${product?.thumbnail}`} />
+        <meta
+          property="og:image"
+          content={hostname+product?.thumbnail}
+        ></meta>
 
-        <meta property="og:type" content="website" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="300" />
-        <meta property="og:image:height" content="300" />
+        <meta property="og:type" content="ecommerce"></meta>
+        <meta property="og:image:type" content="image/jpeg"></meta>
+        <meta property="og:image:width" content="300"></meta>
+        <meta property="og:image:height" content="300"></meta>
 
         <meta
           property="og:url"
-          content="http://localhost:1300"
+          content={hostname+window.location.pathname+window.location.search}
         ></meta>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="og:site_name" content="Banglamart E-commerce" />
+        <meta name="twitter:image:alt" content="Alt text for image"></meta>
       </Helmet>
       {/* product details  */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 bg-CardColor p-4">
@@ -691,7 +700,7 @@ const ProductDetails = () => {
               {product?.price && (
                 <p className="text-SubTextColor">
                   {language ? "Old Price:" : "আগের মূল্য:"}
-                  <span className="line-through text-[18px] text-SubTextColor ml-2">
+                  <span className="line-through text-[18px] text-MainColor ml-2">
                     {product?.price} ৳
                   </span>
                   {language ? "/pc" : "/পিচ"}
@@ -1138,7 +1147,7 @@ const ProductDetails = () => {
 export default ProductDetails;
 
 const ImageShow = ({ product }) => {
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 

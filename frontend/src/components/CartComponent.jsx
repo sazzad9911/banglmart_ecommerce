@@ -18,7 +18,7 @@ const CartComponent = ({
   const { setCartUpdate,language } = useContext(AuthContext);
   let product = data.product;
   // console.log(data?.colors.label);
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   const [loading, setLoading] = useState(false);
   const [minOrder, setQuantity] = useState(null);
@@ -233,7 +233,7 @@ const CartComponent = ({
                 )}
               </div>
               <div className="flex flex-col items-center m-1">
-                <h2 className="line-through text-SubTextColor">
+                <h2 className="line-through text-MainColor">
                   {product?.price} ৳
                 </h2>
                 <h1 className="">{totalPrice?.toFixed()} ৳</h1>

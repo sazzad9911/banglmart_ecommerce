@@ -75,7 +75,7 @@ const BrandCart = ({ data }) => {
   const encodedData = encodeURIComponent(JSON.stringify(data));
 
   const [hover, setHover] = useState(false);
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   return (
     <Link to={`/brand-product-page?data=${encodedData}`}>

@@ -35,7 +35,7 @@ import { deleteApi, getApi } from "../../../apis";
 import { FaCoins } from "react-icons/fa";
 const Header = () => {
   const { user, logOut, cart,language } = useContext(AuthContext);
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
   const navigate=useNavigate()
   // console.log(user);
   const from = location.state?.from?.pathname || "/";
@@ -149,7 +149,6 @@ const Header = () => {
                     className="h-16 w-16 lg:h-20 lg:w-20 "
                     src="https://i.ibb.co/GPpX7Bd/banglamart-logo.png"
                     alt=""
-                    
                   />
                 </Link>
               </div>
@@ -564,7 +563,7 @@ const ConversationCard = ({
 }) => {
   const { handleMessageShow } = useContext(AuthContext);
 
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -610,7 +609,7 @@ import { MdDeleteForever } from "react-icons/md";
 const SearchProductCart = ({ product, handleSearchClose }) => {
   // console.log(product);
 
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
   const navigate=useNavigate()
   const [newPrice, setNewPrice] = useState(product?.price);
 
@@ -657,7 +656,7 @@ const SearchProductCart = ({ product, handleSearchClose }) => {
             <div className="flex flex-wrap">
               <div className="flex flex-wrap mr-2">
                 {product?.price > newPrice && (
-                  <p className={`relative mr-1 line-through text-SubTextColor`}>
+                  <p className={`relative mr-1 line-through text-MainColor`}>
                     {Math.ceil(product?.price)} ৳
                   </p>
                 )}

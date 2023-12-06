@@ -2,7 +2,7 @@ import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import Rating from "react-rating";
 
 const ReviewSection = ({ reviews }) => {
-  const url = "http://localhost:1300"; 
+  const url = "https://api.banglamartecommerce.com.bd"; 
 
   return (
     <div className="flex flex-col items-center">

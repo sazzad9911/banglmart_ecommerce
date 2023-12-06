@@ -44,7 +44,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
-app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173","https://banglamartecommerce.com.bd"]}))
+app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173","https://banglamartecommerce.com.bd","https://api.banglamartecommerce.com.bd"]}))
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 

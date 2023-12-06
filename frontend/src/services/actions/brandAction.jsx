@@ -22,7 +22,7 @@ export const fetchBrand = () => {
   return (dispatch) => {
     dispatch(fetchBrandRequest());
     axios
-      .get("http://localhost:1300/store/allBrand?verified=1")
+      .get("https://api.banglamartecommerce.com.bd/store/allBrand?verified=1")
       .then((response) => {
         const brand = response.data;
         dispatch(fetchBrandSuccess(brand));

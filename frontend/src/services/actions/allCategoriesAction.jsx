@@ -20,7 +20,7 @@ export const fetchAllCategoriesFailure = (error) => ({
 });
 
 export const fetchAllCategories = () => {
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   return (dispatch) => {
     dispatch(fetchAllCategoriesRequest());

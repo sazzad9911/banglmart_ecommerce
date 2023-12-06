@@ -13,7 +13,7 @@ export const AuthContext = createContext();
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-const url = "http://localhost:1300";
+const url = "https://api.banglamartecommerce.com.bd";
 
 const AuthProvider = ({ children }) => {
   const [language, setLanguage] = useState(true);

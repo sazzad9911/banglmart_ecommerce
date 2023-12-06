@@ -3,7 +3,7 @@ import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import Rating from "react-rating";
 
 const BrandShopCart = ({ data }) => {
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   return (
     <div className="mt-4 shadow-md shadow-BorderColor">

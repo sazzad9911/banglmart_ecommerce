@@ -14,7 +14,7 @@ const ProductCart = ({ product }) => {
   // const { user,setCartUpdate } = useContext(AuthContext);
   // const navigate = useNavigate();
   const { t } = useTranslation();
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
 
   const [hover, setHover] = useState(false);
   // const [heartIconHover, setHeartIconHover] = useState(false);
@@ -89,7 +89,7 @@ const ProductCart = ({ product }) => {
             <div>
               <div className="flex flex-wrap">
                 {product?.price > newPrice && (
-                  <p className={`relative mr-1 line-through text-SubTextColor`}>
+                  <p className={`relative mr-1 line-through text-MainColor`}>
                     {product?.price.toFixed()} ৳
                   </p>
                 )}

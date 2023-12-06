@@ -136,7 +136,7 @@ export default FlashSellProductShowSlider;
 const Cart2 = ({ data }) => {
   const { t } = useTranslation();
   const product = data.product;
-  const url = "http://localhost:1300";
+  const url = "https://api.banglamartecommerce.com.bd";
   // const { user, setCartUpdate } = useContext(AuthContext);
   // const navigate = useNavigate();
   const [hover, setHover] = useState(false);
@@ -211,7 +211,7 @@ const Cart2 = ({ data }) => {
           <div>
             <div className="flex">
               {product?.price > newPrice && (
-                <p className={`relative mr-1 line-through text-SubTextColor`}>
+                <p className={`relative mr-1 line-through text-MainColor`}>
                   {product?.price.toFixed()} ৳
                 </p>
               )}

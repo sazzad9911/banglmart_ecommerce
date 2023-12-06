@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://localhost:1300",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -20,8 +19,10 @@
     "axios": "^1.4.0",
     "firebase": "^10.1.0",
     "framer-motion": "^10.16.2",
+    "gatsby-plugin-react-helmet": "^6.12.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
+    "nvm": "^0.0.4",
     "react": "^18.2.0",
     "react-countdown": "^2.3.5",
     "react-custom-scrollbars": "^4.2.1",
