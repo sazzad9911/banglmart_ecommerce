@@ -36,12 +36,12 @@ const AllSeller = () => {
                 id="animatedButton"
               >
                 <h1 className="z-10 text-CardColor text-center p-2">
-                  {t("allsellerBigBtn")}
+                 {t("allsellerBigBtn")}
                 </h1>
               </a>
             ) : (
               <Link to="/seller-form" id="animatedButton">
-                <h1 className="z-10 text-CardColor">{t("beAseller")}</h1>
+                <h1 className="z-10 text-CardColor">{t("beAseller.beAseller")}</h1>
               </Link>
             )}
           </motion.div>

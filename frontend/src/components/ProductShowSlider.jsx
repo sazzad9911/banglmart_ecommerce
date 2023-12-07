@@ -209,7 +209,9 @@ const Cart2 = ({ product }) => {
           <div>
             <div className="flex">
               {product?.price > newPrice && (
-                <p className={`relative mr-1 line-through text-MainColor`}>
+                <p className={`relative mr-1 line-through text-MainColor  ${
+                  hover && "text-SubTextColor"
+                }`}>
                   {product?.price.toFixed()} ৳
                 </p>
               )}

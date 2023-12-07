@@ -11,7 +11,6 @@ import { fetchUpazilas } from "../services/actions/upazilaAction";
 import { fetchUnions } from "../services/actions/unionAction";
 import { fetchAllCategories } from "../services/actions/allCategoriesAction";
 import { fetchFlashSell } from "../services/actions/flashSellCheckAction";
-import { Helmet } from "react-helmet";
 import { fetchAllSellerData } from "../services/actions/allSellerAction";
 import { useContext } from "react";
 import { AuthContext } from "./../providers/AuthProvider";
@@ -28,6 +27,9 @@ import { getToken } from "firebase/messaging";
 import { messaging } from "../firebase/firebase.config";
 import { putApi } from "../apis";
 import MessengerCustomerChat from "react-messenger-customer-chat";
+import logo from "../logo.png";
+import { Helmet } from "react-helmet";
+const hostname="https://banglamartecommerce.com.bd"
 
 const Main = () => {
   const { user } = useContext(AuthContext);
@@ -123,7 +125,41 @@ const Main = () => {
   }, [user]);
   return (
     <div>
-      
+      <Helmet>
+        <title>Banglamart Ecommerce- Home</title>
+        <meta name="title" content="Banglamart Ecommerce- Home"></meta>
+        <meta name="description" content="Banglamart is the operator of the eCommerce platform intended to provide food, grocery, classifieds, accounting, and inventory solutions. The company platform provides a wide range of food, grocery, electronics, clothing, and other similar products, enabling customers to access all products on one platform." />
+        <meta name="keywords" content="shop, shoping, bangla, banglamart, ecommerce, bm, banglamartecommerce, store, seller, buy"></meta>
+        <meta
+          name="msapplication-TileImage"
+          content={hostname+logo}
+        ></meta>
+
+        <meta property="og:site_name" content="Banglamart E-commerce"></meta>
+        <meta property="og:title" content="Banglamart E-commerce"></meta>
+        {/* <meta
+          property="og:description"
+          content="The best photo studio for your events"
+        /> */}
+
+        <meta
+          property="og:image"
+          content={hostname+logo}
+        ></meta>
+
+        <meta property="og:type" content="ecommerce"></meta>
+        <meta property="og:image:type" content="image/jpeg"></meta>
+        <meta property="og:image:width" content="300"></meta>
+        <meta property="og:image:height" content="300"></meta>
+
+        <meta
+          property="og:url"
+          content={hostname+window.location.pathname+window.location.search}
+        ></meta>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="og:site_name" content="Banglamart E-commerce" />
+        <meta name="twitter:image:alt" content="Alt text for image"></meta>
+      </Helmet>
       <div className={`${adds ? "h-screen overflow-y-hidden" : ""}`}>
         <div className={`${adds ? "block" : "hidden"}`}>
           <PopUpAdd setAdds={setAdds}></PopUpAdd>

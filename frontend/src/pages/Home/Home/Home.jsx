@@ -14,7 +14,7 @@ import ForYouProducts from "../ForYouProduct/ForYouProduct";
 import Campaign from "../Campaign/Campaign";
 import logo from "../../../logo.png"
 import { Helmet } from "react-helmet";
-const hostname="https://api.banglamartecommerce.com.bd"
+const hostname="https://banglamartecommerce.com.bd"
 
 const Home = () => {
   const { user } = useContext(AuthContext);

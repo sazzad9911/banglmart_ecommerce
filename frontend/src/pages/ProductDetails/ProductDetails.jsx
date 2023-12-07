@@ -46,7 +46,7 @@ import { PiSmileySadLight } from "react-icons/pi";
 import socket from "../../socket";
 import ImageZoom from "react-image-zooom";
 import logo from "../../logo.png"
-const hostname="https://api.banglamartecommerce.com.bd"
+const hostname="https://banglamartecommerce.com.bd"
 
 const ProductDetails = () => {
   const { user, setCartUpdate, language } = useContext(AuthContext);
@@ -375,7 +375,7 @@ const ProductDetails = () => {
   }, [allMessages]);
   //console.log(logo);
 
-  const shareUrl = `https://api.banglamartecommerce.com.bd/productDetails/${id}`;
+  const shareUrl = `https://banglamartecommerce.com.bd/productDetails/${id}`;
   if (product == null) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center">
@@ -397,7 +397,7 @@ const ProductDetails = () => {
         <meta name="keywords" content=""></meta>
         <meta
           name="msapplication-TileImage"
-          content={hostname+product?.thumbnail}
+          content={hostname+logo}
         ></meta>
 
         <meta property="og:site_name" content="Banglamart E-commerce"></meta>
@@ -409,7 +409,7 @@ const ProductDetails = () => {
 
         <meta
           property="og:image"
-          content={hostname+product?.thumbnail}
+          content={hostname+logo}
         ></meta>
 
         <meta property="og:type" content="ecommerce"></meta>

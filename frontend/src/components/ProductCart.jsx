@@ -74,7 +74,6 @@ const ProductCart = ({ product }) => {
         className="w-[95%] cursor-pointer group aspect-[20/25] rounded-xl relative overflow-hidden border border-BorderColor hover:border-MainColor hover:shadow-lg"
       >
         <div className="inset-0 absolute w-full h-full group-hover:scale-110 ease-in-out duration-300 bg-CardColor">
-          
           <img
             src={`${url}${product?.thumbnail}`}
             className="object-fill w-full h-full pb-10 md:pb-14 p-4 "
@@ -89,7 +88,11 @@ const ProductCart = ({ product }) => {
             <div>
               <div className="flex flex-wrap">
                 {product?.price > newPrice && (
-                  <p className={`relative mr-1 line-through text-MainColor`}>
+                  <p
+                    className={`relative mr-1 line-through text-MainColor  ${
+                      hover && "text-SubTextColor"
+                    }`}
+                  >
                     {product?.price.toFixed()} ৳
                   </p>
                 )}
@@ -190,7 +193,7 @@ const ProductCart = ({ product }) => {
             className="absolute flex flex-col  bg-[#fc3e3e] shadow-md shadow-[#f59090] top-0 h-24 w-24"
           >
             <span className="ml-5 mt-[6px] text-CardColor font-semibold text-[10px]">
-            {t("off")}
+              {t("off")}
             </span>
             <span className="text-[12px] font-semibold ml-[10px] text-CardColor bg-[#fc3e3e]">
               {product?.offer}%
@@ -200,7 +203,7 @@ const ProductCart = ({ product }) => {
           product?.offer && (
             <div className="absolute flex items-center justify-center bg-CardColor shadow-md shadow-[#f59090] rounded-r-full top-2 p-1">
               <span className="font-semibold text-[10px] text-[#fc3e3e] mr-1">
-              {t("off")}
+                {t("off")}
               </span>
               <span className="pl-[2px] pr-[2px] text-[14px] font-semibold text-CardColor bg-[#fc3e3e] rounded-r-full">
                 -{product?.offer}৳
@@ -213,7 +216,7 @@ const ProductCart = ({ product }) => {
             <TbTruckDelivery className="text-MainColor text-[25px] ml-1 mr-1"></TbTruckDelivery>
 
             <p className="text-sm text-CardColor p-1 bg-MainColor rounded-full">
-            {t("off")}
+              {t("off")}
             </p>
           </div>
         ) : (

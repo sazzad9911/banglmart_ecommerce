@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../providers/AuthProvider";
 import { useTranslation } from "react-i18next";
+import footer from "../../../footer.png"
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -18,9 +19,7 @@ const Footer = () => {
               <div className="border-b border-b-SubTextColor mb-4">
                 <h1 className="uppercase">{t("aboutUs.aboutUs")}</h1>
               </div>
-              <p>
-              {t("aboutUs.descriptions")}
-              </p>
+              <p>{t("aboutUs.descriptions")}</p>
               <div className="flex mt-4">
                 <a
                   className="mr-3 hover:shadow-md"
@@ -46,9 +45,7 @@ const Footer = () => {
               </div>
               <div className="mb-2">
                 <p className="text-SubTextColor">Address:</p>
-                <p className="text-TextColor">
-                {t("contactUs.address")}
-                </p>
+                <p className="text-TextColor">{t("contactUs.address")}</p>
               </div>
               <div className="mb-2">
                 <p className="text-SubTextColor">Phone:</p>
@@ -56,7 +53,7 @@ const Footer = () => {
                   onClick={handlePhoneClick}
                   className="text-TextColor cursor-pointer"
                 >
-                 {t("header.number")}
+                  {t("header.number")}
                 </p>
               </div>
               <div>
@@ -69,28 +66,40 @@ const Footer = () => {
                 </a>
               </div>
               <div className="flex gap-2 mt-4">
-                <a href="https://www.facebook.com/banglamart.ecommerce" target="blank">
+                <a
+                  href="https://www.facebook.com/banglamart.ecommerce"
+                  target="blank"
+                >
                   <img
                     className="h-8 w-8 rounded-full"
                     src="https://i.ibb.co/3SxH2yF/Facebook-Logo-2023.png"
                     alt=""
                   />
                 </a>
-                <a href="https://www.youtube.com/channel/UCGub85mobLmELhgxNh3HKRA" target="blank">
+                <a
+                  href="https://www.youtube.com/channel/UCGub85mobLmELhgxNh3HKRA"
+                  target="blank"
+                >
                   <img
                     className="h-8 w-8 rounded-full"
                     src="https://i.ibb.co/1X7wgdD/6-8.png"
                     alt=""
                   />
                 </a>
-                <a href="https://www.linkedin.com/in/banglamart-ecommerce-77058127a/" target="blank">
+                <a
+                  href="https://www.linkedin.com/in/banglamart-ecommerce-77058127a/"
+                  target="blank"
+                >
                   <img
                     className="h-8 w-8 rounded-full"
                     src="https://i.ibb.co/QQw4nJk/linkedin-icon-2048x2048-ya5g47j2.png"
                     alt=""
                   />
                 </a>
-                <a href="https://instagram.com/banglamartecommerce?igshid=MzNlNGNkZWQ4Mg==" target="blank">
+                <a
+                  href="https://instagram.com/banglamartecommerce?igshid=MzNlNGNkZWQ4Mg=="
+                  target="blank"
+                >
                   <img
                     className="h-8 w-8 rounded-full"
                     src="https://i.ibb.co/x3bMz2t/640px-Instagram-logo-2022-svg.png"
@@ -103,7 +112,7 @@ const Footer = () => {
               <div className="border-b border-b-SubTextColor mb-4">
                 <h1 className="uppercase"> {t("usefulLinks.usefulLinks")}</h1>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col  items-center md:items-start">
                 <Link
                   to="/termsConditions"
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
@@ -120,7 +129,7 @@ const Footer = () => {
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
                   to="/sellerPolicy"
                 >
-                   {t("usefulLinks.Seller")}
+                  {t("usefulLinks.Seller")}
                 </Link>
                 <Link
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
@@ -132,13 +141,13 @@ const Footer = () => {
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
                   to="/supportPolicy"
                 >
-                   {t("usefulLinks.support")}
+                  {t("usefulLinks.support")}
                 </Link>
                 <Link
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
                   to="/cancellationPolicy"
                 >
-                   {t("usefulLinks.cancellation")}
+                  {t("usefulLinks.cancellation")}
                 </Link>
                 <Link
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
@@ -150,7 +159,7 @@ const Footer = () => {
                   className="mb-1 hover:underline text-[14px] text-SubTextColor hover:text-TextColor"
                   to="/blog"
                 >
-                   {t("usefulLinks.blog")}
+                  {t("usefulLinks.blog")}
                 </Link>
               </div>
             </div>
@@ -158,7 +167,7 @@ const Footer = () => {
               <div className="border-b border-b-SubTextColor mb-4">
                 <h1 className="uppercase">{t("account.account")}</h1>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col items-center md:items-start">
                 {user ? (
                   ""
                 ) : (
@@ -183,10 +192,10 @@ const Footer = () => {
                 </Link>
                 {/* <Link  className="mb-1 text-[14px] text-SubTextColor hover:text-TextColor" to="/">Affiliating</Link> */}
                 <Link
-                  className="mt-4 p-2 text-center rounded-full bg-MainColor hover:bg-MainColorHover text-CardColor shadow-md"
+                  className="mt-4 p-2 w-full text-center rounded-full bg-MainColor hover:bg-MainColorHover text-CardColor shadow-md"
                   to="/seller-form"
                 >
-                    {t("beAseller.beAseller")}
+                  {t("beAseller.beAseller")}
                 </Link>
               </div>
             </div>
@@ -195,23 +204,21 @@ const Footer = () => {
       </div>
       <div className=" pt-4 pb-4 bg-[#DCDCDC]">
         <div className="md:flex justify-between items-center container mx-auto p-1">
-          <p className="text-SubTextColor  md:block hidden">
-            &copy; {new Date().getFullYear()} Banglamart E-commerce Ltd. All
-            rights reserved.
-          </p>
-          <div className="flex items-center bg-CardColor p-1 md:p-4 rounded-lg">
-            <p className="text-TextColor md:text-2xl font-bold">Pay With: </p>
+          <div className="flex justify-center items-center">
+            <img src={footer} alt="" />
+          </div>
+          <div className="flex items-center p-1 md:p-4 rounded-lg">
+            {/* <p className="text-TextColor md:text-2xl font-bold">Pay With: </p> */}
             <div>
-              <p className="text-TextColor text-center md:text-2xl font-bold mb-2">
-                We Accept{" "}
+              <p className="text-SubTextColor text-center md:text-2xl font-bold mb-2">
+                Accepted Payments{" "}
               </p>
-              <div className="ml-1">
+              <div className="">
                 <img
                   className="lg:w-96 md:w-80"
                   src="https://i.ibb.co/kD2RfPN/Wallet-01.jpg"
                   alt=""
                 />
-               
               </div>
               <div className="flex justify-center mt-2">
                 <img
@@ -220,13 +227,13 @@ const Footer = () => {
                   alt=""
                 />
               </div>
-              <p className="text-right mt-2 text-SubTextColor  md:hidden block">
-                &copy; {new Date().getFullYear()} Banglamart E-commerce Ltd. All
-                rights reserved.
-              </p>
             </div>
           </div>
         </div>
+        <p className="text-SubTextColor text-center">
+          &copy; {new Date().getFullYear()} Banglamart E-commerce Ltd. All
+          rights reserved.
+        </p>
       </div>
     </div>
   );

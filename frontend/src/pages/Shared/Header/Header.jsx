@@ -236,29 +236,31 @@ const Header = () => {
                     </Menu>
                   ) : null}
                 </div>
-                <Link
-                  to="/notifications"
-                  className="hover:border-BorderColor border-CardColor relative ml-2 md:flex hidden items-center rounded-md border hover:border "
-                >
-                  <AiOutlineBell className="text-SubTextColor text-[30px]" />
-                  <div>
-                    <div className="bg-MainColor text-CardColor absolute right-[12px] -top-3 flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
-                      1
+                {
+                  user ? (<div className="flex"><Link
+                    to="/notifications"
+                    className="hover:border-BorderColor border-CardColor relative ml-2 md:flex hidden items-center rounded-md border hover:border "
+                  >
+                    <AiOutlineBell className="text-SubTextColor text-[30px]" />
+                    <div>
+                      <div className="bg-MainColor text-CardColor absolute right-[12px] -top-3 flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
+                        1
+                      </div>
                     </div>
-                  </div>
-                </Link>
-                <Link
-                  to="/cart"
-                  className="hover:border-BorderColor border-CardColor relative ml-2 md:flex hidden items-center rounded-md border hover:border mr-2"
-                >
-                  <AiOutlineShoppingCart className="text-SubTextColor text-[30px]" />
-                  <div>
-                    <div className="bg-MainColor text-CardColor absolute right-[35px] -top-3 flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
-                      {user ? (cart?.length > 9 ? "9+" : cart?.length) : "0"}
+                  </Link>
+                  <Link
+                    to="/cart"
+                    className="hover:border-BorderColor border-CardColor relative ml-2 md:flex hidden items-center rounded-md border hover:border mr-2"
+                  >
+                    <AiOutlineShoppingCart className="text-SubTextColor text-[30px]" />
+                    <div>
+                      <div className="bg-MainColor text-CardColor absolute right-[35px] -top-3 flex h-5 w-5 items-center justify-center rounded-full text-[10px]">
+                        {user ? (cart?.length > 9 ? "9+" : cart?.length) : "0"}
+                      </div>
+                      <p className=" text-SubTextColor">{language ? 'Cart':'ঝুরি'}</p>
                     </div>
-                    <p className=" text-SubTextColor">{language ? 'Cart':'ঝুরি'}</p>
-                  </div>
-                </Link>
+                  </Link></div>):null
+                }
 
                 {user ? (
                   <Menu>
