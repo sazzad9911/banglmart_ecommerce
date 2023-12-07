@@ -397,7 +397,7 @@ const ProductDetails = () => {
         <meta name="keywords" content=""></meta>
         <meta
           name="msapplication-TileImage"
-          content={hostname+logo}
+          content={url+product.thumbnail}
         ></meta>
 
         <meta property="og:site_name" content="Banglamart E-commerce"></meta>
@@ -409,7 +409,7 @@ const ProductDetails = () => {
 
         <meta
           property="og:image"
-          content={hostname+logo}
+          content={url+product.thumbnail}
         ></meta>
 
         <meta property="og:type" content="ecommerce"></meta>
@@ -419,7 +419,7 @@ const ProductDetails = () => {
 
         <meta
           property="og:url"
-          content={hostname+window.location.pathname+window.location.search}
+          content={url+window.location.pathname+window.location.search}
         ></meta>
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="og:site_name" content="Banglamart E-commerce" />
