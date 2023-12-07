@@ -35,7 +35,7 @@ import { deleteApi, getApi } from "../../../apis";
 import { FaCoins } from "react-icons/fa";
 const Header = () => {
   const { user, logOut, cart,language } = useContext(AuthContext);
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   const navigate=useNavigate()
   // console.log(user);
   const from = location.state?.from?.pathname || "/";
@@ -565,7 +565,7 @@ const ConversationCard = ({
 }) => {
   const { handleMessageShow } = useContext(AuthContext);
 
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -611,7 +611,7 @@ import { MdDeleteForever } from "react-icons/md";
 const SearchProductCart = ({ product, handleSearchClose }) => {
   // console.log(product);
 
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   const navigate=useNavigate()
   const [newPrice, setNewPrice] = useState(product?.price);
 

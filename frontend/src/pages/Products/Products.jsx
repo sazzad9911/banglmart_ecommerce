@@ -38,7 +38,7 @@ const Products = () => {
   const [min, setMin] = useState(0);
   const [max, setMax] = useState(0);
 
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   useEffect(() => {
     const fetchOptionProducts = async () => {
       try {

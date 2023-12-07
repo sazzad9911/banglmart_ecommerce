@@ -22,7 +22,7 @@ export const fetchNewProducts = () => {
   return (dispatch) => {
     dispatch(fetchNewProductsRequest());
     axios
-      .get("https://api.banglamartecommerce.com.bd/product/get/new")
+      .get("https://banglamartecommerce.com.bd/product/get/new")
       .then((response) => {
         const newProduct = response.data;
         dispatch(fetchNewProductsSuccess(newProduct));

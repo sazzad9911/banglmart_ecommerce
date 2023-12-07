@@ -183,7 +183,7 @@ const ProductShowSlider = ({ products }) => {
 
 const Cart2 = ({ product }) => {
   const { t } = useTranslation();
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   // const { user, setCartUpdate } = useContext(AuthContext);
   // const navigate = useNavigate();
   const [hover, setHover] = useState(false);

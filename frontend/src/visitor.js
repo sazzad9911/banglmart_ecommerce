@@ -13,7 +13,7 @@ function makeid(length) {
 const init = async (uid) => {
   const randomId = localStorage.getItem("id");
   if (randomId) {
-    const rawResponse = await fetch("https://api.banglamartecommerce.com.bd/auth/visitor", {
+    const rawResponse = await fetch("https://banglamartecommerce.com.bd/auth/visitor", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -26,7 +26,7 @@ const init = async (uid) => {
   } else {
     const randomId = makeid(50);
     localStorage.setItem("id", randomId);
-    const rawResponse = await fetch("https://api.banglamartecommerce.com.bd/auth/visitor", {
+    const rawResponse = await fetch("https://banglamartecommerce.com.bd/auth/visitor", {
       method: "POST",
       headers: {
         Accept: "application/json",

@@ -16,7 +16,7 @@ import { PiSmileySadLight } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 const TrackOrder = () => {
   const {t}=useTranslation()
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [orders, setOrders] = useState([]);

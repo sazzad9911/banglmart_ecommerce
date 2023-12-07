@@ -22,7 +22,7 @@ export const fetchFlashSellData = (id) => {
   return (dispatch) => {
     dispatch(fetchFlashSellDataRequest());
     axios
-      .get(`https://api.banglamartecommerce.com.bd/product/get/flash/product?flashSellId=${id}`)
+      .get(`https://banglamartecommerce.com.bd/product/get/flash/product?flashSellId=${id}`)
       .then((response) => {
         const flashSellData = response.data;
         dispatch(fetchFlashSellDataSuccess(flashSellData));

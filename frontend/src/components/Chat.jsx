@@ -14,7 +14,7 @@ const Chat = () => {
     messages,
     setConversationShow,
   } = useContext(AuthContext);
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   const [allMessages, setAllMessages] = useState(null);
   useEffect(() => {
     setAllMessages(messages);

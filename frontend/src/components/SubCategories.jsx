@@ -6,7 +6,7 @@ const SubCategory = ({ subCategories }) => {
   const [options, setOptions] = useState(null);
   // console.log(subCategories);
 
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   useEffect(() => {
     const fetchCategories = async () => {
       try {

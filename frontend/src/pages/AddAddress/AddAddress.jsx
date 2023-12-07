@@ -5,7 +5,7 @@ import { AuthContext } from "../../providers/AuthProvider";
 import { Avatar } from "@chakra-ui/react";
 import { FaUserEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
-const url = "https://api.banglamartecommerce.com.bd";
+const url = "https://banglamartecommerce.com.bd";
 const AddDeliveryAddressForm = () => {
   const { user, setUserState, updateUser, language } = useContext(AuthContext);
   const [divisions, setDivisions] = useState([]);

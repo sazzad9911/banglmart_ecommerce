@@ -136,7 +136,7 @@ export default FlashSellProductShowSlider;
 const Cart2 = ({ data }) => {
   const { t } = useTranslation();
   const product = data.product;
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   // const { user, setCartUpdate } = useContext(AuthContext);
   // const navigate = useNavigate();
   const [hover, setHover] = useState(false);

@@ -5,7 +5,7 @@ import { getApi } from "../apis";
 import { Spinner } from "@chakra-ui/react";
 
 const Banner = () => {
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   const [sliders, setSliders] = useState(null);
   // console.log(sliders);

@@ -15,7 +15,7 @@ import { AuthContext } from "../../providers/AuthProvider";
 const Profile = () => {
   const { user, language } = useContext(AuthContext);
   // console.log(user);
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   return (
     <div className="pt-4 bg-BackgroundColor flex items-center justify-center m-1 lg:m-0">

@@ -29,7 +29,7 @@ const VariousProductsPage = () => {
   const encodedData = queryParams.get("data");
   const route = JSON.parse(decodeURIComponent(encodedData));
   // console.log(products);
-  //   const url = "https://api.banglamartecommerce.com.bd";
+  //   const url = "https://banglamartecommerce.com.bd";
   const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   useEffect(() => {
     getApi(route, null)

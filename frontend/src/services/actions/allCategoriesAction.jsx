@@ -20,7 +20,7 @@ export const fetchAllCategoriesFailure = (error) => ({
 });
 
 export const fetchAllCategories = () => {
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   return (dispatch) => {
     dispatch(fetchAllCategoriesRequest());

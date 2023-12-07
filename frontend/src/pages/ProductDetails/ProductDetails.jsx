@@ -58,7 +58,7 @@ const ProductDetails = () => {
   const [product, setProductDetails] = useState(null);
   const [shopDetails, setShopDetails] = useState(null);
   // console.log(product);
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
   useEffect(() => {
     const visitorId = localStorage.getItem("visitorId");
     const fetchProductDetails = async () => {
@@ -1147,7 +1147,7 @@ const ProductDetails = () => {
 export default ProductDetails;
 
 const ImageShow = ({ product }) => {
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 

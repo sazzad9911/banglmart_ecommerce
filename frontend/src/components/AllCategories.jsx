@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 
 const AllCategory = () => {
   const { t } = useTranslation();
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   // const [categories, setCategories] = useState(null);
   const [subCategories, setSubCategories] = useState([]);

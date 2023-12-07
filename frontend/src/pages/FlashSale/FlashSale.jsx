@@ -10,7 +10,7 @@ import { Helmet } from "react-helmet";
 
 const FlashSalePage = () => {
   const dispatch = useDispatch();
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   const flashSellId =useSelector(
     (state) => state.flashSell.flashSell?.data[0]?.id

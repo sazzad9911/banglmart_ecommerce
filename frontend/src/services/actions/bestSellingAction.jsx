@@ -22,7 +22,7 @@ export const fetchBestSellingProducts = () => {
   return (dispatch) => {
     dispatch(fetchBestSellingProductsRequest());
     axios
-      .get("https://api.banglamartecommerce.com.bd/product/get/top/sell")
+      .get("https://banglamartecommerce.com.bd/product/get/top/sell")
       .then((response) => {
         const bestSellingProduct = response.data;
         dispatch(fetchBestSellingProductsSuccess(bestSellingProduct));

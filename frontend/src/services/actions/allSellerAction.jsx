@@ -22,7 +22,7 @@ export const fetchAllSellerData = () => {
   return (dispatch) => {
     dispatch(fetchAllSellerDataRequest());
     axios
-      .get('https://api.banglamartecommerce.com.bd/store/allSeller?verified=1')
+      .get('https://banglamartecommerce.com.bd/store/allSeller?verified=1')
       .then((response) => {
         const allSellerData = response.data;
         dispatch(fetchAllSellerDataSuccess(allSellerData));

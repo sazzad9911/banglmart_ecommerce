@@ -18,7 +18,7 @@ const CartComponent = ({
   const { setCartUpdate,language } = useContext(AuthContext);
   let product = data.product;
   // console.log(data?.colors.label);
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   const [loading, setLoading] = useState(false);
   const [minOrder, setQuantity] = useState(null);

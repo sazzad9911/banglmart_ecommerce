@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { putApi } from "../apis";
 
 const PopUpAdd = ({ setAdds }) => {
-  const url = "https://api.banglamartecommerce.com.bd";
+  const url = "https://banglamartecommerce.com.bd";
 
   const [addImages, setAddImages] = useState(null);
   const [image, setImage] = useState(null);
