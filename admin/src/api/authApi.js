@@ -1,6 +1,6 @@
 import axios from "axios"
-//const url = "https://api.banglamartecommerce.com.bd";
-const url = "http://localhost:1300";
+const url = "https://banglamartecommerce.com.bd";
+//const url = "http://localhost:1300";
 
 const signIn=async(email,password)=>{
     const res=await axios.post(`${url}/auth/signIn`,{
