@@ -44,7 +44,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
-app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173","https://banglamartecommerce.com.bd","https://api.banglamartecommerce.com.bd"]}))
+app.use(cors({origin:["http://localhost:1300","https://admin.banglamartecommerce.com.bd","http://localhost:5173","https://banglamartecommerce.com.bd","https://api.banglamartecommerce.com.bd","http://localhost:3000"]}))
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
  
@@ -53,7 +53,7 @@ app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
-
+app.use(express.static(path.join(__dirname, 'admin/build')));
 
 app.use("/images", express.static("functions/images"));
 app.use("/icon", express.static("icon"));
@@ -82,7 +82,7 @@ app.use("/codes", codes);
 app.use("/notification", notification);
 app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
-app.use("/admin",admin)
+app.use("/panel",admin)
 // app.get('/', async (req, res) => {
 //   res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
 // });

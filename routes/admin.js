@@ -26,4 +26,7 @@ const __dirname = path.dirname(__filename);
 const adminFolder=path.join(__dirname, '../static/admin/build');
 
 admin.route("/translate").post(englishToBangla)
+admin.route('*').get(async (req, res) => {
+  res.sendFile(path.join(__dirname, '../admin/build/index.html'));
+});
 export default admin;
