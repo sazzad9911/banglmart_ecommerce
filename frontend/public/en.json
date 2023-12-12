@@ -179,9 +179,11 @@
     "aboutUs": "About Us",
     "descriptions": "Banglamart is the operator of the eCommerce platform intended to provide food, grocery, classifieds, accounting, and inventory solutions. The company platform provides a wide range of food, grocery, electronics, clothing, and other similar products, enabling customers to access all products on one platform."
   },
+  
   "contactUs": {
     "contactUs": "Contact Us",
-    "address": "Gulfesha Plaza, 5th Floor, Ramna, Dhaka-1217",
+    "address": "Khandakar lodge, House-65, Road-2, R.K Road, Rangpur.",
+    "addressss": "Gulfesha Plaza, 5th Floor, Ramna, Dhaka-1217",
     "branch": "Branch Office"
   },
   "usefulLinks": {

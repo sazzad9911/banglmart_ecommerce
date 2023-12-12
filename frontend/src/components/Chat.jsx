@@ -109,19 +109,19 @@ const Chat = () => {
               {/* chat start  */}
               <div
                 className={`chat ${
-                  user.id === message.receiverId ? "chat-start" : "chat-end"
+                  user?.id === message.receiverId ? "chat-start" : "chat-end"
                 } `}
               >
                 <div className="chat-image avatar">
                   <Avatar
                     size="sm"
                     name={
-                      user.id === message.receiverId
+                      user?.id === message.receiverId
                         ? conversation?.receiver?.name
                         : user.name
                     }
                     src={`${url}${
-                      user.id === message.receiverId
+                      user?.id === message.receiverId
                         ? conversation?.receiver?.image
                         : user.image
                     }`}
@@ -129,7 +129,7 @@ const Chat = () => {
                 </div>
                 <div className="text-xs chat-header flex flex-col  text-SubTextColor ">
                   <p>
-                    {user.id === message.receiverId
+                    {user?.id === message.receiverId
                       ? conversation?.receiver?.name
                       : user.name}
                   </p>

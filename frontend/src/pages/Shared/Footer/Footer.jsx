@@ -215,7 +215,7 @@ const Footer = () => {
               </p>
               <div className="">
                 <img
-                  className="lg:w-96 md:w-80"
+                  className="lg:w-96 md:w-80 rounded-md"
                   src="https://i.ibb.co/kD2RfPN/Wallet-01.jpg"
                   alt=""
                 />
@@ -227,7 +227,7 @@ const Footer = () => {
                   alt=""
                 />
               </div>
-            </div>
+            </div>  
           </div>
         </div>
         <p className="text-SubTextColor text-center">
@@ -235,7 +235,7 @@ const Footer = () => {
           rights reserved.
         </p>
       </div>
-    </div>
+    </div>  
   );
 };
 
