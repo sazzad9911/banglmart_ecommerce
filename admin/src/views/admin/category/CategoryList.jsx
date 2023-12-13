@@ -125,7 +125,7 @@ export default function CategoryList({ onBack }) {
                       )}option/${e.data.id}`
                     );
                   }}
-                  className="text-blue-500 hover:underline"
+                  className="text-blue-500 hover:underline cursor-pointer"
                 >
                   {e.data.name}
                 </Td>
