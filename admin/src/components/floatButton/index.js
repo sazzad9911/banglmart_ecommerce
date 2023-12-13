@@ -4,9 +4,9 @@ import { AiOutlinePlus } from 'react-icons/ai'
 
 export default function FloatButton({onClick,className}) {
   return (
-    <div className={`fixed bottom-10 right-10 z-50 ${className}`}>
+    <div className={`fixed bottom-10 right-10 z-50 rounded-full shadow-lg ${className}`}>
         <Button onClick={onClick} style={{
-            backgroundColor:"#4318FF",
+            backgroundColor:"#0083A9",
             borderRadius:30,
             height:60,
             width:60,

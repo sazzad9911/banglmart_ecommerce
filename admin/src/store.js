@@ -15,6 +15,7 @@ import { flashSell } from "reducers/multiple";
 import { color } from "reducers/multiple";
 import option from "reducers/option";
 import product from "reducers/product";
+import search from "reducers/search";
 import subCategory from "reducers/sub-category";
 import user from "reducers/user";
 
@@ -40,7 +41,8 @@ const combine=combineReducers({
     allAds:allAds,
     allBanner:allBanner,
     allComment:allComments,
-    allConversation:allConversation
+    allConversation:allConversation,
+    search:search
 })
 const store =createStore(combine)
 export default store

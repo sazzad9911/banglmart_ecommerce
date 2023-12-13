@@ -7,8 +7,10 @@ import {
   InputRightElement,
   Button,
   useDisclosure,
+  Avatar,
+  ButtonGroup,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Table,
   Thead,
@@ -21,7 +23,13 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { FaSearch } from "react-icons/fa";
-import { AiFillDelete, AiOutlineDown, AiOutlineHolder } from "react-icons/ai";
+import {
+  AiFillDelete,
+  AiFillEdit,
+  AiOutlineDown,
+  AiOutlineHolder,
+  AiOutlinePlus,
+} from "react-icons/ai";
 import {
   Menu,
   MenuButton,
@@ -56,6 +64,8 @@ import {
 } from "@chakra-ui/react";
 import { putApi } from "api/api";
 import { url } from "api/authApi";
+import { useLocation, useParams } from "react-router-dom";
+import FloatButton from "components/floatButton";
 
 export default function Category() {
   const [page, setPage] = useState(0);
@@ -77,11 +87,13 @@ export default function Category() {
   const alert = useAlert();
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [editCategoryId,setEditCategoryId]=useState()
-  const [editCategoryName,setEditCategoryName]=useState()
-  const [editCategoryIcon,setEditCategoryIcon]=useState()
-  const [editCategoryIconVal,setEditCategoryIconVal]=useState()
-
+  const [editCategoryId, setEditCategoryId] = useState();
+  const [editCategoryName, setEditCategoryName] = useState();
+  const [editCategoryIcon, setEditCategoryIcon] = useState();
+  const [editCategoryIconVal, setEditCategoryIconVal] = useState();
+  const params = useLocation();
+  const inpRef = useRef();
+  //params.search
   useEffect(() => {
     if (search) {
       return setCategories(
@@ -94,28 +106,31 @@ export default function Category() {
   }, [search, isLoading, categoryList]);
 
   const addMainCategory = async () => {
-    if (!name || !icon) {
+   // console.log(editCategoryName);
+    if (!editCategoryName || !editCategoryIcon) {
       return alert.info("All fields are required");
     }
     dispatch(setLoading(true));
     const f = new FormData();
-    f.append("name", name);
-    f.append("icon", icon);
+    f.append("name", editCategoryName);
+    f.append("icon", editCategoryIcon);
     try {
       const res = await storeCategory(f, user?.token);
       dispatch(setLoading(false));
       dispatch(setChange(res));
       alert.success("Category added");
-      setName("");
-      setIcon();
+    
+      onClose()
+      setEditCategoryIcon("");
+      setEditCategoryName();
     } catch (e) {
       dispatch(setLoading(false));
       alert.error("Something went wrong!");
     }
   };
   const editMainCategory = async () => {
-    onClose()
-    if (!editCategoryName ||!editCategoryId) {
+    onClose();
+    if (!editCategoryName || !editCategoryId) {
       return alert.info("All fields are required");
     }
     dispatch(setLoading(true));
@@ -124,12 +139,14 @@ export default function Category() {
     f.append("icon", editCategoryIcon);
     f.append("id", editCategoryId);
     try {
-      const res = await putApi("/category/editCategory",f, user?.token);
+      const res = await putApi("/category/editCategory", f, user?.token);
       dispatch(setLoading(false));
       dispatch(setChange(res));
+      onClose()
       alert.success("Category updated");
-      setName("");
-      setIcon();
+      setEditCategoryIcon("");
+      setEditCategoryName();
+      
     } catch (e) {
       dispatch(setLoading(false));
       alert.error("Something went wrong!");
@@ -191,119 +208,9 @@ export default function Category() {
     return <CategoryList id={categoryId} onBack={setCategoryId} />;
   }
   return (
-    <div className="mt-4 gap-2 py-3 dark:text-[#fff] lg:grid lg:grid-cols-2">
-      <div>
-        <div className=" rounded-md border-2 p-4">
-          <h1 className="headLine">Add Main Category</h1>
-          <FormControl className="my-6">
-            <FormLabel>Category Name</FormLabel>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={style}
-              placeholder="Category Name"
-            />
-            <FormLabel className="mt-4">Category Icon</FormLabel>
-            <Input
-              onChange={(e) =>
-                setIcon(e.target.files[e.target.files.length - 1])
-              }
-              type="file"
-              style={style}
-            />
-            <Button
-              onClick={addMainCategory}
-              className="mt-4"
-              colorScheme="blue"
-            >
-              Save
-            </Button>
-          </FormControl>
-        </div>
-        <div className=" mt-2 rounded-md border-2 p-4">
-          <h1 className="headLine">Add Sub Category</h1>
-          <FormControl className="my-6">
-            <FormLabel>Select Category</FormLabel>
-            <Select
-              className=" dark:bg-brandLinear dark:text-[#000]"
-              value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
-              style={style}
-              placeholder="Select Category"
-            >
-              {categoryList?.map((doc, i) => (
-                <option key={i} value={doc.id}>
-                  {doc.name}
-                </option>
-              ))}
-            </Select>
-            <FormLabel className="mt-4">Sub Category Name</FormLabel>
-            <Input
-              value={subCategoryName}
-              onChange={(e) => setSubCategoryName(e.target.value)}
-              placeholder="Sub Category Name"
-              type="text"
-              style={style}
-            />
-            <Button
-              onClick={addSubCategory}
-              className="mt-4"
-              colorScheme="blue"
-            >
-              Save
-            </Button>
-          </FormControl>
-        </div>
-        <div className=" mt-2 rounded-md border-2 p-4">
-          <h1 className="headLine">Add Options</h1>
-          <FormControl className="my-6">
-            <FormLabel>Select Category</FormLabel>
-            <Select
-              className=" dark:bg-brandLinear dark:text-[#000]"
-              onChange={(e) => {
-                setSubCategories(
-                  subCategoryList?.filter((d) => d.categoryId == e.target.value)
-                );
-              }}
-              style={style}
-              placeholder="Select Category"
-            >
-              {categoryList?.map((doc, i) => (
-                <option key={i} value={doc.id}>
-                  {doc.name}
-                </option>
-              ))}
-            </Select>
-            <FormLabel className="mt-4">Select Sub Category</FormLabel>
-            <Select
-              className=" dark:bg-brandLinear dark:text-[#000]"
-              value={option}
-              onChange={(e) => setOption(e.target.value)}
-              style={style}
-              placeholder="Select Sub-Category"
-            >
-              {subCategories?.map((doc, i) => (
-                <option key={i} value={doc.id}>
-                  {doc.name}
-                </option>
-              ))}
-            </Select>
-            <FormLabel className="mt-4">Option Name</FormLabel>
-            <Input
-              value={optionName}
-              onChange={(e) => setOptionName(e.target.value)}
-              placeholder="Option Name"
-              type="text"
-              style={style}
-            />
-            <Button onClick={addOptions} className="mt-4" colorScheme="blue">
-              Save
-            </Button>
-          </FormControl>
-        </div>
-      </div>
+    <div className="mt-4 gap-2 py-3 dark:text-[#fff] ">
       <div className=" mt-2 overflow-y-auto rounded-md border-2 p-4 lg:mt-0">
-        <h1 className="headLine">Category List</h1>
+        {/* <h1 className="headLine">Category List</h1>
         <InputGroup className="mt-4" style={style}>
           <Input
             value={search}
@@ -313,82 +220,96 @@ export default function Category() {
           <InputRightElement>
             <FaSearch />
           </InputRightElement>
-        </InputGroup>
+        </InputGroup> */}
 
         <Pagination
-          itemsPerPage={12}
+          itemsPerPage={10}
           data={Category}
           head={
             <Tr>
               <Th>No.</Th>
-              <Th>Name</Th>
+              <Th>Image and Name</Th>
               <Th>Action</Th>
             </Tr>
           }
           ROW={(e) => (
             <Tr>
               <Td>{e.index + 1}</Td>
-              <Td>{e.data.name}</Td>
-              <Td className=" z-30">
-                <Menu >
-                  {({ isOpen }) => (
-                    <>
-                      <MenuButton isActive={isOpen} as={Button}>
-                        <AiOutlineHolder />
-                      </MenuButton>
-
-                      <MenuList className=" dark:text-[#000] z-20">
-                        <MenuItem className="z-20"
-                          onClick={() => {
-                            Swal.fire({
-                              title: "Are you sure?",
-                              text: "You won't be able to revert this!",
-                              icon: "warning",
-                              showCancelButton: true,
-                              confirmButtonColor: "#3085d6",
-                              cancelButtonColor: "#d33",
-                              confirmButtonText: "Yes, delete it!",
-                            }).then((result) => {
-                              if (result.isConfirmed) {
-                                deleteItem(e.data.id);
-                              }
-                            });
-                          }}
-                        >
-                          Delete
-                        </MenuItem>
-                        <MenuItem onClick={() => setCategoryId(e.data.id)}>
-                          View Sub-Categories
-                        </MenuItem>
-                        <MenuItem onClick={() => {
-                          setEditCategoryId(e.data.id);
-                          setEditCategoryName(e.data.name);
-                          setEditCategoryIconVal(e.data.icon);
-                          onOpen()
-                        }}>
-                          Edit
-                        </MenuItem>
-                      </MenuList>
-                    </>
-                  )}
-                </Menu>
+              <Td className="flex items-center">
+                <Avatar className="mr-2" src={`${url}${e.data.icon}`} />
+                <p
+                  className="cursor-pointer text-blue-400 hover:underline"
+                  onClick={() => setCategoryId(e.data.id)}
+                >
+                  {e.data.name}
+                </p>
+              </Td>
+              <Td className=" ">
+                <div className="flex items-center gap-4">
+                  <div
+                    onClick={() => {
+                      Swal.fire({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          deleteItem(e.data.id);
+                        }
+                      });
+                    }}
+                    className="rounded-full bg-red-300 p-2"
+                  >
+                    <AiFillDelete />
+                  </div>
+                  <div
+                    onClick={() => {
+                      setEditCategoryId(e.data.id);
+                      setEditCategoryName(e.data.name);
+                      setEditCategoryIconVal(e.data.icon);
+                      onOpen();
+                    }}
+                    className="rounded-full bg-gray-400 p-2"
+                  >
+                    <AiFillEdit />
+                  </div>
+                </div>
               </Td>
             </Tr>
           )}
         />
       </div>
-      <Modal isOpen={isOpen} onClose={()=>{
-        onClose()
-        setEditCategoryIcon()
-        setEditCategoryName()
-        setEditCategoryId()
-        setEditCategoryIconVal()
-      }}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          setEditCategoryIcon();
+          setEditCategoryName();
+          setEditCategoryId();
+          setEditCategoryIconVal();
+        }}
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Category</ModalHeader>
+          <ModalHeader>{editCategoryId ? "Edit" : "Add"} Category</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <div className="flex w-full justify-center">
+              <Avatar
+                alt="icon"
+                className="my-2"
+                src={
+                  editCategoryIcon
+                    ? URL.createObjectURL(editCategoryIcon)
+                    : `${url}${editCategoryIconVal}`
+                }
+              />
+            </div>
+            <FormLabel className="mt-4">Category Title</FormLabel>
             <Input
               value={editCategoryName}
               onChange={(e) => setEditCategoryName(e.target.value)}
@@ -396,30 +317,52 @@ export default function Category() {
               placeholder="Category Name"
             />
             <FormLabel className="mt-4">Category Icon</FormLabel>
+            <Button
+              onClick={() => {
+                inpRef.current?.click();
+              }}
+              colorScheme="blue"
+              className="w-full"
+              leftIcon={<AiOutlinePlus />}
+            >
+              Add Icon
+            </Button>
             <Input
+              ref={inpRef}
+              className="hidden"
               onChange={(e) =>
                 setEditCategoryIcon(e.target.files[e.target.files.length - 1])
               }
               type="file"
               style={style}
             />
-            <img alt="icon" className="w-8 h-8 mt-2" src={editCategoryIcon?URL.createObjectURL(editCategoryIcon):`${url}${editCategoryIconVal}`}></img>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={()=>{
-               onClose()
-               setEditCategoryIcon()
-               setEditCategoryName()
-               setEditCategoryId()
-               setEditCategoryIconVal()
-            }}>
+            <Button
+              onClick={!editCategoryId ? addMainCategory : editMainCategory}
+              colorScheme={"blue"}
+              mr={3}
+            >
+              Save
+            </Button>
+            <Button
+              colorScheme="red"
+             
+              onClick={() => {
+                onClose();
+                setEditCategoryIcon();
+                setEditCategoryName();
+                setEditCategoryId();
+                setEditCategoryIconVal();
+              }}
+            >
               Close
             </Button>
-            <Button onClick={editMainCategory} colorScheme={"blue"}>Save</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <FloatButton onClick={() => onOpen()} />
     </div>
   );
 }

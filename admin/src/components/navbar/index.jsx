@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Dropdown from "components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import navbarimage from "assets/img/layout/Navbar.png";
 import { BsArrowBarUp } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
@@ -11,7 +11,7 @@ import {
   IoMdInformationCircleOutline,
 } from "react-icons/io";
 import avatar from "assets/img/avatars/profile.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "reducers/user";
 import { url } from "api/authApi";
 import { setLoading } from "reducers/isLoading";
@@ -19,35 +19,36 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, Badge } from "@chakra-ui/react";
 import { getApi } from "api/api";
 import { onMessage } from "firebase/messaging";
-import {messaging} from "./../../firebase"
+import { messaging } from "./../../firebase";
+import { storeSearch } from "reducers/search";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = React.useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [notificationCount, setNotificationCount] = useState(0);
   const [notification, setNotification] = useState();
+  const { pathname } = useLocation();
+  const dispatch=useDispatch()
+  const search=useSelector(s=>s.search)
 
   useEffect(() => {
-    const get=()=>{
+    const get = () => {
       if (user) {
         getApi("/notification/unRead", user.token).then((response) => {
           setNotificationCount(response.data.data);
           //console.log(response.data.data);
         });
-        
       }
-    }
+    };
     // onMessage(messaging,data=>{
     //   get()
     //   //console.log(data);
     // })
-    get()
+    get();
     getApi("/notification/read", user.token).then((response) => {
       setNotification(response.data.data);
-    
     });
   }, [user]);
 
@@ -106,16 +107,22 @@ const Navbar = (props) => {
       </div>
 
       <div className="relative mt-[3px] flex h-[61px] w-[355px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-2 py-2 shadow-xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none md:w-[365px] md:flex-grow-0 md:gap-1 xl:w-[365px] xl:gap-2">
-        <div className="flex h-full items-center rounded-full bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
-          <p className="pl-3 pr-2 text-xl">
-            <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
-          </p>
-          <input
-            type="text"
-            placeholder="Search..."
-            class="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
-          />
-        </div>
+        {pathname.split("/")[pathname.split("/").length - 1] != "default" ?(
+          <div className="flex h-full items-center rounded-full bg-lightPrimary text-navy-700 dark:bg-navy-900 dark:text-white xl:w-[225px]">
+            <p className="pl-3 pr-2 text-xl">
+              <FiSearch className="h-4 w-4 text-gray-400 dark:text-white" />
+            </p>
+            <input  value={search} 
+            onChange={e=>dispatch(storeSearch(e.target.value))}
+              type="text"
+              placeholder="Search..."
+              class="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
+            />
+          </div>
+        ):(
+          <div>Service Analytics</div>
+        )}
+
         <span
           className="flex cursor-pointer text-xl text-gray-600 dark:text-white xl:hidden"
           onClick={onOpenSidenav}
@@ -138,7 +145,7 @@ const Navbar = (props) => {
           }
           animation="origin-[65%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
           children={
-            <div className="flex w-[360px] h-[calc(100vh-200px)] overflow-y-scroll flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
+            <div className="flex h-[calc(100vh-200px)] w-[360px] flex-col gap-3 overflow-y-scroll rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
               <div className="flex items-center justify-between">
                 <p className="text-base font-bold text-navy-700 dark:text-white">
                   Notification
@@ -147,20 +154,20 @@ const Navbar = (props) => {
                   Mark all read
                 </p>
               </div>
-              {notification?.map((doc,i)=>(
+              {notification?.map((doc, i) => (
                 <button className="flex w-full items-center">
-                <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
-                  <BsArrowBarUp />
-                </div>
-                <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                  <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                    {doc.title}
-                  </p>
-                  <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-                    {doc.message}
-                  </p>
-                </div>
-              </button>
+                  <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
+                    <BsArrowBarUp />
+                  </div>
+                  <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
+                    <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
+                      {doc.title}
+                    </p>
+                    <p className="font-base text-left text-xs text-gray-900 dark:text-white">
+                      {doc.message}
+                    </p>
+                  </div>
+                </button>
               ))}
             </div>
           }
@@ -250,7 +257,7 @@ const Navbar = (props) => {
 
               <div className="flex flex-col p-4">
                 <a
-                  href=" "
+                  href="https://banglamartecommerce.com.bd/addDeliveryAddress"
                   className="text-sm text-gray-800 dark:text-white hover:dark:text-white"
                 >
                   Profile Settings
