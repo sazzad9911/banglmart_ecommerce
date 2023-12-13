@@ -9,6 +9,7 @@ import {
   useDisclosure,
   Avatar,
   ButtonGroup,
+  useFocusEffect,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -64,8 +65,9 @@ import {
 } from "@chakra-ui/react";
 import { putApi } from "api/api";
 import { url } from "api/authApi";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useRoutes } from "react-router-dom";
 import FloatButton from "components/floatButton";
+import { storeSearch } from "reducers/search";
 
 export default function Category() {
   const [page, setPage] = useState(0);
@@ -81,7 +83,7 @@ export default function Category() {
   const [subCategories, setSubCategories] = useState();
   const user = useSelector((state) => state.user);
   const [Category, setCategories] = useState();
-  const [search, setSearch] = useState();
+  const search = useSelector((s) => s.search);
   const isLoading = useSelector((state) => state.isLoading);
 
   const alert = useAlert();
@@ -91,8 +93,9 @@ export default function Category() {
   const [editCategoryName, setEditCategoryName] = useState();
   const [editCategoryIcon, setEditCategoryIcon] = useState();
   const [editCategoryIconVal, setEditCategoryIconVal] = useState();
-  const params = useLocation();
+  const { pathname } = useLocation();
   const inpRef = useRef();
+  const navigate=useNavigate()
   //params.search
   useEffect(() => {
     if (search) {
@@ -104,9 +107,15 @@ export default function Category() {
     }
     setCategories(categoryList);
   }, [search, isLoading, categoryList]);
+  // useFocusEffect(()=>{
+  //   dispatch(storeSearch(""))
+  // })
+  useEffect(() => {
+    dispatch(storeSearch(""));
+  }, [pathname]);
 
   const addMainCategory = async () => {
-   // console.log(editCategoryName);
+    // console.log(editCategoryName);
     if (!editCategoryName || !editCategoryIcon) {
       return alert.info("All fields are required");
     }
@@ -119,8 +128,8 @@ export default function Category() {
       dispatch(setLoading(false));
       dispatch(setChange(res));
       alert.success("Category added");
-    
-      onClose()
+
+      onClose();
       setEditCategoryIcon("");
       setEditCategoryName();
     } catch (e) {
@@ -142,54 +151,17 @@ export default function Category() {
       const res = await putApi("/category/editCategory", f, user?.token);
       dispatch(setLoading(false));
       dispatch(setChange(res));
-      onClose()
+      onClose();
       alert.success("Category updated");
       setEditCategoryIcon("");
       setEditCategoryName();
-      
     } catch (e) {
       dispatch(setLoading(false));
       alert.error("Something went wrong!");
     }
   };
-  const addSubCategory = async () => {
-    if (!subCategory || !subCategoryName || !user) {
-      return alert.info("All fields are required");
-    }
-    dispatch(setLoading(true));
-    try {
-      const res = await storeSubCategory(
-        subCategoryName,
-        subCategory,
-        user.token
-      );
-      dispatch(setLoading(false));
-      dispatch(setChange(res));
-      alert.success("Category added");
-      setSubCategoryName("");
-      setSubCategory("");
-    } catch (e) {
-      dispatch(setLoading(false));
-      alert.error("Something went wrong!");
-    }
-  };
-  const addOptions = async () => {
-    if (!option || !optionName) {
-      return alert.info("All fields are required");
-    }
-    dispatch(setLoading(true));
-    try {
-      const res = await storeOption(optionName, option, user?.token);
-      dispatch(setLoading(false));
-      dispatch(setChange(res));
-      alert.success("Category added");
-      setOptionName("");
-      setOption("");
-    } catch (e) {
-      dispatch(setLoading(false));
-      alert.error("Something went wrong!");
-    }
-  };
+ 
+  
   const deleteItem = async (id) => {
     dispatch(setLoading(true));
     try {
@@ -239,7 +211,7 @@ export default function Category() {
                 <Avatar className="mr-2" src={`${url}${e.data.icon}`} />
                 <p
                   className="cursor-pointer text-blue-400 hover:underline"
-                  onClick={() => setCategoryId(e.data.id)}
+                  onClick={() =>navigate(`${pathname}/${e.data.id}`) }
                 >
                   {e.data.name}
                 </p>
@@ -348,7 +320,6 @@ export default function Category() {
             </Button>
             <Button
               colorScheme="red"
-             
               onClick={() => {
                 onClose();
                 setEditCategoryIcon();

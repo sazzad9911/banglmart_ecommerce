@@ -45,11 +45,13 @@ import {
 import { putApi } from "api/api";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import FloatButton from "components/floatButton";
-import { storeSubCategory } from "api/category";
+import { storeOption } from "api/category";
 import { storeSearch } from "reducers/search";
 
-export default function CategoryList({ onBack }) {
+export default function OptionList({ onBack }) {
   const subCategory = useSelector((state) => state.subCategory);
+  const option = useSelector((state) => state.option);
+  const [selection, setSelection] = useState();
   const alert = useAlert();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -57,33 +59,32 @@ export default function CategoryList({ onBack }) {
   const search = useSelector((s) => s.search);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editSubCategory, setEditSubCategory] = useState();
+  const [editOption, setEditOption] = useState();
   const { id } = useParams();
   const categoryList = useSelector((state) => state.category);
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  console.log(pathname.substring(0, pathname.lastIndexOf("/") + 1));
+  const {pathname}=useLocation()
 
   useEffect(() => {
     if (search) {
       return setSubCategoryList(
-        subCategory?.filter(
+        option?.filter(
           (d) =>
             d.name.toLowerCase().includes(search.toLowerCase()) &&
-            d.categoryId === id
+            d.subCategoryId === id
         )
       );
     }
-    setSubCategoryList(subCategory?.filter((d) => d.categoryId == id));
+    setSubCategoryList(option?.filter((d) => d.subCategoryId == id));
     // console.log(subCategory.filter((d) => d.categoryId == id));
-  }, [search, subCategory?.length, subCategory, id]);
+  }, [search, option?.length, option, id]);
   useEffect(() => {
     dispatch(storeSearch(""));
   }, [pathname]);
-
-  const deleteCategoryItem = async (id) => {
+  const deleteItem = async (id) => {
     dispatch(setLoading(true));
     try {
-      const res = await deleteSubCategory(id, user.token);
+      const res = await deleteOption(id, user.token);
       //const res = await getCategory();
       //dispatch(setCategory(res.data));
       dispatch(setLoading(false));
@@ -100,7 +101,7 @@ export default function CategoryList({ onBack }) {
       <div className=" gap-2 py-3 ">
         <div className=" mt-2 overflow-y-auto rounded-md border-2 p-4 lg:mt-0">
           <div className="my-2 text-2xl font-bold">
-            {categoryList?.filter((d) => d.id.match(id))[0]?.name}
+            {subCategory?.filter((d) => d.id.match(id))[0]?.name}
           </div>
           <Pagination
             itemsPerPage={10}
@@ -116,19 +117,7 @@ export default function CategoryList({ onBack }) {
             ROW={(e) => (
               <Tr>
                 <Td>{e.index + 1}</Td>
-                <Td
-                  onClick={() => {
-                    navigate(
-                      `${pathname.substring(
-                        0,
-                        pathname.lastIndexOf("/") + 1
-                      )}option/${e.data.id}`
-                    );
-                  }}
-                  className="text-blue-500 hover:underline"
-                >
-                  {e.data.name}
-                </Td>
+                <Td>{e.data.name}</Td>
                 <Td>
                   <div className="flex gap-4">
                     <div
@@ -143,7 +132,7 @@ export default function CategoryList({ onBack }) {
                           confirmButtonText: "Yes, delete it!",
                         }).then((result) => {
                           if (result.isConfirmed) {
-                            deleteCategoryItem(e.data.id);
+                            deleteItem(e.data.id);
                           }
                         });
                       }}
@@ -153,10 +142,10 @@ export default function CategoryList({ onBack }) {
                     </div>
                     <div
                       onClick={() => {
-                        setEditSubCategory(e.data.id);
+                        setEditOption(e.data.id);
                         onOpen();
                       }}
-                      className="rounded-full bg-gray-300 p-2"
+                      className="rounded-full bg-gray-400 p-2"
                     >
                       <AiFillEdit size={20} />
                     </div>
@@ -172,14 +161,14 @@ export default function CategoryList({ onBack }) {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          setEditSubCategory("");
+          setEditOption("");
         }}
       >
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <EditSub categoryId={id} onClose={onClose} id={editSubCategory} />
+            <EditOption subCategoryId={id} onClose={onClose} id={editOption} />
           </ModalBody>
 
           <ModalFooter>
@@ -188,7 +177,7 @@ export default function CategoryList({ onBack }) {
               mr={3}
               onClick={() => {
                 onClose();
-                setEditSubCategory("");
+                setEditOption("");
               }}
             >
               Close
@@ -202,63 +191,63 @@ export default function CategoryList({ onBack }) {
 const style = {
   borderColor: "#ABB2B9",
 };
-const EditSub = ({ id, onClose, categoryId }) => {
+
+const EditOption = ({ id, onClose, subCategoryId }) => {
   const [subCategory, setSubCategory] = useState();
-  const [subCategoryName, setSubCategoryName] = useState();
+  const [option, setOption] = useState();
+  const [optionName, setOptionName] = useState();
   const alert = useAlert();
+  const options = useSelector((state) => state.option);
   const categoryList = useSelector((state) => state.category);
   const subCategoryList = useSelector((state) => state.subCategory);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-
   useEffect(() => {
-    let arr = subCategoryList?.filter((d) => d.id === id);
+    let arr = options?.filter((d) => d.id === id);
     if (arr.length > 0) {
-      setSubCategory(arr[0].categoryId);
-      setSubCategoryName(arr[0].name);
+      setOption(arr[0].subCategoryId);
+      setOptionName(arr[0].name);
     }
   }, [id]);
   const editMainCategory = async () => {
     onClose();
-    if (!subCategoryName || !id) {
+    if (!optionName || !id || !option) {
       return alert.info("All fields are required");
     }
     dispatch(setLoading(true));
     try {
       const res = await putApi(
-        "/category/editSubCategory",
+        "/category/editOption",
         {
-          name: subCategoryName,
-          categoryId: subCategory,
+          name: optionName,
+          subCategoryId: option,
           id: id,
         },
         user?.token
       );
       dispatch(setLoading(false));
       dispatch(setChange(res));
-      alert.success("Sub Category updated");
+      alert.success("Option updated");
+      setOptionName("");
+      setOption("");
     } catch (e) {
       dispatch(setLoading(false));
       alert.error("Something went wrong!");
     }
   };
-  const addSubCategory = async () => {
+  const addOptions = async () => {
     onClose();
-    if (!categoryId || !subCategoryName || !user) {
+    if (!option || !optionName) {
       return alert.info("All fields are required");
     }
     dispatch(setLoading(true));
     try {
-      const res = await storeSubCategory(
-        subCategoryName,
-        categoryId,
-        user.token
-      );
+      const res = await storeOption(optionName, option, user?.token);
       dispatch(setLoading(false));
       dispatch(setChange(res));
       alert.success("Category added");
-      setSubCategoryName("");
-      setSubCategory("");
+      setOptionName("");
+      setOption("");
     } catch (e) {
       dispatch(setLoading(false));
       alert.error("Something went wrong!");
@@ -266,32 +255,32 @@ const EditSub = ({ id, onClose, categoryId }) => {
   };
   return (
     <div>
-      <h1 className="headLine">{id ? "Edit" : "Add"} Sub Category</h1>
+      <h1 className="headLine">{id ? "Edit" : "Add"} Options</h1>
       <FormControl className="my-6">
-        {/* <FormLabel>Select Category</FormLabel>
+        <FormLabel className="mt-4">Select Sub Category</FormLabel>
         <Select
           className=" dark:bg-brandLinear dark:text-[#000]"
-          value={subCategory}
-          onChange={(e) => setSubCategory(e.target.value)}
+          value={option}
+          onChange={(e) => setOption(e.target.value)}
           style={style}
-          placeholder="Select Category"
+          placeholder="Select Sub-Category"
         >
-          {categoryList?.map((doc, i) => (
+          {subCategoryList?.map((doc, i) => (
             <option key={i} value={doc.id}>
               {doc.name}
             </option>
           ))}
-        </Select> */}
-        <FormLabel className="mt-4">Sub Category Name</FormLabel>
+        </Select>
+        <FormLabel className="mt-4">Option Name</FormLabel>
         <Input
-          value={subCategoryName}
-          onChange={(e) => setSubCategoryName(e.target.value)}
-          placeholder="Sub Category Name"
+          value={optionName}
+          onChange={(e) => setOptionName(e.target.value)}
+          placeholder="Option Name"
           type="text"
           style={style}
         />
         <Button
-          onClick={id ? editMainCategory : addSubCategory}
+          onClick={id ? editMainCategory : addOptions}
           className="mt-4"
           colorScheme="blue"
         >

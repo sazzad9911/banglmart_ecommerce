@@ -54,6 +54,8 @@ import Campaign from "views/admin/campaign";
 import CampaignProduct from "views/admin/campaign/CampaignProduct";
 import AddCampaign from "views/admin/campaign/AddProduct";
 import AddCampaignProduct from "views/admin/campaign/AddCampaignProduct";
+import CategoryList from "views/admin/category/CategoryList";
+import OptionList from "views/admin/category/OptionList";
 
 const adminRoutes = [
   {
@@ -69,6 +71,20 @@ const adminRoutes = [
     path: "category",
     icon: <MdCategory className="h-6 w-6" />,
     component: <Category />,
+  },
+  {
+    name: "Category",
+    layout: "/panel/admin/",
+    path: "category/:id",
+    icon: <MdCategory className="h-6 w-6" />,
+    component: <CategoryList />,
+  },
+  {
+    name: "Category",
+    layout: "/panel/admin/",
+    path: "category/option/:id",
+    icon: <MdCategory className="h-6 w-6" />,
+    component: <OptionList />,
   },
   {
     name: "Manage Accounts",
