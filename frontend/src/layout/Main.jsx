@@ -151,7 +151,7 @@ const Main = () => {
         <meta property="og:image:type" content="image/jpeg"></meta>
         <meta property="og:image:width" content="300"></meta>
         <meta property="og:image:height" content="300"></meta>
-
+ 
         <meta
           property="og:url"
           content={hostname+window.location.pathname+window.location.search}

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../providers/AuthProvider";
 import { useTranslation } from "react-i18next";
-import footer from "../../../footer.png"
+import footer from "../../../footer1.png"
 
 const Footer = () => {
   const { t } = useTranslation();
