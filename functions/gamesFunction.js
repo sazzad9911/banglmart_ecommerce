@@ -11,7 +11,7 @@ export const getGameList = async (req, res) => {
         method: "getGameList",
         show_additional: true,
         show_systems: 1,
-        currency: "BDT",
+        currency: "USD",
       }
     );
     //console.log(list.data);
