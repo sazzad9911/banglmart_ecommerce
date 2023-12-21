@@ -36,6 +36,7 @@ import notification from "./routes/notification.js";
 import campaign from "./routes/campaign.js";
 import { englishToBangla } from "./functions/main.js";
 import admin from "./routes/admin.js";
+import games from "./routes/games.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,10 +80,12 @@ app.use("/adds", adds);
 app.use("/cart", cart);
 app.use("/wish", wish);
 app.use("/codes", codes);
+app.use("/games",games)
 app.use("/notification", notification);
 app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 app.use("/panel",admin)
+
 // app.get('/', async (req, res) => {
 //   res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
 // });
