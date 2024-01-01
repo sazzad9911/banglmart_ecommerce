@@ -17,7 +17,7 @@ export const createOrder = async (req, res) => {
   const { token, paymentMethod, redirectUrl } = req.body;
   const { id } = req.user;
   const { bkashToken } = req;
-  const siteUrl="https://api.banglamartecommerce.com.bd"
+  const siteUrl = "https://banglamartecommerce.com.bd";
 
   if (!token || !paymentMethod || !redirectUrl) {
     return res
@@ -276,8 +276,8 @@ export const checkOut = async (req, res) => {
         totalPrice: doc.offerPrice
           ? doc.offerPrice * doc.quantity
           : doc?.product.price * doc?.quantity +
-          ((doc?.product.vat * doc?.product.price) / 100) * doc.quantity -
-          (offerDiscount * doc?.quantity + couponDiscount).toFixed(2),
+            ((doc?.product.vat * doc?.product.price) / 100) * doc.quantity -
+            (offerDiscount * doc?.quantity + couponDiscount).toFixed(2),
         couponDiscount: doc.offerPrice ? 0 : couponDiscount.toFixed(2),
         offerDiscount: doc.offerPrice
           ? 0
@@ -569,7 +569,7 @@ export const refundOrder = async (req, res) => {
         status: orderState[5],
       },
     });
-   
+
     res.status(StatusCodes.OK).json({ data: order });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
@@ -823,6 +823,21 @@ export const confirmBkashPayment = async (req, res) => {
       amount: amount,
       contact: user.email || user.phone,
     });
+  } catch (error) {
+    res.status(StatusCodes.EXPECTATION_FAILED).json({ message: error.message });
+  }
+};
+export const getTotalSells = async (req, res) => {
+  const { id } = req.user;
+  try {
+    const orders = await prisma.orders.count({
+      where: {
+        product: {
+          userId: id,
+        },
+      },
+    });
+    res.status(StatusCodes.OK).json(orders);
   } catch (error) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: error.message });
   }
