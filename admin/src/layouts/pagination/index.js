@@ -34,7 +34,7 @@ export default function Pagination({ data, ROW, head, itemsPerPage,children,leng
   };
   return (
     <TableContainer>
-      <Table variant="striped" colorScheme="blackAlpha">
+      <Table  colorScheme="blackAlpha">
         <TableCaption className="">
         {children&&(
           <div className="flex justify-end">

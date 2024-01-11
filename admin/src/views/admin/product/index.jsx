@@ -39,7 +39,7 @@ import { getAllProduct } from "api/productApi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Product() {
-  const [search, setSearch] = useState();
+  
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -53,6 +53,7 @@ export default function Product() {
   const queryParams = new URLSearchParams(location.search);
   const page = queryParams.get("page");
   const allProduct = useSelector((state) => state.product);
+  const search=useSelector(s=>s.search)
   //console.log(product?.data?.length);
 
   // useEffect(() => {
@@ -68,15 +69,22 @@ export default function Product() {
   //   setProductList(product?.data);
   // }, [search, product]);
   useEffect(() => {
+    //console.log(allProduct);
     fetching2();
   }, [change,page,search]);
   const fetching2 = async () => {
     dispatch(setLoading(true));
     setProductList(null)
-    const product = await getAllProduct(user?.user?.id,page?page:1,10,search);
-    setProduct(product)
-    setProductList(product.data)
-    dispatch(setLoading(false));
+    try {
+      const product = await getAllProduct(user?.user?.id,page?page:1,10,search);
+      console.log(product);
+      // setProduct(product)
+      // setProductList(product?.data)
+      dispatch(setLoading(false));
+    } catch (error) {
+      console.error(error);
+    }
+   
   };
   const deleteProduct = (id) => {
     Swal.fire({
@@ -138,7 +146,7 @@ export default function Product() {
   return (
     <div className="dark:text-white">
       
-      <InputGroup className="mt-4" style={style}>
+      {/* <InputGroup className="mt-4" style={style}>
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -147,7 +155,7 @@ export default function Product() {
         <InputRightElement>
           <FaSearch />
         </InputRightElement>
-      </InputGroup>
+      </InputGroup> */}
       <Pagination
         itemsPerPage={10}
         data={productList}
@@ -170,7 +178,7 @@ export default function Product() {
                 <img
                   alt="img"
                   crossOrigin="anonymous"
-                  className="h-10 w-10"
+                  className="h-10 w-10 rounded-full bg-white border shadow-sm"
                   src={`${url}${e.data.thumbnail}`}
                 />
               </Td>

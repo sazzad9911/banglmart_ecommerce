@@ -122,13 +122,23 @@ export const getAllProduct = async (req, res) => {
           seller: true,
           brand: true,
         },
+
         take: page && perPage ? parseInt(perPage) : undefined,
         skip:
           page && perPage
             ? (parseInt(page) - 1) * parseInt(perPage)
             : undefined,
       });
-      return res.status(StatusCodes.OK).json({ data: p, length: p.length });
+      const length = await prisma.products.count({
+        where: {
+          userId: userId ? userId : undefined,
+          title: {
+            contains: search,
+          },
+        }
+      });
+     console.log(length);
+      return res.status(StatusCodes.OK).json({ data: p, length: length });
     }
     const product = await prisma.products.findMany({
       where: {
@@ -170,8 +180,8 @@ export const getProductById = async (req, res) => {
       include: {
         seller: true,
         brand: true,
-        comments:true,
-        reviews:true
+        comments: true,
+        reviews: true,
       },
     });
     res.status(StatusCodes.OK).json({ data: product });
@@ -794,8 +804,8 @@ export const searchFilter = async (req, res) => {
     let brand = [];
     let color = [];
     let size = [];
-    let minPrice=43955677;
-    let maxPrice=0;
+    let minPrice = 43955677;
+    let maxPrice = 0;
     check.map((doc) => {
       category.push(doc.category);
       subCategory.push(doc.subCategory);
@@ -831,7 +841,7 @@ export const searchFilter = async (req, res) => {
       color: [...new Map(color.map((item) => [item["value"], item])).values()],
       size: [...new Map(size.map((item) => [item["value"], item])).values()],
       minPrice,
-      maxPrice
+      maxPrice,
     });
   } catch (e) {
     res.status(StatusCodes.EXPECTATION_FAILED).json({ message: e.message });
