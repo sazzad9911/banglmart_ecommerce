@@ -17,5 +17,5 @@ const checkSellerRequest=async(userId,token)=>{
     })
     return res
 }
-
+ 
 export {url,signIn,checkSellerRequest}
