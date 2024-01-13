@@ -77,9 +77,9 @@ export default function Product() {
     setProductList(null)
     try {
       const product = await getAllProduct(user?.user?.id,page?page:1,10,search);
-      console.log(product);
-      // setProduct(product)
-      // setProductList(product?.data)
+     // console.log(product);
+      setProduct(product)
+      setProductList(product?.data)
       dispatch(setLoading(false));
     } catch (error) {
       console.error(error);
