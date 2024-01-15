@@ -106,7 +106,7 @@ export default function CampaignProduct() {
       </div>
       <FloatButton
         onClick={() => {
-          navigate(`/${location.pathname.split("/")[1]}/campaign/add/${id}`);
+          navigate(`/${location.pathname.split("/")[1]}/${location.pathname.split("/")[2]}/campaign/add/${id}`);
         }}
       />
     </div>
