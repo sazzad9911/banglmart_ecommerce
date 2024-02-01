@@ -62,7 +62,7 @@ export const getGame = async (req, res) => {
         api_login: "40xbet_mc_s",
         method: "getGame",
         lang: "EN",
-        user_username: "sazzad",
+        user_username: username,
         user_password: "sazzad#991",
         gameid: id,
         play_for_fun: 0,
