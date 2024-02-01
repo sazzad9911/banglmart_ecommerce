@@ -40,8 +40,21 @@ export const getGameListOffline = async (req, res) => {
   }
 };
 export const getGame = async (req, res) => {
-  const {id}=req.params
+  const { id } = req.params;
+  const {username}=req.query;
   try {
+    const usr = await axios.post(
+      "https://stage.game-program.com/api/seamless/provider",
+      {
+        api_password: "3XKBmgmYXAKpcuVyQv",
+        api_login: "40xbet_mc_s",
+        method: "createPlayer",
+        user_username: username,
+        user_password: "sazzad#991",
+        user_nickname: username,
+        currency: "EUR",
+      }
+    );
     const list = await axios.post(
       "https://stage.game-program.com/api/seamless/provider",
       {
