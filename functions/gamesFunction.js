@@ -53,7 +53,7 @@ export const getGame = async (req, res) => {
         user_password: "sazzad#991",
         gameid: id,
         play_for_fun: 0,
-        currency: "USD",
+        currency: "EUR",
       }
     );
     //console.log(list.data);
