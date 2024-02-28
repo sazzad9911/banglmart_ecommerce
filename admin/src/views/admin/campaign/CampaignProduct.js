@@ -24,7 +24,9 @@ export default function CampaignProduct() {
   useEffect(() => {
     getApi(`/campaign/products/${id}`).then((res) => {
       setProductList(res.data.data);
-    });
+    }).catch(err=>{
+      console.error(err)
+    })
   }, [id, isLoading]);
   //console.log(id);
 

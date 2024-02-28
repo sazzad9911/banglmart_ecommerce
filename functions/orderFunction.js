@@ -465,7 +465,7 @@ export const rejectOrder = async (req, res) => {
     });
     await sendNotification(
       `Order Rejected!`,
-      `Your order ${order.product.title} has reject by seller`,
+      `Your order ${order?.product?.title} has reject by seller`,
       order.buyerId,
       order.id
     );

@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "../lib/prisma.js";
 import { getBannerImageLink, uploadCampaignImage, uploadImage } from "./main.js";
+import { sendNotification, sendNotificationAll } from "../lib/sendNotification.js";
 
 export const createCampaign = async (req, res) => {
   const { month, startAt,endAt } = req.body;
@@ -34,6 +35,9 @@ export const storeCampaign = async (req, res) => {
       .json({ message: "All fields are required" });
   }
   try {
+    const product=await prisma.products.findUnique({
+      where:{id:productId}
+    })
     const result = await prisma.campaignOffer.create({
       data: {
         offer:parseInt(offer),
@@ -46,6 +50,12 @@ export const storeCampaign = async (req, res) => {
         userId:id
       },
     });
+   const noti= await sendNotificationAll(
+      `Campaign Offer!!`,
+      `${product.title} has ${offer} ${percentage?"%":"Tk"} discount ${freeDelivery&&"with free delivery fee"}. Get It from Current Campaign`,
+      "Campaign Offer"
+    );
+    //console.log(noti);
     res.status(StatusCodes.OK).json({ data: result });
   } catch (e) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message:e.code==="P2002"?"This product has already used in another campaign. Delete that for add from new.": e.message });
