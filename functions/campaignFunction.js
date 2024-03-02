@@ -52,7 +52,7 @@ export const storeCampaign = async (req, res) => {
     });
    const noti= await sendNotificationAll(
       `Campaign Offer!!`,
-      `${product.title} has ${offer} ${percentage?"%":"Tk"} discount ${freeDelivery&&"with free delivery fee"}. Get It from Current Campaign`,
+      `${product.title} has ${offer} ${percentage?"%":"Tk"} discount ${freeDelivery?"with free delivery fee":""}. Get It from Current Campaign`,
       "Campaign Offer"
     );
     //console.log(noti);
