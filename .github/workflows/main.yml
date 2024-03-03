@@ -25,7 +25,7 @@ jobs:
         script: |
           cd server
           git pull origin main
-          git status
+  
           cd admin
           npm i
           npm run build
