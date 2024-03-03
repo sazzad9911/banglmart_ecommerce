@@ -24,6 +24,15 @@ jobs:
         port: 22
         script: |
           PATH=$PATH:/root/.nvm/versions/node/v21.6.2/bin
-          pm2 status
-         
+          cd server
+          git pull origin main
+          cd admin
+          npm i
+          npm run build
+          cd ..
+          cd frontend
+          npm i
+          npm run build
+          cd ..
+          npm i
           
