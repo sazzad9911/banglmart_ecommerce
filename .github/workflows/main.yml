@@ -23,7 +23,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          PATH=$PATH:$(npm config get prefix)/bin
+          PATH=$PATH:/root/.nvm/versions/node/v21.6.2/bin
           pm2 status
          
           
