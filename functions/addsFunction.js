@@ -10,7 +10,7 @@ export const createAdds = async (req, res) => {
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "All field are require" });
   }
-  try {
+  try { 
     const { path } = await getLogoLink(req, res);
     const adds = await prisma.adds.create({ 
       data: {
