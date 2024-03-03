@@ -23,9 +23,9 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
+          PATH=$PATH:$(npm config get prefix)/bin
           cd server
           git pull origin main
-  
           cd admin
           npm i
           npm run build
@@ -35,3 +35,4 @@ jobs:
           npm run build
           cd ..
           npm i
+          pm2 status
