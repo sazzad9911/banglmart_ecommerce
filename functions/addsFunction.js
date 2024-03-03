@@ -12,7 +12,7 @@ export const createAdds = async (req, res) => {
   }
   try {
     const { path } = await getLogoLink(req, res);
-    const adds = await prisma.adds.create({
+    const adds = await prisma.adds.create({ 
       data: {
         title,
         image: path,
