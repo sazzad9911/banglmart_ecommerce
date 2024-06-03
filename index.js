@@ -56,6 +56,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
 app.use(express.static(path.join(__dirname, 'admin/build')));
 
+app.use("/zohoverify", express.static("zohoverify"));
 app.use("/images", express.static("functions/images"));
 app.use("/icon", express.static("icon"));
 app.use("/upload", express.static("upload"));
