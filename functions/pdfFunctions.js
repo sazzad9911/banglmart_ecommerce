@@ -113,7 +113,7 @@ export const extractPdf = async (req, res) => {
     const images = await exportImages(filePath, outDir);
     let extractedImages = [];
     images.map((img) => {
-      const split = img.file.split("\\");
+      const split = img.file.split("/");
       const name = split[split.length - 1];
       extractedImages.push({
         url: `${url}/extract-images/${name}`,
