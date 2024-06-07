@@ -37,6 +37,7 @@ import campaign from "./routes/campaign.js";
 import { englishToBangla } from "./functions/main.js";
 import admin from "./routes/admin.js";
 import games from "./routes/games.js";
+import pdf from "./routes/pdf.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,6 +87,7 @@ app.use("/notification", notification);
 app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 app.use("/panel",admin)
+app.use("/reader",pdf)
 
 // app.get('/', async (req, res) => {
 //   res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
