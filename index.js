@@ -37,7 +37,6 @@ import campaign from "./routes/campaign.js";
 import { englishToBangla } from "./functions/main.js";
 import admin from "./routes/admin.js";
 import games from "./routes/games.js";
-import pdf from "./routes/pdf.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
