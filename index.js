@@ -87,7 +87,6 @@ app.use("/notification", notification);
 app.use("/campaign", campaign);
 app.post("/uploadImages", uploadImages, resizeImages, getResult);
 app.use("/panel",admin)
-app.use("/reader",pdf)
 
 // app.get('/', async (req, res) => {
 //   res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
